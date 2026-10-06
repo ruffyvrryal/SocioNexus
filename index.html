@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SocioNexus | Account-First Social Media Analytics</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230ea5e9'/><stop offset='100%' stop-color='%232563eb'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><path d='M30 35 C30 25, 70 25, 70 40 C70 55, 30 45, 30 60 C30 75, 70 75, 70 65' stroke='white' stroke-width='10' stroke-linecap='round' fill='none'/><circle cx='30' cy='35' r='7' fill='%23a855f7'/><circle cx='70' cy='65' r='7' fill='%2310b981'/></svg>">
   
+  <!-- SocioNexus SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230ea5e9'/><stop offset='100%' stop-color='%232563eb'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><path d='M30 35 C30 25, 70 25, 70 40 C70 55, 30 45, 30 60 C30 75, 70 75, 70 65' stroke='white' stroke-width='10' stroke-linecap='round' fill='none'/><circle cx='30' cy='35' r='7' fill='%23a855f7'/><circle cx='70' cy='65' r='7' fill='%2310b981'/></svg>">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -170,19 +172,26 @@
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
       </div>
 
-      <!-- PLATFORM TABS -->
+      <!-- PLATFORM TABS (FIXED BRAND SVG ICONS) -->
       <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto custom-scrollbar">
         <button id="tab-all" onclick="window.selectPlatform('all')" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="layers" class="w-3.5 h-3.5"></i> All Platforms
         </button>
+        
         <button id="tab-tiktok" onclick="window.selectPlatform('tiktok')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="video" class="w-3.5 h-3.5 text-pink-400"></i> TikTok
         </button>
+        
+        <!-- Instagram SVG -->
         <button id="tab-instagram" onclick="window.selectPlatform('instagram')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
-          <i data-lucide="instagram" class="w-3.5 h-3.5 text-purple-400"></i> Instagram
+          <svg class="w-3.5 h-3.5 text-purple-400 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Instagram
         </button>
+
+        <!-- YouTube SVG -->
         <button id="tab-youtube" onclick="window.selectPlatform('youtube')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
-          <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-500"></i> YouTube
+          <svg class="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+          YouTube
         </button>
       </div>
 
@@ -499,7 +508,7 @@
       if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
       const accId = state.currentAccountId;
       state.accounts = state.accounts.filter(a => a.id !== accId);
-      state.posts = state.posts.filter(p => p.id !== accId);
+      state.posts = state.posts.filter(p => p.account_id !== accId);
 
       if (supabaseClient) {
         try {
@@ -764,7 +773,6 @@
       lucide.createIcons();
     }
 
-    // DUAL DATED & TIME SORTING LOGIC
     function getFilteredPosts() {
       let list = state.posts.filter(p => p.account_id === state.currentAccountId);
       if (state.currentPlatform !== 'all') {
@@ -782,7 +790,6 @@
         list = list.filter(p => p.post_date.startsWith(state.selectedDateVal));
       }
 
-      // Sort by Date DESC, then Time DESC
       return list.sort((a,b) => {
         const dtA = new Date(`${a.post_date}T${a.post_time || '00:00'}`);
         const dtB = new Date(`${b.post_date}T${b.post_time || '00:00'}`);
