@@ -200,42 +200,36 @@
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Impressions (Views)</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-impressions">-- vs prior</div>
         </div>
 
         <!-- Reach Card -->
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Reach (Unique)</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-reach">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-reach">-- vs prior</div>
         </div>
 
         <!-- Likes Card -->
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Likes</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-likes">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-likes">-- vs prior</div>
         </div>
 
         <!-- Comments Card -->
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Comments</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-comments">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-comments">-- vs prior</div>
         </div>
 
         <!-- Shares Card -->
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Shares</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-shares">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-shares">-- vs prior</div>
         </div>
 
         <!-- Saves Card -->
         <div class="glass-panel p-4 rounded-xl space-y-1">
           <span class="text-xs text-slate-400 font-medium">Saves</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-saves">0</div>
-          <div class="text-[10px] flex items-center gap-1 text-slate-400" id="cmp-saves">-- vs prior</div>
         </div>
       </div>
 
@@ -456,7 +450,7 @@
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
 
     // APPLICATION STATE
-    let state = {
+    const state = {
       accounts: [],
       posts: [],
       currentAccountId: null,
@@ -465,9 +459,224 @@
       selectedDateVal: ''
     };
 
-    let supabase = null;
+    let supabaseClient = null;
     let trendChartInstance = null;
     let engagementChartInstance = null;
+
+    // ATTACH GLOBAL HANDLERS TO WINDOW OBJECT
+    window.navigateToHub = function() {
+      state.currentAccountId = null;
+      document.getElementById('view-account-hub').classList.remove('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('header-account-badge').classList.add('hidden');
+      renderHub();
+    };
+
+    window.openAccountWorkspace = function(accountId) {
+      state.currentAccountId = accountId;
+      document.getElementById('view-account-hub').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
+      
+      const acc = state.accounts.find(a => a.id === accountId);
+      if (acc) {
+        document.getElementById('current-account-title').innerText = acc.name;
+        document.getElementById('current-account-niche').innerText = acc.niche;
+        document.getElementById('header-account-name').innerText = acc.name;
+        document.getElementById('header-account-badge').classList.remove('hidden');
+      }
+
+      renderDashboard();
+    };
+
+    window.openAddAccountModal = function() {
+      document.getElementById('modal-account-title').innerText = "Add New Account";
+      document.getElementById('account-id').value = "";
+      document.getElementById('account-name').value = "";
+      document.getElementById('account-niche').value = "";
+      document.getElementById('modal-account').classList.remove('hidden');
+      document.getElementById('modal-account').classList.add('flex');
+    };
+
+    window.openEditAccountModal = function() {
+      const acc = state.accounts.find(a => a.id === state.currentAccountId);
+      if (!acc) return;
+
+      document.getElementById('modal-account-title').innerText = "Edit Account";
+      document.getElementById('account-id').value = acc.id;
+      document.getElementById('account-name').value = acc.name;
+      document.getElementById('account-niche').value = acc.niche;
+      document.getElementById('account-color').value = acc.color || "#0ea5e9";
+      document.getElementById('modal-account').classList.remove('hidden');
+      document.getElementById('modal-account').classList.add('flex');
+    };
+
+    window.saveAccount = async function(e) {
+      e.preventDefault();
+      const id = document.getElementById('account-id').value || 'acc-' + Date.now();
+      const name = document.getElementById('account-name').value;
+      const niche = document.getElementById('account-niche').value;
+      const color = document.getElementById('account-color').value;
+
+      const accObj = { id, name, niche, color };
+
+      const idx = state.accounts.findIndex(a => a.id === id);
+      if (idx >= 0) state.accounts[idx] = accObj;
+      else state.accounts.push(accObj);
+
+      if (supabaseClient) {
+        try { await supabaseClient.from('accounts').upsert(accObj); } catch(err){ console.warn(err); }
+      }
+
+      saveLocalData();
+      window.closeModal('modal-account');
+
+      if (state.currentAccountId === id) {
+        window.openAccountWorkspace(id);
+      } else {
+        renderHub();
+      }
+    };
+
+    window.confirmDeleteAccount = async function() {
+      if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
+
+      const accId = state.currentAccountId;
+      state.accounts = state.accounts.filter(a => a.id !== accId);
+      state.posts = state.posts.filter(p => p.account_id !== accId);
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('accounts').delete().eq('id', accId);
+          await supabaseClient.from('content_posts').delete().eq('account_id', accId);
+        } catch(err){ console.warn(err); }
+      }
+
+      saveLocalData();
+      window.navigateToHub();
+    };
+
+    window.openAddPostModal = function() {
+      document.getElementById('form-post').reset();
+      document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('modal-post').classList.remove('hidden');
+      document.getElementById('modal-post').classList.add('flex');
+    };
+
+    window.savePost = async function(e) {
+      e.preventDefault();
+      const newPost = {
+        id: 'p-' + Date.now(),
+        account_id: state.currentAccountId,
+        platform: document.getElementById('post-platform').value,
+        title: document.getElementById('post-title').value,
+        post_date: document.getElementById('post-date').value,
+        impressions: parseInt(document.getElementById('post-impressions').value) || 0,
+        reach: parseInt(document.getElementById('post-reach').value) || 0,
+        likes: parseInt(document.getElementById('post-likes').value) || 0,
+        comments: parseInt(document.getElementById('post-comments').value) || 0,
+        shares: parseInt(document.getElementById('post-shares').value) || 0,
+        saves: parseInt(document.getElementById('post-saves').value) || 0
+      };
+
+      state.posts.push(newPost);
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('content_posts').insert({
+            id: newPost.id,
+            account_id: newPost.account_id,
+            platform: newPost.platform,
+            title: newPost.title,
+            publish_date: newPost.post_date,
+            post_date: newPost.post_date,
+            impressions: newPost.impressions,
+            reach: newPost.reach,
+            likes: newPost.likes,
+            comments: newPost.comments,
+            shares: newPost.shares,
+            saves: newPost.saves
+          });
+        } catch(err){ console.warn(err); }
+      }
+
+      saveLocalData();
+      window.closeModal('modal-post');
+      renderDashboard();
+    };
+
+    window.deletePost = async function(postId) {
+      if (!confirm("Delete this content record?")) return;
+
+      state.posts = state.posts.filter(p => p.id !== postId);
+
+      if (supabaseClient) {
+        try { await supabaseClient.from('content_posts').delete().eq('id', postId); } catch(err){ console.warn(err); }
+      }
+
+      saveLocalData();
+      renderDashboard();
+    };
+
+    window.setTimeframe = function(type) {
+      state.timeframe = type;
+      document.getElementById('tf-all').className = type === 'all' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
+      document.getElementById('tf-weekly').className = type === 'weekly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
+      document.getElementById('tf-monthly').className = type === 'monthly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
+
+      if (type === 'weekly') {
+        const today = new Date().toISOString().split('T')[0];
+        state.selectedDateVal = today;
+      } else if (type === 'monthly') {
+        const ym = new Date().toISOString().slice(0, 7);
+        state.selectedDateVal = ym;
+      } else {
+        state.selectedDateVal = '';
+      }
+
+      renderDashboard();
+    };
+
+    window.updateDateVal = function(val) {
+      state.selectedDateVal = val;
+      renderDashboard();
+    };
+
+    window.selectPlatform = function(plat) {
+      state.currentPlatform = plat;
+      ['all', 'tiktok', 'instagram', 'youtube'].forEach(p => {
+        const btn = document.getElementById(`tab-${p}`);
+        if (p === plat) {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap";
+        } else {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap";
+        }
+      });
+      renderDashboard();
+    };
+
+    window.openSettingsModal = function() {
+      document.getElementById('cfg-url').value = localStorage.getItem('sn_supabase_url') || HARDCODED_URL;
+      document.getElementById('cfg-key').value = localStorage.getItem('sn_supabase_key') || HARDCODED_KEY;
+      document.getElementById('modal-settings').classList.remove('hidden');
+      document.getElementById('modal-settings').classList.add('flex');
+    };
+
+    window.saveSupabaseSettings = function() {
+      const url = document.getElementById('cfg-url').value.trim();
+      const key = document.getElementById('cfg-key').value.trim();
+
+      localStorage.setItem('sn_supabase_url', url);
+      localStorage.setItem('sn_supabase_key', key);
+
+      initSupabaseClient();
+      window.closeModal('modal-settings');
+      location.reload();
+    };
+
+    window.closeModal = function(id) {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    };
 
     // INITIALIZATION
     window.addEventListener('DOMContentLoaded', async () => {
@@ -483,7 +692,7 @@
 
       if (url && key && window.supabase) {
         try {
-          supabase = window.supabase.createClient(url, key);
+          supabaseClient = window.supabase.createClient(url, key);
           document.getElementById('sync-indicator').className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400";
         } catch (e) {
           console.error("Supabase Init Error:", e);
@@ -492,16 +701,16 @@
     }
 
     async function loadInitialData() {
-      if (supabase) {
+      if (supabaseClient) {
         try {
-          const { data: accs, error: accErr } = await supabase.from('accounts').select('*');
+          const { data: accs, error: accErr } = await supabaseClient.from('accounts').select('*');
           if (!accErr && accs && accs.length > 0) {
             state.accounts = accs;
           } else {
             loadDummyAccounts();
           }
 
-          const { data: pst, error: pstErr } = await supabase.from('content_posts').select('*');
+          const { data: pst, error: pstErr } = await supabaseClient.from('content_posts').select('*');
           if (!pstErr && pst && pst.length > 0) {
             state.posts = pst.map(p => ({
               ...p,
@@ -558,31 +767,6 @@
       localStorage.setItem('sn_accounts', JSON.stringify(state.accounts));
       localStorage.setItem('sn_posts', JSON.stringify(state.posts));
     }
-
-    // NAVIGATION
-    window.navigateToHub = function() {
-      state.currentAccountId = null;
-      document.getElementById('view-account-hub').classList.remove('hidden');
-      document.getElementById('view-dashboard').classList.add('hidden');
-      document.getElementById('header-account-badge').classList.add('hidden');
-      renderHub();
-    };
-
-    window.openAccountWorkspace = function(accountId) {
-      state.currentAccountId = accountId;
-      document.getElementById('view-account-hub').classList.add('hidden');
-      document.getElementById('view-dashboard').classList.remove('hidden');
-      
-      const acc = state.accounts.find(a => a.id === accountId);
-      if (acc) {
-        document.getElementById('current-account-title').innerText = acc.name;
-        document.getElementById('current-account-niche').innerText = acc.niche;
-        document.getElementById('header-account-name').innerText = acc.name;
-        document.getElementById('header-account-badge').classList.remove('hidden');
-      }
-
-      renderDashboard();
-    };
 
     // RENDER LOGIC
     function renderApp() {
@@ -659,26 +843,6 @@
       return list.sort((a,b) => new Date(b.post_date) - new Date(a.post_date));
     }
 
-    // TIMEFRAME CONTROL HANDLERS
-    window.setTimeframe = function(type) {
-      state.timeframe = type;
-      document.getElementById('tf-all').className = type === 'all' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
-      document.getElementById('tf-weekly').className = type === 'weekly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
-      document.getElementById('tf-monthly').className = type === 'monthly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
-
-      if (type === 'weekly') {
-        const today = new Date().toISOString().split('T')[0];
-        state.selectedDateVal = today;
-      } else if (type === 'monthly') {
-        const ym = new Date().toISOString().slice(0, 7);
-        state.selectedDateVal = ym;
-      } else {
-        state.selectedDateVal = '';
-      }
-
-      renderDashboard();
-    };
-
     function renderTimeframeControls() {
       const container = document.getElementById('date-picker-controls');
       container.innerHTML = '';
@@ -694,25 +858,6 @@
       }
     }
 
-    window.updateDateVal = function(val) {
-      state.selectedDateVal = val;
-      renderDashboard();
-    };
-
-    window.selectPlatform = function(plat) {
-      state.currentPlatform = plat;
-      ['all', 'tiktok', 'instagram', 'youtube'].forEach(p => {
-        const btn = document.getElementById(`tab-${p}`);
-        if (p === plat) {
-          btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap";
-        } else {
-          btn.className = "px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap";
-        }
-      });
-      renderDashboard();
-    };
-
-    // METRICS CARDS & COMPARATIVE CALCULATION
     function renderMetricsCards(posts) {
       const sum = (key) => posts.reduce((a, b) => a + (parseInt(b[key]) || 0), 0);
 
@@ -724,7 +869,6 @@
       document.getElementById('metric-saves').innerText = sum('saves').toLocaleString();
     }
 
-    // 5-TIER COLOR-CODED IMPRESSIONS BADGE HELPER
     function getImpressionBadge(impressions) {
       const val = parseInt(impressions) || 0;
 
@@ -741,7 +885,6 @@
       }
     }
 
-    // TABLE RENDER
     function renderTable(posts) {
       const tbody = document.getElementById('posts-table-body');
       tbody.innerHTML = '';
@@ -776,9 +919,7 @@
       });
     }
 
-    // CHARTS RENDER
     function renderCharts(posts) {
-      // Trend Chart
       const ctxTrend = document.getElementById('trendChart').getContext('2d');
       if (trendChartInstance) trendChartInstance.destroy();
 
@@ -820,7 +961,6 @@
         }
       });
 
-      // Engagement Chart
       const ctxEng = document.getElementById('engagementChart').getContext('2d');
       if (engagementChartInstance) engagementChartInstance.destroy();
 
@@ -846,163 +986,6 @@
         }
       });
     }
-
-    // ACCOUNT FORM ACTIONS
-    window.openAddAccountModal = function() {
-      document.getElementById('modal-account-title').innerText = "Add New Account";
-      document.getElementById('account-id').value = "";
-      document.getElementById('account-name').value = "";
-      document.getElementById('account-niche').value = "";
-      document.getElementById('modal-account').classList.remove('hidden');
-      document.getElementById('modal-account').classList.add('flex');
-    };
-
-    window.openEditAccountModal = function() {
-      const acc = state.accounts.find(a => a.id === state.currentAccountId);
-      if (!acc) return;
-
-      document.getElementById('modal-account-title').innerText = "Edit Account";
-      document.getElementById('account-id').value = acc.id;
-      document.getElementById('account-name').value = acc.name;
-      document.getElementById('account-niche').value = acc.niche;
-      document.getElementById('account-color').value = acc.color || "#0ea5e9";
-      document.getElementById('modal-account').classList.remove('hidden');
-      document.getElementById('modal-account').classList.add('flex');
-    };
-
-    window.saveAccount = async function(e) {
-      e.preventDefault();
-      const id = document.getElementById('account-id').value || 'acc-' + Date.now();
-      const name = document.getElementById('account-name').value;
-      const niche = document.getElementById('account-niche').value;
-      const color = document.getElementById('account-color').value;
-
-      const accObj = { id, name, niche, color };
-
-      const idx = state.accounts.findIndex(a => a.id === id);
-      if (idx >= 0) state.accounts[idx] = accObj;
-      else state.accounts.push(accObj);
-
-      if (supabase) {
-        try { await supabase.from('accounts').upsert(accObj); } catch(err){ console.warn(err); }
-      }
-
-      saveLocalData();
-      window.closeModal('modal-account');
-
-      if (state.currentAccountId === id) {
-        window.openAccountWorkspace(id);
-      } else {
-        renderHub();
-      }
-    };
-
-    window.confirmDeleteAccount = async function() {
-      if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
-
-      const accId = state.currentAccountId;
-      state.accounts = state.accounts.filter(a => a.id !== accId);
-      state.posts = state.posts.filter(p => p.account_id !== accId);
-
-      if (supabase) {
-        try {
-          await supabase.from('accounts').delete().eq('id', accId);
-          await supabase.from('content_posts').delete().eq('account_id', accId);
-        } catch(err){ console.warn(err); }
-      }
-
-      saveLocalData();
-      window.navigateToHub();
-    };
-
-    // POST FORM ACTIONS
-    window.openAddPostModal = function() {
-      document.getElementById('form-post').reset();
-      document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('modal-post').classList.remove('hidden');
-      document.getElementById('modal-post').classList.add('flex');
-    };
-
-    window.savePost = async function(e) {
-      e.preventDefault();
-      const newPost = {
-        id: 'p-' + Date.now(),
-        account_id: state.currentAccountId,
-        platform: document.getElementById('post-platform').value,
-        title: document.getElementById('post-title').value,
-        post_date: document.getElementById('post-date').value,
-        impressions: parseInt(document.getElementById('post-impressions').value) || 0,
-        reach: parseInt(document.getElementById('post-reach').value) || 0,
-        likes: parseInt(document.getElementById('post-likes').value) || 0,
-        comments: parseInt(document.getElementById('post-comments').value) || 0,
-        shares: parseInt(document.getElementById('post-shares').value) || 0,
-        saves: parseInt(document.getElementById('post-saves').value) || 0
-      };
-
-      state.posts.push(newPost);
-
-      if (supabase) {
-        try {
-          await supabase.from('content_posts').insert({
-            id: newPost.id,
-            account_id: newPost.account_id,
-            platform: newPost.platform,
-            title: newPost.title,
-            publish_date: newPost.post_date,
-            post_date: newPost.post_date,
-            impressions: newPost.impressions,
-            reach: newPost.reach,
-            likes: newPost.likes,
-            comments: newPost.comments,
-            shares: newPost.shares,
-            saves: newPost.saves
-          });
-        } catch(err){ console.warn(err); }
-      }
-
-      saveLocalData();
-      window.closeModal('modal-post');
-      renderDashboard();
-    };
-
-    window.deletePost = async function(postId) {
-      if (!confirm("Delete this content record?")) return;
-
-      state.posts = state.posts.filter(p => p.id !== postId);
-
-      if (supabase) {
-        try { await supabase.from('content_posts').delete().eq('id', postId); } catch(err){ console.warn(err); }
-      }
-
-      saveLocalData();
-      renderDashboard();
-    };
-
-    // SETTINGS MODAL
-    window.openSettingsModal = function() {
-      document.getElementById('cfg-url').value = localStorage.getItem('sn_supabase_url') || HARDCODED_URL;
-      document.getElementById('cfg-key').value = localStorage.getItem('sn_supabase_key') || HARDCODED_KEY;
-      document.getElementById('modal-settings').classList.remove('hidden');
-      document.getElementById('modal-settings').classList.add('flex');
-    };
-
-    window.saveSupabaseSettings = function() {
-      const url = document.getElementById('cfg-url').value.trim();
-      const key = document.getElementById('cfg-key').value.trim();
-
-      localStorage.setItem('sn_supabase_url', url);
-      localStorage.setItem('sn_supabase_key', key);
-
-      initSupabaseClient();
-      window.closeModal('modal-settings');
-      location.reload();
-    };
-
-    // UTILITY
-    window.closeModal = function(id) {
-      document.getElementById(id).classList.add('hidden');
-      document.getElementById(id).classList.remove('flex');
-    };
   </script>
 </body>
 </html>
