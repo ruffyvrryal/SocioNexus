@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Media Analytics Hub</title>
+    <title>SocioNexus - Social Media Content & Engagement Analytics</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -62,14 +62,13 @@
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-                <i class="fa-solid font-bold fa-chart-line text-lg"></i>
+            <div class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-share-nodes text-lg"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg text-white leading-none">Social Metrics Pro</h1>
+                <h1 class="font-bold text-lg text-white leading-none tracking-tight">SocioNexus</h1>
                 <p class="text-xs text-slate-400 mt-1">Account-First Analytics Engine</p>
             </div>
         </div>
@@ -89,15 +88,14 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <div class="flex-1 flex flex-col max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 gap-6">
 
         <!-- VIEW 1: Account Selector Landing Hub -->
         <div id="view-accounts" class="space-y-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Select Account Workspace</h2>
-                    <p class="text-slate-400 text-sm mt-1">Choose a client or social account to view isolated performance metrics & analytics.</p>
+                    <h2 class="text-2xl font-bold text-white">SocioNexus Account Hub</h2>
+                    <p class="text-slate-400 text-sm mt-1">Select a brand persona or social account workspace to inspect platform performance & content metrics.</p>
                 </div>
                 <button id="btn-add-account" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-600/20">
                     <i class="fa-solid fa-plus"></i>
@@ -111,13 +109,12 @@
             </div>
         </div>
 
-        <!-- VIEW 2: Account Analytics Dashboard Workspace -->
+        <!-- VIEW 2: Account Workspace -->
         <div id="view-dashboard" class="hidden space-y-6">
 
-            <!-- Back to Hub & Account Details -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5">
                 <div class="flex items-center gap-4">
-                    <button id="btn-back-hub" class="p-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                    <button id="btn-back-hub" class="p-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Back to Account Selector">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                     <img id="dash-account-avatar" class="w-12 h-12 rounded-xl object-cover border border-slate-700" src="" alt="Avatar">
@@ -130,15 +127,25 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button id="btn-open-add-content" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium flex items-center gap-2 transition shadow-md shadow-indigo-600/20">
+                <!-- Account Management & Post Actions -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="btn-edit-account" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-pen text-indigo-400"></i>
+                        <span>Edit Account</span>
+                    </button>
+
+                    <button id="btn-delete-account" class="px-3.5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Delete</span>
+                    </button>
+
+                    <button id="btn-open-add-content" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition shadow-md shadow-indigo-600/20">
                         <i class="fa-solid fa-plus"></i>
-                        <span>New Content Log</span>
+                        <span>Log Content</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Platform Filters and Timeframe Selector -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
                 <!-- Platform Tabs -->
                 <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 overflow-x-auto">
@@ -177,7 +184,6 @@
                 </div>
             </div>
 
-            <!-- Metrics Overview Cards Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
                 <!-- Impression -->
                 <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
@@ -268,7 +274,6 @@
                 </div>
             </div>
 
-            <!-- Chart Visualization -->
             <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-slate-200">Metrics Breakdown Trend</h3>
@@ -282,12 +287,11 @@
                 </div>
             </div>
 
-            <!-- Content Data Table -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden space-y-3 p-5">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div>
                         <h3 class="text-base font-bold text-white">Content Performance Table</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Specific color rules applied to the Impression column.</p>
+                        <p class="text-xs text-slate-400 mt-0.5">5 color rules applied to the Impression column.</p>
                     </div>
 
                     <!-- Impression Color Rule Legend -->
@@ -320,7 +324,7 @@
                     </div>
                 </div>
 
-                <!-- Responsive Table Block -->
+                <!-- Table Elements -->
                 <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left text-xs text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] font-semibold border-b border-slate-800">
@@ -443,7 +447,41 @@ CREATE TABLE content_posts (
         </div>
     </div>
 
-    <!-- MODAL 3: New Content Post Log Modal -->
+    <!-- MODAL 3: Edit Account Modal -->
+    <div id="modal-edit-account" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Edit Account Details</h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-edit-account" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Account Name</label>
+                    <input type="text" id="edit-acc-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Social Handle</label>
+                    <input type="text" id="edit-acc-handle" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Niche / Category</label>
+                    <input type="text" id="edit-acc-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Avatar Image URL</label>
+                    <input type="url" id="edit-acc-avatar" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3">
+                    <button type="button" class="btn-close-modal px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Update Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: New/Edit Content Post Log Modal -->
     <div id="modal-content" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -543,16 +581,13 @@ CREATE TABLE content_posts (
             }
         ];
 
-        // Sample Pre-seeded posts with balanced impression variations to demo the threshold styling
+        // Sample Pre-seeded posts
         const seedPosts = [
-            // Alex Rivera Posts
             { id: 'p-1', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-10-01', caption: 'Morning Routine for Tech Founders', impressions: 1420, reach: 1100, likes: 210, comments: 45, shares: 18, saves: 32 },
             { id: 'p-2', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-10-03', caption: 'Desk Setup Tour 2026', impressions: 780, reach: 620, likes: 95, comments: 12, shares: 8, saves: 14 },
             { id: 'p-3', account_id: 'acc-1', platform: 'YouTube', post_date: '2026-10-04', caption: 'Failed Product Launch Case Study', impressions: 320, reach: 290, likes: 42, comments: 8, shares: 2, saves: 5 },
             { id: 'p-4', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-09-25', caption: 'Quick Tip for Productivity', impressions: 85, reach: 70, likes: 12, comments: 2, shares: 1, saves: 0 },
             { id: 'p-5', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-09-20', caption: 'Unreleased Design Draft', impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0 },
-
-            // FitPulse Studio Posts
             { id: 'p-6', account_id: 'acc-2', platform: 'TikTok', post_date: '2026-10-02', caption: '15-Min High Intensity Core Routine', impressions: 3450, reach: 2900, likes: 620, comments: 110, shares: 94, saves: 210 },
             { id: 'p-7', account_id: 'acc-2', platform: 'Instagram', post_date: '2026-09-28', caption: 'Post Workout Meal Prep Ideas', impressions: 650, reach: 510, likes: 88, comments: 14, shares: 12, saves: 45 },
             { id: 'p-8', account_id: 'acc-2', platform: 'YouTube', post_date: '2026-09-15', caption: 'Hydration Myth Debunked', impressions: 45, reach: 30, likes: 4, comments: 1, shares: 0, saves: 2 }
@@ -564,7 +599,6 @@ CREATE TABLE content_posts (
         });
 
         function initApp() {
-            // Load Supabase credentials if available
             const savedUrl = localStorage.getItem('sb_url');
             const savedKey = localStorage.getItem('sb_key');
 
@@ -580,10 +614,7 @@ CREATE TABLE content_posts (
                 }
             }
 
-            // Load data from Storage or Local Cache
             loadAccountsData();
-            
-            // Set Default Timeframe to current month
             setPresetDates('this-month');
         }
 
@@ -624,7 +655,7 @@ CREATE TABLE content_posts (
         }
 
         /**
-         * Dynamic Impression Badge Stylist according to explicit specifications:
+         * Dynamic Impression Badge Stylist:
          * 1. == 0: Red (#ef4444)
          * 2. > 0 and < 100: Orange (#f97316)
          * 3. >= 100 and <= 500: White (#ffffff)
@@ -635,31 +666,15 @@ CREATE TABLE content_posts (
             const imp = Number(impressions) || 0;
 
             if (imp === 0) {
-                return {
-                    class: 'bg-red-500/20 text-red-400 border-red-500/40',
-                    label: '0'
-                };
+                return { class: 'bg-red-500/20 text-red-400 border-red-500/40', label: '0' };
             } else if (imp > 0 && imp < 100) {
-                return {
-                    class: 'bg-orange-500/20 text-orange-400 border-orange-500/40',
-                    label: imp.toLocaleString()
-                };
+                return { class: 'bg-orange-500/20 text-orange-400 border-orange-500/40', label: imp.toLocaleString() };
             } else if (imp >= 100 && imp <= 500) {
-                return {
-                    class: 'bg-slate-800 text-white border-slate-600',
-                    label: imp.toLocaleString()
-                };
+                return { class: 'bg-slate-800 text-white border-slate-600', label: imp.toLocaleString() };
             } else if (imp > 500 && imp <= 1000) {
-                return {
-                    class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
-                    label: imp.toLocaleString()
-                };
+                return { class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40', label: imp.toLocaleString() };
             } else {
-                // > 1000
-                return {
-                    class: 'bg-sky-500/20 text-sky-400 border-sky-500/40',
-                    label: imp.toLocaleString()
-                };
+                return { class: 'bg-sky-500/20 text-sky-400 border-sky-500/40', label: imp.toLocaleString() };
             }
         }
 
@@ -728,7 +743,6 @@ CREATE TABLE content_posts (
             document.getElementById('view-accounts').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
 
-            // Initial Dashboard Render
             refreshDashboard();
         }
 
@@ -758,7 +772,7 @@ CREATE TABLE content_posts (
                 return p.post_date >= startDate && p.post_date <= endDate;
             });
 
-            // Calculate Prior Equivalent Period Dates for comparative growth stats
+            // Prior Period Posts calculation
             let priorPeriodPosts = [];
             if (startDate && endDate) {
                 const startMs = new Date(startDate).getTime();
@@ -770,11 +784,10 @@ CREATE TABLE content_posts (
                 priorPeriodPosts = accountPosts.filter(p => p.post_date >= priorStart && p.post_date <= priorEnd);
             }
 
-            // Calculate Aggregates
             const currentStats = aggregateMetrics(currentPeriodPosts);
             const priorStats = aggregateMetrics(priorPeriodPosts);
 
-            // Render KPI Metrics Cards
+            // Render KPI Cards
             renderMetricCard('m-impressions', 'g-impressions', currentStats.impressions, priorStats.impressions);
             renderMetricCard('m-reach', 'g-reach', currentStats.reach, priorStats.reach);
             renderMetricCard('m-likes', 'g-likes', currentStats.likes, priorStats.likes);
@@ -787,10 +800,7 @@ CREATE TABLE content_posts (
             document.getElementById('m-er').innerText = currentStats.er.toFixed(2) + '%';
             renderGrowthTag('g-er', currentStats.er, priorStats.er, true);
 
-            // Render Chart
             renderAnalyticsChart(currentPeriodPosts);
-
-            // Render Content Table
             renderContentTable(currentPeriodPosts);
         }
 
@@ -836,7 +846,6 @@ CREATE TABLE content_posts (
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
 
-            // Sort posts by date for trendline
             const sorted = [...postList].sort((a, b) => new Date(a.post_date) - new Date(b.post_date));
 
             const labels = sorted.map(p => p.post_date);
@@ -893,12 +902,10 @@ CREATE TABLE content_posts (
             const searchVal = document.getElementById('table-search').value.toLowerCase();
             const sortVal = document.getElementById('table-sort').value;
 
-            // Search filter
             let filtered = postList.filter(p => 
                 p.caption.toLowerCase().includes(searchVal) || p.platform.toLowerCase().includes(searchVal)
             );
 
-            // Sorting logic
             filtered.sort((a, b) => {
                 const totalEngA = a.likes + a.comments + a.shares + a.saves;
                 const totalEngB = b.likes + b.comments + b.shares + b.saves;
@@ -929,7 +936,6 @@ CREATE TABLE content_posts (
                 const totalEng = post.likes + post.comments + post.shares + post.saves;
                 const er = post.impressions > 0 ? ((totalEng / post.impressions) * 100).toFixed(2) : '0.00';
 
-                // Get dynamic badge styling for impression column based on rules
                 const impStyle = getImpressionBadgeStyle(post.impressions);
 
                 let platformIcon = 'fa-globe';
@@ -951,7 +957,6 @@ CREATE TABLE content_posts (
                     </td>
                     <td class="p-3 font-medium text-slate-400">${post.post_date}</td>
                     
-                    <!-- Dynamic Impression Threshold Cell -->
                     <td class="p-3">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${impStyle.class}">
                             ${impStyle.label}
@@ -977,9 +982,12 @@ CREATE TABLE content_posts (
         }
 
         function setupEventListeners() {
-            // Navigation
             document.getElementById('switch-account-btn').onclick = backToAccountsHub;
             document.getElementById('btn-back-hub').onclick = backToAccountsHub;
+
+            // Account Edit & Delete Actions
+            document.getElementById('btn-edit-account').onclick = openEditAccountModal;
+            document.getElementById('btn-delete-account').onclick = handleDeleteActiveAccount;
 
             // Platform Filter Tabs
             document.querySelectorAll('.platform-tab').forEach(tab => {
@@ -1012,7 +1020,6 @@ CREATE TABLE content_posts (
                 refreshDashboard();
             };
 
-            // Search & Sort Table listeners
             document.getElementById('table-search').oninput = refreshDashboard;
             document.getElementById('table-sort').onchange = refreshDashboard;
 
@@ -1022,7 +1029,6 @@ CREATE TABLE content_posts (
                 document.getElementById('form-add-content').reset();
                 document.getElementById('post-id-edit').value = '';
                 document.getElementById('modal-content-title').innerText = 'Log Content Post';
-                // Set default date to today
                 document.getElementById('post-input-date').value = new Date().toISOString().split('T')[0];
                 openModal('modal-content');
             };
@@ -1032,6 +1038,7 @@ CREATE TABLE content_posts (
             document.querySelectorAll('.btn-close-modal').forEach(btn => {
                 btn.onclick = () => {
                     closeModal('modal-account');
+                    closeModal('modal-edit-account');
                     closeModal('modal-content');
                     closeModal('modal-supabase');
                 };
@@ -1039,6 +1046,7 @@ CREATE TABLE content_posts (
 
             // Form Submissions
             document.getElementById('form-add-account').onsubmit = handleAddAccount;
+            document.getElementById('form-edit-account').onsubmit = handleUpdateAccount;
             document.getElementById('form-add-content').onsubmit = handleSaveContentPost;
             document.getElementById('btn-save-supabase').onclick = handleSaveSupabaseConfig;
             document.getElementById('btn-disconnect-supabase').onclick = handleDisconnectSupabase;
@@ -1050,7 +1058,7 @@ CREATE TABLE content_posts (
             const now = new Date();
 
             if (preset === 'this-week') {
-                const day = now.getDay() || 7; // Get current day of week (Mon=1)
+                const day = now.getDay() || 7;
                 const mon = new Date(now);
                 mon.setDate(now.getDate() - day + 1);
                 const sun = new Date(mon);
@@ -1119,6 +1127,80 @@ CREATE TABLE content_posts (
             closeModal('modal-account');
             document.getElementById('form-add-account').reset();
             renderAccountsGrid();
+        }
+
+        function openEditAccountModal() {
+            if (!activeAccountId) return;
+            const acc = accounts.find(a => a.id === activeAccountId);
+            if (!acc) return;
+
+            document.getElementById('edit-acc-name').value = acc.name;
+            document.getElementById('edit-acc-handle').value = acc.handle;
+            document.getElementById('edit-acc-cat').value = acc.category || '';
+            document.getElementById('edit-acc-avatar').value = acc.avatar_url || '';
+
+            openModal('modal-edit-account');
+        }
+
+        async function handleUpdateAccount(e) {
+            e.preventDefault();
+            if (!activeAccountId) return;
+
+            const idx = accounts.findIndex(a => a.id === activeAccountId);
+            if (idx === -1) return;
+
+            const updatedAcc = {
+                ...accounts[idx],
+                name: document.getElementById('edit-acc-name').value,
+                handle: document.getElementById('edit-acc-handle').value,
+                category: document.getElementById('edit-acc-cat').value || 'General',
+                avatar_url: document.getElementById('edit-acc-avatar').value || ''
+            };
+
+            accounts[idx] = updatedAcc;
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('accounts').update(updatedAcc).eq('id', activeAccountId);
+                } catch (err) { console.error('Supabase update account failed', err); }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-edit-account');
+
+            // Refresh Hero Header
+            document.getElementById('dash-account-avatar').src = updatedAcc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + updatedAcc.name.charAt(0);
+            document.getElementById('dash-account-name').innerText = updatedAcc.name;
+            document.getElementById('dash-account-handle').innerText = updatedAcc.handle;
+            document.getElementById('dash-account-category').innerText = updatedAcc.category || 'General';
+
+            document.getElementById('badge-account-avatar').src = updatedAcc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + updatedAcc.name.charAt(0);
+            document.getElementById('badge-account-name').innerText = updatedAcc.name;
+        }
+
+        async function handleDeleteActiveAccount() {
+            if (!activeAccountId) return;
+            const acc = accounts.find(a => a.id === activeAccountId);
+            if (!acc) return;
+
+            if (!confirm(`Are you sure you want to delete "${acc.name}"? This will also remove all logged posts for this account.`)) return;
+
+            const targetId = activeAccountId;
+
+            // Remove locally
+            accounts = accounts.filter(a => a.id !== targetId);
+            posts = posts.filter(p => p.account_id !== targetId);
+
+            // Remove from Supabase
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('content_posts').delete().eq('account_id', targetId);
+                    await supabaseClient.from('accounts').delete().eq('id', targetId);
+                } catch (err) { console.error('Supabase delete account failed', err); }
+            }
+
+            saveToLocalStorage();
+            backToAccountsHub();
         }
 
         async function handleSaveContentPost(e) {
