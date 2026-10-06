@@ -74,7 +74,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.0</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.1</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -115,10 +115,7 @@
         </button>
       </div>
 
-      <!-- Accounts Grid -->
-      <div id="accounts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Rendered dynamically via JS -->
-      </div>
+      <div id="accounts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
 
     <!-- VIEW 2: ACCOUNT DASHBOARD WORKSPACE -->
@@ -138,7 +135,6 @@
           </div>
         </div>
 
-        <!-- Account Controls & Add Content -->
         <div class="flex items-center gap-3 w-full md:w-auto justify-end">
           <button onclick="window.openEditAccountModal()" class="px-3 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
@@ -171,7 +167,6 @@
           </div>
         </div>
 
-        <!-- Dynamic Date Pickers -->
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
       </div>
 
@@ -256,7 +251,7 @@
               <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
               Content Performance Log
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">5-Tier Color Coded Impression Badges Active</p>
+            <p class="text-xs text-slate-400 mt-0.5">Sorted by Latest Upload Date & Time</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2 text-[10px]">
@@ -274,7 +269,7 @@
               <tr>
                 <th class="px-4 py-3">Platform</th>
                 <th class="px-4 py-3">Title / Caption</th>
-                <th class="px-4 py-3">Date</th>
+                <th class="px-4 py-3">Upload Date & Time</th>
                 <th class="px-4 py-3 text-right">Impressions</th>
                 <th class="px-4 py-3 text-right">Reach</th>
                 <th class="px-4 py-3 text-right">Likes</th>
@@ -328,7 +323,7 @@
         <button onclick="window.closeModal('modal-post')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="form-post" onsubmit="window.savePost(event)" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Platform</label>
             <select id="post-platform" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
@@ -338,8 +333,12 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Publish Date</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Upload Date</label>
             <input type="date" id="post-date" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Upload Time</label>
+            <input type="time" id="post-time" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
         <div>
@@ -500,7 +499,7 @@
       if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
       const accId = state.currentAccountId;
       state.accounts = state.accounts.filter(a => a.id !== accId);
-      state.posts = state.posts.filter(p => p.account_id !== accId);
+      state.posts = state.posts.filter(p => p.id !== accId);
 
       if (supabaseClient) {
         try {
@@ -515,7 +514,9 @@
 
     window.openAddPostModal = function() {
       document.getElementById('form-post').reset();
-      document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      document.getElementById('post-date').value = now.toISOString().split('T')[0];
+      document.getElementById('post-time').value = now.toTimeString().slice(0, 5);
       document.getElementById('modal-post').classList.remove('hidden');
       document.getElementById('modal-post').classList.add('flex');
     };
@@ -528,6 +529,7 @@
         platform: document.getElementById('post-platform').value,
         title: document.getElementById('post-title').value,
         post_date: document.getElementById('post-date').value,
+        post_time: document.getElementById('post-time').value || '00:00',
         impressions: parseInt(document.getElementById('post-impressions').value) || 0,
         reach: parseInt(document.getElementById('post-reach').value) || 0,
         likes: parseInt(document.getElementById('post-likes').value) || 0,
@@ -547,6 +549,8 @@
             title: newPost.title,
             publish_date: newPost.post_date,
             post_date: newPost.post_date,
+            publish_time: newPost.post_time,
+            post_time: newPost.post_time,
             impressions: newPost.impressions,
             impression: newPost.impressions,
             reach: newPost.reach,
@@ -663,6 +667,7 @@
             state.posts = pst.map(p => ({
               ...p,
               post_date: p.post_date || p.publish_date,
+              post_time: p.post_time || p.publish_time || '00:00',
               impressions: parseInt(p.impressions || p.impression || 0),
               reach: parseInt(p.reach || 0),
               likes: parseInt(p.likes || 0),
@@ -759,6 +764,7 @@
       lucide.createIcons();
     }
 
+    // DUAL DATED & TIME SORTING LOGIC
     function getFilteredPosts() {
       let list = state.posts.filter(p => p.account_id === state.currentAccountId);
       if (state.currentPlatform !== 'all') {
@@ -775,7 +781,13 @@
       } else if (state.timeframe === 'monthly' && state.selectedDateVal) {
         list = list.filter(p => p.post_date.startsWith(state.selectedDateVal));
       }
-      return list.sort((a,b) => new Date(b.post_date) - new Date(a.post_date));
+
+      // Sort by Date DESC, then Time DESC
+      return list.sort((a,b) => {
+        const dtA = new Date(`${a.post_date}T${a.post_time || '00:00'}`);
+        const dtB = new Date(`${b.post_date}T${b.post_time || '00:00'}`);
+        return dtB - dtA;
+      });
     }
 
     function renderTimeframeControls() {
@@ -823,7 +835,7 @@
         tr.innerHTML = `
           <td class="px-4 py-3 capitalize font-medium text-slate-300">${p.platform}</td>
           <td class="px-4 py-3 text-white font-medium max-w-xs truncate">${p.title}</td>
-          <td class="px-4 py-3 text-slate-400">${p.post_date}</td>
+          <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${p.post_date} <span class="text-cyan-400 ml-1">${p.post_time || '00:00'}</span></td>
           <td class="px-4 py-3 text-right">${getImpressionBadge(p.impressions)}</td>
           <td class="px-4 py-3 text-right text-slate-300">${(p.reach || 0).toLocaleString()}</td>
           <td class="px-4 py-3 text-right text-slate-300">${(p.likes || 0).toLocaleString()}</td>
@@ -843,7 +855,7 @@
       const ctxTrend = document.getElementById('trendChart').getContext('2d');
       if (trendChartInstance) trendChartInstance.destroy();
 
-      const dates = posts.map(p => p.post_date).reverse();
+      const dates = posts.map(p => `${p.post_date} ${p.post_time || ''}`).reverse();
       const impressionsData = posts.map(p => p.impressions || 0).reverse();
       const reachData = posts.map(p => p.reach || 0).reverse();
 
