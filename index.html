@@ -1,313 +1,1233 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SocioNexus — Multi-Account Content & Analytics Hub</title>
-  
-  <!-- Favicon fix -->
-  <link rel="icon" href="data:," />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocioNexus - Social Media Content & Engagement Analytics Hub</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              dark: '#07090e',
-              card: '#0f1422',
-              cardBorder: '#1e293b',
-              accent: '#3b82f6',
-              tiktokCyan: '#00f2fe',
-              tiktokPink: '#ff0050',
-              igPurple: '#833ab4',
-              igRed: '#fd1d1d',
-              igOrange: '#fcb045',
-              ytRed: '#ff0000',
+    <!-- Silence Favicon 404 -->
+    <link rel="icon" href="data:,">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#070a12',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        }
+                    }
+                }
             }
-          }
         }
-      }
-    }
-  </script>
+    </script>
 
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Supabase JS Client CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <style>
-    body {
-      background-color: #07090e;
-      color: #f8fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-    .glass-card {
-      background: rgba(15, 20, 34, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .glass-card-hover:hover {
-      border-color: rgba(59, 130, 246, 0.4);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.15);
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #0b0f19;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-  </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070a12;
+            color: #f3f4f6;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar selection:bg-blue-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased">
 
-  <!-- TOP HEADER / NAVBAR -->
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      
-      <!-- Logo & Brand Name -->
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateToHub()">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-pink-500 p-0.5 shadow-lg shadow-blue-500/20">
-          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-            <i data-lucide="share-2" class="w-5 h-5 text-blue-400"></i>
-          </div>
-        </div>
-        <div>
-          <span class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-blue-400">
-            SocioNexus
-          </span>
-          <span class="block text-[10px] text-slate-400 tracking-wider font-semibold uppercase">Cloud Analytics</span>
-        </div>
-      </div>
-
-      <!-- Header Active Workspace & Quick Nav -->
-      <div id="headerWorkspaceInfo" class="hidden md:flex items-center space-x-3">
-        <div class="flex items-center space-x-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-lg">
-          <div id="headerAccountAvatar" class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs">
-            A
-          </div>
-          <span id="headerAccountName" class="text-sm font-medium text-slate-200">Alex Rivera</span>
-        </div>
-        
-        <button onclick="navigateToHub()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg transition border border-slate-700/50 flex items-center space-x-1.5">
-          <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
-          <span>Switch Account</span>
-        </button>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center space-x-3">
-        <!-- Cloud Status Indicator -->
-        <button onclick="openCloudModal()" id="cloudStatusBtn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-          <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
-          <span id="cloudStatusText">Cloud Connected</span>
-        </button>
-
-        <!-- New Post Action Button (Visible inside workspace) -->
-        <button id="addPostNavBtn" onclick="openPostModal()" class="hidden md:flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-lg shadow-blue-600/20 transition">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Add Post</span>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-
-    <!-- VIEW 1: ACCOUNT SELECTION HUB (LANDING VIEW) -->
-    <section id="accountHubView" class="space-y-8">
-      
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
-        <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-white">Select Account</h1>
-          <p class="text-slate-400 text-sm mt-1">Choose a brand or user profile to access platform content and analytics workspace.</p>
-        </div>
-
-        <button onclick="openAccountModal()" class="inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/25">
-          <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span>Create New Profile</span>
-        </button>
-      </div>
-
-      <!-- Account Cards Grid -->
-      <div id="accountCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Dynamic Account Cards Render Here -->
-      </div>
-
-    </section>
-
-    <!-- VIEW 2: ACCOUNT WORKSPACE (OVERVIEW / TIKTOK / INSTAGRAM / YOUTUBE) -->
-    <section id="workspaceView" class="hidden space-y-8">
-
-      <!-- Workspace Top Bar & Navigation -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 glass-card">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          
-          <!-- Account Identity Header -->
-          <div class="flex items-center space-x-4">
-            <div id="wsAvatar" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-xl">
-              A
+    <!-- Top Sticky Header -->
+    <header class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigateToHub()">
+            <div class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-share-nodes text-lg"></i>
             </div>
             <div>
-              <div class="flex items-center space-x-3">
-                <h2 id="wsAccountName" class="text-2xl font-bold text-white">Alex Rivera</h2>
-                <span id="wsAccountNiche" class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  Tech & Lifestyle
-                </span>
-              </div>
-              <p id="wsAccountHandle" class="text-slate-400 text-sm font-mono mt-0.5">@alexrivera_tech</p>
+                <h1 class="font-bold text-lg text-white leading-none tracking-tight">SocioNexus</h1>
+                <p class="text-xs text-slate-400 mt-1">Multi-Account Content & Analytics Hub</p>
             </div>
-          </div>
+        </div>
 
-          <!-- Account Actions & Timeframe Filter -->
-          <div class="flex flex-wrap items-center gap-3">
+        <!-- Credentials & Active Badge -->
+        <div class="flex items-center gap-3">
+            <button id="supabase-config-btn" class="px-3 py-1.5 rounded-xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-300 flex items-center gap-2 transition shadow-sm">
+                <i id="cloud-status-icon" class="fa-solid fa-cloud-arrow-up text-amber-400"></i>
+                <span id="supabase-status-label">Cloud: Syncing...</span>
+            </button>
             
-            <!-- Edit Account Button -->
-            <button onclick="openEditAccountModal()" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition border border-slate-700/60 flex items-center space-x-1.5">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-blue-400"></i>
-              <span>Edit Account</span>
-            </button>
+            <div id="active-account-badge" class="hidden flex items-center gap-2 px-3 py-1.5 bg-slate-800/90 rounded-xl border border-slate-700 text-xs font-semibold shadow-inner">
+                <img id="badge-account-avatar" class="w-5 h-5 rounded-full object-cover border border-slate-600" src="" alt="Avatar">
+                <span id="badge-account-name" class="text-slate-200">Account</span>
+                <button onclick="navigateToHub()" class="ml-2 text-indigo-400 hover:text-indigo-300 text-xs underline">Switch</button>
+            </div>
+        </div>
+    </header>
 
-            <!-- Delete Account Button -->
-            <button onclick="confirmDeleteAccount()" class="px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold transition border border-red-500/30 flex items-center space-x-1.5">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-              <span>Delete Account</span>
-            </button>
+    <div class="flex-1 flex flex-col max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 gap-6">
 
-            <!-- Return to Hub -->
-            <button onclick="navigateToHub()" class="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition border border-slate-700/60 flex items-center space-x-1.5">
-              <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-slate-400"></i>
-              <span>All Accounts</span>
-            </button>
+        <!-- VIEW 1: Account Hub (Landing View) -->
+        <div id="view-accounts" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Select Account Workspace</h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Choose a brand persona or profile to manage posts and inspect analytics.</p>
+                </div>
+                <button onclick="openModal('modal-account')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-600/20">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add New Account</span>
+                </button>
+            </div>
 
-            <!-- Add Post CTA -->
-            <button onclick="openPostModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold transition shadow-md shadow-blue-600/20 flex items-center space-x-1.5">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>Add Entry</span>
-            </button>
-
-          </div>
-
+            <!-- Account Grid -->
+            <div id="account-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Injected via JavaScript -->
+            </div>
         </div>
 
-        <!-- Platform Tabs Navigation -->
-        <div class="flex items-center space-x-2 border-t border-slate-800/80 mt-6 pt-6 overflow-x-auto custom-scrollbar">
-          
-          <button onclick="switchPlatformTab('overview')" id="tab-overview" class="platform-tab px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/25">
-            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-            <span>Overview</span>
-          </button>
+        <!-- VIEW 2: Account Workspace -->
+        <div id="view-dashboard" class="hidden space-y-6">
 
-          <button onclick="switchPlatformTab('tiktok')" id="tab-tiktok" class="platform-tab px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800/60">
-            <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
-            <span>TikTok</span>
-          </button>
+            <!-- Workspace Banner Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-panel rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center gap-4">
+                    <button onclick="navigateToHub()" class="p-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Back to Account Hub">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <img id="dash-account-avatar" class="w-12 h-12 rounded-xl object-cover border border-slate-700" src="" alt="Avatar">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="dash-account-name" class="text-xl font-bold text-white">Account Name</h2>
+                            <span id="dash-account-category" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Category</span>
+                        </div>
+                        <p id="dash-account-handle" class="text-xs text-slate-400 mt-1">@handle</p>
+                    </div>
+                </div>
 
-          <button onclick="switchPlatformTab('instagram')" id="tab-instagram" class="platform-tab px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800/60">
-            <i data-lucide="instagram" class="w-4 h-4 text-pink-400"></i>
-            <span>Instagram</span>
-          </button>
+                <!-- Account Management Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="openEditAccountModal()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-pen text-indigo-400"></i>
+                        <span>Edit Account</span>
+                    </button>
 
-          <button onclick="switchPlatformTab('youtube')" id="tab-youtube" class="platform-tab px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800/60">
-            <i data-lucide="youtube" class="w-4 h-4 text-red-500"></i>
-            <span>YouTube</span>
-          </button>
+                    <button onclick="handleDeleteActiveAccount()" class="px-3.5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Delete Account</span>
+                    </button>
+
+                    <button onclick="openAddPostModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition shadow-md shadow-indigo-600/20">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Log Post Data</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Platform Tabs & Timeframe Selector -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-panel p-4 rounded-2xl">
+                <!-- Platform Tabs -->
+                <div class="flex items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800/80 overflow-x-auto">
+                    <button data-platform="ALL" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white">
+                        <i class="fa-solid fa-globe mr-1.5"></i> Overview
+                    </button>
+                    <button data-platform="TikTok" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-tiktok mr-1.5 text-pink-400"></i> TikTok
+                    </button>
+                    <button data-platform="Instagram" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-instagram mr-1.5 text-purple-400"></i> Instagram
+                    </button>
+                    <button data-platform="YouTube" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-youtube mr-1.5 text-red-400"></i> YouTube
+                    </button>
+                </div>
+
+                <!-- Date Controls -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs text-slate-300">
+                        <i class="fa-regular fa-calendar text-indigo-400"></i>
+                        <input type="date" id="date-start" class="bg-transparent border-0 text-white text-xs focus:ring-0 focus:outline-none">
+                        <span class="text-slate-500">to</span>
+                        <input type="date" id="date-end" class="bg-transparent border-0 text-white text-xs focus:ring-0 focus:outline-none">
+                    </div>
+
+                    <select id="timeframe-preset" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="custom">Custom Range</option>
+                        <option value="this-week">This Week (Mon-Sun)</option>
+                        <option value="last-week">Last Week</option>
+                        <option value="this-month" selected>This Month</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="this-year">This Year</option>
+                        <option value="all-time">All Time</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Impressions</span>
+                    <div class="mt-2">
+                        <div id="m-impressions" class="text-lg font-bold text-white">0</div>
+                        <div id="g-impressions" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Reach</span>
+                    <div class="mt-2">
+                        <div id="m-reach" class="text-lg font-bold text-white">0</div>
+                        <div id="g-reach" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Likes</span>
+                    <div class="mt-2">
+                        <div id="m-likes" class="text-lg font-bold text-white">0</div>
+                        <div id="g-likes" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Comments</span>
+                    <div class="mt-2">
+                        <div id="m-comments" class="text-lg font-bold text-white">0</div>
+                        <div id="g-comments" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Shares</span>
+                    <div class="mt-2">
+                        <div id="m-shares" class="text-lg font-bold text-white">0</div>
+                        <div id="g-shares" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Saves</span>
+                    <div class="mt-2">
+                        <div id="m-saves" class="text-lg font-bold text-white">0</div>
+                        <div id="g-saves" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">Total Eng.</span>
+                    <div class="mt-2">
+                        <div id="m-engagement" class="text-lg font-bold text-indigo-400">0</div>
+                        <div id="g-engagement" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between shadow-md">
+                    <span class="text-[11px] font-medium text-slate-400">ER %</span>
+                    <div class="mt-2">
+                        <div id="m-er" class="text-lg font-bold text-emerald-400">0.00%</div>
+                        <div id="g-er" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Panel -->
+            <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200">Metrics Breakdown & Engagement Trend</h3>
+                    <div class="text-xs text-slate-400 flex items-center gap-4">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Impressions</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Engagement</span>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Content Performance Table Container -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden space-y-3 p-5 shadow-xl">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Content Performance Table</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Filterable log of all published social media posts.</p>
+                    </div>
+
+                    <!-- 5-Tier Color Threshold Legend -->
+                    <div class="flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px]">
+                        <span class="text-slate-400 font-medium mr-1">Impression Tiers:</span>
+                        <span class="px-2 py-0.5 rounded border bg-red-500/20 text-red-400 border-red-500/30">0 (Red)</span>
+                        <span class="px-2 py-0.5 rounded border bg-amber-500/20 text-amber-400 border-amber-500/30">&lt; 100 (Orange)</span>
+                        <span class="px-2 py-0.5 rounded border bg-slate-700/50 text-white border-slate-600">100–499 (White)</span>
+                        <span class="px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">500–999 (Green)</span>
+                        <span class="px-2 py-0.5 rounded border bg-cyan-500/20 text-cyan-300 border-cyan-500/30">&ge; 1000 (Cyan)</span>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="text" id="table-search" placeholder="Search caption or post ID..." class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl pl-8 pr-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <label class="text-xs text-slate-400">Sort By:</label>
+                        <select id="table-sort" class="bg-slate-950 border border-slate-800 text-xs rounded-xl px-3 py-2 text-slate-300 focus:outline-none">
+                            <option value="date-desc">Date (Newest)</option>
+                            <option value="date-asc">Date (Oldest)</option>
+                            <option value="imp-desc">Impressions (High to Low)</option>
+                            <option value="imp-asc">Impressions (Low to High)</option>
+                            <option value="eng-desc">Engagement Rate %</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] font-semibold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Platform & Caption</th>
+                                <th class="p-3">Publish Date</th>
+                                <th class="p-3">Impressions</th>
+                                <th class="p-3">Reach</th>
+                                <th class="p-3">Likes</th>
+                                <th class="p-3">Comments</th>
+                                <th class="p-3">Shares</th>
+                                <th class="p-3">Saves</th>
+                                <th class="p-3">Total Eng.</th>
+                                <th class="p-3">ER %</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="content-table-body" class="divide-y divide-slate-800">
+                            <!-- Injected dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         </div>
-      </div>
+    </div>
 
-      <!-- TIMEFRAME & DATE RANGE CONTROLS -->
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        
-        <div class="flex items-center space-x-2">
-          <i data-lucide="calendar" class="w-4 h-4 text-blue-400"></i>
-          <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Timeframe Filter</span>
+    <!-- MODALS SECTION -->
+
+    <!-- MODAL 1: Supabase Configuration -->
+    <div id="modal-supabase" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-indigo-400"></i> Supabase Cloud Database
+                </h3>
+                <button onclick="closeModal('modal-supabase')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase Project URL</label>
+                    <input type="text" id="supabase-url" placeholder="https://utqcoplopcbevtscbaas.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase Public Anon Key</label>
+                    <input type="password" id="supabase-key" placeholder="eyJhbGciOi..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button onclick="handleDisconnectSupabase()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition">Use Local Only</button>
+                <button onclick="handleSaveSupabaseConfig()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl transition shadow-md">Connect & Sync</button>
+            </div>
         </div>
+    </div>
 
-        <!-- Mode Selectors: All Time / Weekly / Monthly -->
-        <div class="flex items-center space-x-2">
-          
-          <button onclick="setTimeframeMode('all')" id="tfBtnAll" class="tf-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-blue-600 text-white">
-            All Time
-          </button>
+    <!-- MODAL 2: Add Account -->
+    <div id="modal-account" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Add New Account Workspace</h3>
+                <button onclick="closeModal('modal-account')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-          <button onclick="setTimeframeMode('weekly')" id="tfBtnWeekly" class="tf-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700">
-            Weekly Range
-          </button>
+            <form id="form-add-account" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Account Name</label>
+                    <input type="text" id="acc-input-name" required placeholder="e.g. Alex Rivera" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Social Handle</label>
+                    <input type="text" id="acc-input-handle" required placeholder="e.g. @alexrivera" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Category / Niche</label>
+                    <input type="text" id="acc-input-cat" placeholder="e.g. Digital Creator" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Avatar Image URL (Optional)</label>
+                    <input type="url" id="acc-input-avatar" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
 
-          <button onclick="setTimeframeMode('monthly')" id="tfBtnMonthly" class="tf-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-800 text-slate-300 hover:bg-slate-700">
-            Monthly
-          </button>
-
+                <div class="flex items-center justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('modal-account')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Create Account</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Weekly Date Range Selector Inputs -->
-        <div id="weeklyDateControls" class="hidden flex flex-wrap items-center gap-2">
-          <input type="date" id="startDateInput" onchange="applyDateRangeFilter()" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500" />
-          <span class="text-slate-500 text-xs">to</span>
-          <input type="date" id="endDateInput" onchange="applyDateRangeFilter()" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500" />
-          
-          <button onclick="setThisWeekPreset()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700">
-            This Week
-          </button>
-          <button onclick="setLastWeekPreset()" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700">
-            Last Week
-          </button>
+    <!-- MODAL 3: Edit Account -->
+    <div id="modal-edit-account" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Edit Account Details</h3>
+                <button onclick="closeModal('modal-edit-account')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-edit-account" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Account Name</label>
+                    <input type="text" id="edit-acc-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Social Handle</label>
+                    <input type="text" id="edit-acc-handle" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Category / Niche</label>
+                    <input type="text" id="edit-acc-cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Avatar Image URL</label>
+                    <input type="url" id="edit-acc-avatar" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('modal-edit-account')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Update Account</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Monthly Selector Inputs -->
-        <div id="monthlyDateControls" class="hidden flex items-center space-x-2">
-          <select id="monthSelect" onchange="applyDateRangeFilter()" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500">
-            <option value="0">January</option>
-            <option value="1">February</option>
-            <option value="2">March</option>
-            <option value="3">April</option>
-            <option value="4">May</option>
-            <option value="5">June</option>
-            <option value="6">July</option>
-            <option value="7">August</option>
-            <option value="8">September</option>
-            <option value="9">October</option>
-            <option value="10">November</option>
-            <option value="11">December</option>
-          </select>
+    <!-- MODAL 4: Log Post -->
+    <div id="modal-content" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="modal-content-title" class="text-base font-bold text-white">Log Content Post</h3>
+                <button onclick="closeModal('modal-content')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-          <select id="yearSelect" onchange="applyDateRangeFilter()" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-blue-500">
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026" selected>2026</option>
-            <option value="2027">2027</option>
-          </select>
+            <form id="form-add-content" class="space-y-4">
+                <input type="hidden" id="post-id-edit" value="">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Platform</label>
+                        <select id="post-input-platform" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                            <option value="TikTok">TikTok</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="YouTube">YouTube</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Publish Date</label>
+                        <input type="date" id="post-input-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Caption / Video Title</label>
+                    <input type="text" id="post-input-caption" required placeholder="Enter post caption..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Impressions</label>
+                        <input type="number" id="post-input-imp" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Reach</label>
+                        <input type="number" id="post-input-reach" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Likes</label>
+                        <input type="number" id="post-input-likes" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Comments</label>
+                        <input type="number" id="post-input-comments" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Shares</label>
+                        <input type="number" id="post-input-shares" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Saves</label>
+                        <input type="number" id="post-input-saves" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeModal('modal-content')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Save Post</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-      </div>
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        // Exact Supabase Pre-Configured Credentials
+        const DEFAULT_SUPABASE_URL = 'https://utqcoplopcbevtscbaas.supabase.co';
+        const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4';
 
-      <!-- ANALYTICS SUMMARY CARDS GRID -->
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        
-        <!-- Card 1: Impression -->
-        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 glass-card">
-          <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="text-[11px] font-semibold uppercase tracking-wider">Impression</span>
-            <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-400"></i>
-          </div>
-          <p id="kpiImpression" class="text-xl font-extrabold text-white">0</p>
-          <div id="growthImpression" class="mt-1 text-[10px] font-semibold flex items-center space-x-1 text-slate-400">
-            <span>-- vs prior</span>
-          </div>
-        </div>
+        // Global State
+        let supabaseClient = null;
+        let accounts = [];
+        let posts = [];
+        let activeAccountId = null;
+        let selectedPlatform = 'ALL';
+        let chartInstance = null;
 
-        <!-- Card 2: Reach -->
-        <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl
+        // Default Seed Data Fallback
+        const seedAccounts = [
+            { id: 'acc-1', name: 'Alex Rivera', handle: '@alexrivera_official', category: 'Digital Creator', avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' },
+            { id: 'acc-2', name: 'FitPulse Studio', handle: '@fitpulse.app', category: 'Fitness & Health', avatar_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=150&auto=format&fit=crop&q=80' },
+            { id: 'acc-3', name: 'TechDaily Review', handle: '@techdaily', category: 'Tech & Gadgets', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80' }
+        ];
+
+        const seedPosts = [
+            { id: 'p-1', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-10-01', caption: 'Morning Routine for Founders', impressions: 1420, reach: 1100, likes: 210, comments: 45, shares: 18, saves: 32 },
+            { id: 'p-2', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-10-03', caption: 'Minimal Desk Setup Tour 2026', impressions: 780, reach: 620, likes: 95, comments: 12, shares: 8, saves: 14 },
+            { id: 'p-3', account_id: 'acc-1', platform: 'YouTube', post_date: '2026-10-04', caption: 'Failed SaaS Product Launch', impressions: 320, reach: 290, likes: 42, comments: 8, shares: 2, saves: 5 },
+            { id: 'p-4', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-09-25', caption: 'Quick Productivity Hack', impressions: 85, reach: 70, likes: 12, comments: 2, shares: 1, saves: 0 },
+            { id: 'p-5', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-09-20', caption: 'Unreleased Design Concept', impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0 }
+        ];
+
+        // Global functions
+        window.openModal = function(id) { document.getElementById(id).classList.remove('hidden'); };
+        window.closeModal = function(id) { document.getElementById(id).classList.add('hidden'); };
+
+        window.navigateToHub = function() {
+            activeAccountId = null;
+            document.getElementById('active-account-badge').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-accounts').classList.remove('hidden');
+            renderAccountsGrid();
+        };
+
+        window.openAccountWorkspace = function(accId) {
+            activeAccountId = accId;
+            const account = accounts.find(a => a.id === accId);
+            if (!account) return;
+
+            document.getElementById('badge-account-avatar').src = account.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + account.name.charAt(0);
+            document.getElementById('badge-account-name').innerText = account.name;
+            document.getElementById('active-account-badge').classList.remove('hidden');
+
+            document.getElementById('dash-account-avatar').src = account.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + account.name.charAt(0);
+            document.getElementById('dash-account-name').innerText = account.name;
+            document.getElementById('dash-account-handle').innerText = account.handle;
+            document.getElementById('dash-account-category').innerText = account.category || 'General';
+
+            document.getElementById('view-accounts').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+
+            refreshDashboard();
+        };
+
+        window.openAddPostModal = function() {
+            document.getElementById('form-add-content').reset();
+            document.getElementById('post-id-edit').value = '';
+            document.getElementById('modal-content-title').innerText = 'Log Content Post';
+            document.getElementById('post-input-date').value = new Date().toISOString().split('T')[0];
+            openModal('modal-content');
+        };
+
+        window.openEditAccountModal = function() {
+            if (!activeAccountId) return;
+            const acc = accounts.find(a => a.id === activeAccountId);
+            if (!acc) return;
+
+            document.getElementById('edit-acc-name').value = acc.name;
+            document.getElementById('edit-acc-handle').value = acc.handle;
+            document.getElementById('edit-acc-cat').value = acc.category || '';
+            document.getElementById('edit-acc-avatar').value = acc.avatar_url || '';
+
+            openModal('modal-edit-account');
+        };
+
+        window.handleDeleteActiveAccount = async function() {
+            if (!activeAccountId) return;
+            const acc = accounts.find(a => a.id === activeAccountId);
+            if (!acc) return;
+
+            if (!confirm(`Are you sure you want to delete "${acc.name}"? This will delete all logged posts for this account.`)) return;
+
+            const targetId = activeAccountId;
+            accounts = accounts.filter(a => a.id !== targetId);
+            posts = posts.filter(p => p.account_id !== targetId);
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('content_posts').delete().eq('account_id', targetId);
+                    await supabaseClient.from('accounts').delete().eq('id', targetId);
+                } catch (err) { console.error('Cloud delete failed:', err); }
+            }
+
+            saveToLocalStorage();
+            navigateToHub();
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
+            await initSupabaseClient();
+            setPresetDates('this-month');
+            await loadData();
+        });
+
+        async function initSupabaseClient() {
+            const url = localStorage.getItem('sb_url') || DEFAULT_SUPABASE_URL;
+            const key = localStorage.getItem('sb_key') || DEFAULT_SUPABASE_KEY;
+
+            document.getElementById('supabase-url').value = url;
+            document.getElementById('supabase-key').value = key;
+
+            if (url && key && window.supabase) {
+                try {
+                    supabaseClient = window.supabase.createClient(url, key);
+                    document.getElementById('supabase-status-label').innerText = 'Cloud Connected';
+                    document.getElementById('supabase-status-label').classList.add('text-emerald-400');
+                    document.getElementById('cloud-status-icon').className = 'fa-solid fa-cloud-check text-emerald-400';
+                } catch (e) {
+                    console.error('Supabase initialization error:', e);
+                    setCloudOfflineStatus();
+                }
+            } else {
+                setCloudOfflineStatus();
+            }
+        }
+
+        function setCloudOfflineStatus() {
+            document.getElementById('supabase-status-label').innerText = 'Local Storage Mode';
+            document.getElementById('supabase-status-label').classList.remove('text-emerald-400');
+            document.getElementById('cloud-status-icon').className = 'fa-solid fa-database text-amber-400';
+        }
+
+        async function loadData() {
+            let loadedAccounts = null;
+            let loadedPosts = null;
+
+            if (supabaseClient) {
+                try {
+                    const { data: accData, error: accErr } = await supabaseClient.from('accounts').select('*');
+                    const { data: postData, error: postErr } = await supabaseClient.from('content_posts').select('*');
+
+                    if (!accErr && accData) loadedAccounts = accData;
+                    if (!postErr && postData) {
+                        loadedPosts = postData.map(p => ({
+                            ...p,
+                            post_date: p.post_date || p.publish_date,
+                            impressions: p.impressions !== undefined ? p.impressions : (p.impression || 0)
+                        }));
+                    }
+                } catch (err) {
+                    console.warn('Could not fetch from Supabase. Falling back to local storage.', err);
+                }
+            }
+
+            if (loadedAccounts && loadedAccounts.length > 0) {
+                accounts = loadedAccounts;
+            } else {
+                accounts = JSON.parse(localStorage.getItem('sn_accounts')) || seedAccounts;
+            }
+
+            if (loadedPosts && loadedPosts.length > 0) {
+                posts = loadedPosts;
+            } else {
+                posts = JSON.parse(localStorage.getItem('sn_posts')) || seedPosts;
+            }
+
+            saveToLocalStorage();
+            renderAccountsGrid();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('sn_accounts', JSON.stringify(accounts));
+            localStorage.setItem('sn_posts', JSON.stringify(posts));
+        }
+
+        function getImpressionBadgeStyle(impressions) {
+            const imp = Number(impressions) || 0;
+
+            if (imp === 0) {
+                return { class: 'bg-red-500/20 text-red-400 border-red-500/30', label: '0' };
+            } else if (imp > 0 && imp < 100) {
+                return { class: 'bg-amber-500/20 text-amber-400 border-amber-500/30', label: imp.toLocaleString() };
+            } else if (imp >= 100 && imp < 500) {
+                return { class: 'bg-slate-700/50 text-white border-slate-600', label: imp.toLocaleString() };
+            } else if (imp >= 500 && imp < 1000) {
+                return { class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', label: imp.toLocaleString() };
+            } else {
+                return { class: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30', label: imp.toLocaleString() };
+            }
+        }
+
+        function renderAccountsGrid() {
+            const grid = document.getElementById('account-cards-grid');
+            grid.innerHTML = '';
+
+            accounts.forEach(acc => {
+                const accPosts = posts.filter(p => p.account_id === acc.id);
+                const totalPosts = accPosts.length;
+                const totalImpressions = accPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel rounded-2xl p-5 hover:border-indigo-500/50 transition cursor-pointer flex flex-col justify-between group shadow-lg';
+                card.onclick = () => openAccountWorkspace(acc.id);
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${acc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + acc.name.charAt(0)}" class="w-12 h-12 rounded-xl object-cover border border-slate-700" alt="Avatar" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=${acc.name.charAt(0)}'">
+                            <div>
+                                <h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">${acc.name}</h3>
+                                <p class="text-xs text-slate-400">${acc.handle}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800/90 text-slate-300 border border-slate-700/80">${acc.category || 'General'}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-slate-800/80 text-xs">
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-medium">Logged Content</span>
+                            <span class="font-bold text-slate-200 mt-0.5 block">${totalPosts} Posts</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-medium">Total Imp.</span>
+                            <span class="font-bold text-indigo-400 mt-0.5 block">${totalImpressions.toLocaleString()}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Open Workspace</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function refreshDashboard() {
+            if (!activeAccountId) return;
+
+            const startDate = document.getElementById('date-start').value;
+            const endDate = document.getElementById('date-end').value;
+
+            let accountPosts = posts.filter(p => p.account_id === activeAccountId);
+            if (selectedPlatform !== 'ALL') {
+                accountPosts = accountPosts.filter(p => p.platform === selectedPlatform);
+            }
+
+            const currentPeriodPosts = accountPosts.filter(p => {
+                if (!startDate || !endDate) return true;
+                return p.post_date >= startDate && p.post_date <= endDate;
+            });
+
+            let priorPeriodPosts = [];
+            if (startDate && endDate) {
+                const startMs = new Date(startDate).getTime();
+                const endMs = new Date(endDate).getTime();
+                const diffMs = Math.max(endMs - startMs, 86400000);
+                const priorEnd = new Date(startMs - 86400000).toISOString().split('T')[0];
+                const priorStart = new Date(startMs - 86400000 - diffMs).toISOString().split('T')[0];
+
+                priorPeriodPosts = accountPosts.filter(p => p.post_date >= priorStart && p.post_date <= priorEnd);
+            }
+
+            const currentStats = aggregateMetrics(currentPeriodPosts);
+            const priorStats = aggregateMetrics(priorPeriodPosts);
+
+            renderMetricCard('m-impressions', 'g-impressions', currentStats.impressions, priorStats.impressions);
+            renderMetricCard('m-reach', 'g-reach', currentStats.reach, priorStats.reach);
+            renderMetricCard('m-likes', 'g-likes', currentStats.likes, priorStats.likes);
+            renderMetricCard('m-comments', 'g-comments', currentStats.comments, priorStats.comments);
+            renderMetricCard('m-shares', 'g-shares', currentStats.shares, priorStats.shares);
+            renderMetricCard('m-saves', 'g-saves', currentStats.saves, priorStats.saves);
+            renderMetricCard('m-engagement', 'g-engagement', currentStats.engagement, priorStats.engagement);
+
+            document.getElementById('m-er').innerText = currentStats.er.toFixed(2) + '%';
+            renderGrowthTag('g-er', currentStats.er, priorStats.er);
+
+            renderAnalyticsChart(currentPeriodPosts);
+            renderContentTable(currentPeriodPosts);
+        }
+
+        function aggregateMetrics(postList) {
+            const impressions = postList.reduce((s, p) => s + (Number(p.impressions) || 0), 0);
+            const reach = postList.reduce((s, p) => s + (Number(p.reach) || 0), 0);
+            const likes = postList.reduce((s, p) => s + (Number(p.likes) || 0), 0);
+            const comments = postList.reduce((s, p) => s + (Number(p.comments) || 0), 0);
+            const shares = postList.reduce((s, p) => s + (Number(p.shares) || 0), 0);
+            const saves = postList.reduce((s, p) => s + (Number(p.saves) || 0), 0);
+
+            const engagement = likes + comments + shares + saves;
+            const er = impressions > 0 ? (engagement / impressions) * 100 : 0;
+
+            return { impressions, reach, likes, comments, shares, saves, engagement, er };
+        }
+
+        function renderMetricCard(valId, growthId, currentVal, priorVal) {
+            document.getElementById(valId).innerText = currentVal.toLocaleString();
+            renderGrowthTag(growthId, currentVal, priorVal);
+        }
+
+        function renderGrowthTag(growthId, current, prior) {
+            const el = document.getElementById(growthId);
+            if (!prior || prior === 0) {
+                el.innerHTML = `<span class="text-slate-500">vs prior period</span>`;
+                return;
+            }
+
+            const diff = current - prior;
+            const pct = ((diff / prior) * 100).toFixed(1);
+
+            if (diff > 0) {
+                el.innerHTML = `<span class="text-emerald-400 flex items-center gap-0.5"><i class="fa-solid fa-caret-up"></i> +${pct}%</span> <span class="text-slate-500">vs prior</span>`;
+            } else if (diff < 0) {
+                el.innerHTML = `<span class="text-red-400 flex items-center gap-0.5"><i class="fa-solid fa-caret-down"></i> ${pct}%</span> <span class="text-slate-500">vs prior</span>`;
+            } else {
+                el.innerHTML = `<span class="text-slate-400">0% vs prior</span>`;
+            }
+        }
+
+        function renderAnalyticsChart(postList) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const sorted = [...postList].sort((a, b) => new Date(a.post_date) - new Date(b.post_date));
+
+            const labels = sorted.map(p => p.post_date);
+            const impressionData = sorted.map(p => p.impressions);
+            const engagementData = sorted.map(p => (Number(p.likes) + Number(p.comments) + Number(p.shares) + Number(p.saves)));
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length ? labels : ['No Posts Logged'],
+                    datasets: [
+                        {
+                            label: 'Impressions',
+                            data: impressionData.length ? impressionData : [0],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Total Engagement',
+                            data: engagementData.length ? engagementData : [0],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderContentTable(postList) {
+            const tbody = document.getElementById('content-table-body');
+            const searchVal = document.getElementById('table-search').value.toLowerCase();
+            const sortVal = document.getElementById('table-sort').value;
+
+            let filtered = postList.filter(p => 
+                p.caption.toLowerCase().includes(searchVal) || p.platform.toLowerCase().includes(searchVal)
+            );
+
+            filtered.sort((a, b) => {
+                const totalEngA = Number(a.likes) + Number(a.comments) + Number(a.shares) + Number(a.saves);
+                const totalEngB = Number(b.likes) + Number(b.comments) + Number(b.shares) + Number(b.saves);
+                const erA = a.impressions > 0 ? (totalEngA / a.impressions) * 100 : 0;
+                const erB = b.impressions > 0 ? (totalEngB / b.impressions) * 100 : 0;
+
+                if (sortVal === 'date-desc') return new Date(b.post_date) - new Date(a.post_date);
+                if (sortVal === 'date-asc') return new Date(a.post_date) - new Date(b.post_date);
+                if (sortVal === 'imp-desc') return b.impressions - a.impressions;
+                if (sortVal === 'imp-asc') return a.impressions - b.impressions;
+                if (sortVal === 'eng-desc') return erB - erA;
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="text-center py-8 text-slate-500">
+                            No content logs found matching criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filtered.forEach(post => {
+                const totalEng = Number(post.likes) + Number(post.comments) + Number(post.shares) + Number(post.saves);
+                const er = post.impressions > 0 ? ((totalEng / post.impressions) * 100).toFixed(2) : '0.00';
+                const impStyle = getImpressionBadgeStyle(post.impressions);
+
+                let platformIcon = 'fa-globe';
+                if (post.platform === 'TikTok') platformIcon = 'fa-brands fa-tiktok text-pink-400';
+                if (post.platform === 'Instagram') platformIcon = 'fa-brands fa-instagram text-purple-400';
+                if (post.platform === 'YouTube') platformIcon = 'fa-brands fa-youtube text-red-400';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition border-b border-slate-800/60';
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="flex items-center gap-2.5">
+                            <i class="${platformIcon} text-base"></i>
+                            <div>
+                                <p class="font-medium text-slate-200 line-clamp-1 max-w-[180px]">${post.caption}</p>
+                                <span class="text-[10px] text-slate-500 uppercase">${post.platform}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-3 font-medium text-slate-400">${post.post_date}</td>
+                    
+                    <td class="p-3">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${impStyle.class}">
+                            ${impStyle.label}
+                        </span>
+                    </td>
+                    
+                    <td class="p-3 text-slate-300 font-medium">${Number(post.reach).toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${Number(post.likes).toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${Number(post.comments).toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${Number(post.shares).toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${Number(post.saves).toLocaleString()}</td>
+                    <td class="p-3 text-indigo-400 font-semibold">${totalEng.toLocaleString()}</td>
+                    <td class="p-3 text-emerald-400 font-semibold">${er}%</td>
+                    <td class="p-3 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="editPost('${post.id}')" class="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded transition" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deletePost('${post.id}')" class="p-1.5 hover:bg-slate-700 text-red-400 rounded transition" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.onclick = () => {
+                    document.querySelectorAll('.platform-tab').forEach(t => {
+                        t.classList.remove('bg-indigo-600', 'text-white');
+                        t.classList.add('text-slate-400');
+                    });
+                    tab.classList.add('bg-indigo-600', 'text-white');
+                    tab.classList.remove('text-slate-400');
+
+                    selectedPlatform = tab.getAttribute('data-platform');
+                    refreshDashboard();
+                };
+            });
+
+            document.getElementById('timeframe-preset').onchange = (e) => {
+                setPresetDates(e.target.value);
+                refreshDashboard();
+            };
+
+            document.getElementById('date-start').onchange = () => {
+                document.getElementById('timeframe-preset').value = 'custom';
+                refreshDashboard();
+            };
+
+            document.getElementById('date-end').onchange = () => {
+                document.getElementById('timeframe-preset').value = 'custom';
+                refreshDashboard();
+            };
+
+            document.getElementById('table-search').oninput = refreshDashboard;
+            document.getElementById('table-sort').onchange = refreshDashboard;
+
+            document.getElementById('supabase-config-btn').onclick = () => openModal('modal-supabase');
+
+            document.getElementById('form-add-account').onsubmit = handleAddAccount;
+            document.getElementById('form-edit-account').onsubmit = handleUpdateAccount;
+            document.getElementById('form-add-content').onsubmit = handleSaveContentPost;
+        }
+
+        function setPresetDates(preset) {
+            const startInput = document.getElementById('date-start');
+            const endInput = document.getElementById('date-end');
+            const now = new Date();
+
+            if (preset === 'this-week') {
+                const day = now.getDay() || 7;
+                const mon = new Date(now);
+                mon.setDate(now.getDate() - day + 1);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+
+                startInput.value = mon.toISOString().split('T')[0];
+                endInput.value = sun.toISOString().split('T')[0];
+            } else if (preset === 'last-week') {
+                const day = now.getDay() || 7;
+                const prevMon = new Date(now);
+                prevMon.setDate(now.getDate() - day - 6);
+                const prevSun = new Date(prevMon);
+                prevSun.setDate(prevMon.getDate() + 6);
+
+                startInput.value = prevMon.toISOString().split('T')[0];
+                endInput.value = prevSun.toISOString().split('T')[0];
+            } else if (preset === 'this-month') {
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            } else if (preset === 'last-month') {
+                const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            } else if (preset === 'this-year') {
+                const firstDay = new Date(now.getFullYear(), 0, 1);
+                const lastDay = new Date(now.getFullYear(), 11, 31);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            } else if (preset === 'all-time') {
+                startInput.value = '';
+                endInput.value = '';
+            }
+        }
+
+        async function handleAddAccount(e) {
+            e.preventDefault();
+
+            const newAcc = {
+                id: 'acc-' + Date.now(),
+                name: document.getElementById('acc-input-name').value,
+                handle: document.getElementById('acc-input-handle').value,
+                category: document.getElementById('acc-input-cat').value || 'General',
+                avatar_url: document.getElementById('acc-input-avatar').value || ''
+            };
+
+            accounts.push(newAcc);
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('accounts').insert([newAcc]);
+                } catch (err) { console.error('Cloud save failed:', err); }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-account');
+            document.getElementById('form-add-account').reset();
+            renderAccountsGrid();
+        }
+
+        async function handleUpdateAccount(e) {
+            e.preventDefault();
+            if (!activeAccountId) return;
+
+            const idx = accounts.findIndex(a => a.id === activeAccountId);
+            if (idx === -1) return;
+
+            const updatedAcc = {
+                ...accounts[idx],
+                name: document.getElementById('edit-acc-name').value,
+                handle: document.getElementById('edit-acc-handle').value,
+                category: document.getElementById('edit-acc-cat').value || 'General',
+                avatar_url: document.getElementById('edit-acc-avatar').value || ''
+            };
+
+            accounts[idx] = updatedAcc;
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('accounts').update(updatedAcc).eq('id', activeAccountId);
+                } catch (err) { console.error('Cloud update failed:', err); }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-edit-account');
+
+            document.getElementById('dash-account-avatar').src = updatedAcc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + updatedAcc.name.charAt(0);
+            document.getElementById('dash-account-name').innerText = updatedAcc.name;
+            document.getElementById('dash-account-handle').innerText = updatedAcc.handle;
+            document.getElementById('dash-account-category').innerText = updatedAcc.category || 'General';
+
+            document.getElementById('badge-account-avatar').src = updatedAcc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + updatedAcc.name.charAt(0);
+            document.getElementById('badge-account-name').innerText = updatedAcc.name;
+        }
+
+        async function handleSaveContentPost(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('post-id-edit').value;
+            const postObj = {
+                id: editId ? editId : 'post-' + Date.now(),
+                account_id: activeAccountId,
+                platform: document.getElementById('post-input-platform').value,
+                post_date: document.getElementById('post-input-date').value,
+                publish_date: document.getElementById('post-input-date').value,
+                caption: document.getElementById('post-input-caption').value,
+                title: document.getElementById('post-input-caption').value,
+                impressions: parseInt(document.getElementById('post-input-imp').value) || 0,
+                impression: parseInt(document.getElementById('post-input-imp').value) || 0,
+                reach: parseInt(document.getElementById('post-input-reach').value) || 0,
+                likes: parseInt(document.getElementById('post-input-likes').value) || 0,
+                comments: parseInt(document.getElementById('post-input-comments').value) || 0,
+                shares: parseInt(document.getElementById('post-input-shares').value) || 0,
+                saves: parseInt(document.getElementById('post-input-saves').value) || 0
+            };
+
+            if (editId) {
+                const idx = posts.findIndex(p => p.id === editId);
+                if (idx !== -1) posts[idx] = postObj;
+
+                if (supabaseClient) {
+                    try { await supabaseClient.from('content_posts').update(postObj).eq('id', editId); }
+                    catch (err) { console.error('Cloud update post failed:', err); }
+                }
+            } else {
+                posts.push(postObj);
+
+                if (supabaseClient) {
+                    try { await supabaseClient.from('content_posts').insert([postObj]); }
+                    catch (err) { console.error('Cloud insert post failed:', err); }
+                }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-content');
+            refreshDashboard();
+        }
+
+        window.editPost = function(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            document.getElementById('post-id-edit').value = post.id;
+            document.getElementById('post-input-platform').value = post.platform;
+            document.getElementById('post-input-date').value = post.post_date || post.publish_date;
+            document.getElementById('post-input-caption').value = post.caption || post.title;
+            document.getElementById('post-input-imp').value = post.impressions || post.impression || 0;
+            document.getElementById('post-input-reach').value = post.reach || 0;
+            document.getElementById('post-input-likes').value = post.likes || 0;
+            document.getElementById('post-input-comments').value = post.comments || 0;
+            document.getElementById('post-input-shares').value = post.shares || 0;
+            document.getElementById('post-input-saves').value = post.saves || 0;
+
+            document.getElementById('modal-content-title').innerText = 'Edit Content Post Log';
+            openModal('modal-content');
+        };
+
+        window.deletePost = async function(postId) {
+            if (!confirm('Are you sure you want to delete this content post log?')) return;
+
+            posts = posts.filter(p => p.id !== postId);
+
+            if (supabaseClient) {
+                try { await supabaseClient.from('content_posts').delete().eq('id', postId); }
+                catch (err) { console.error('Cloud delete post failed:', err); }
+            }
+
+            saveToLocalStorage();
+            refreshDashboard();
+        };
+
+        window.handleSaveSupabaseConfig = async function() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+
+            if (url && key) {
+                localStorage.setItem('sb_url', url);
+                localStorage.setItem('sb_key', key);
+                await initSupabaseClient();
+                await loadData();
+                closeModal('modal-supabase');
+            }
+        };
+
+        window.handleDisconnectSupabase = function() {
+            localStorage.removeItem('sb_url');
+            localStorage.removeItem('sb_key');
+            supabaseClient = null;
+            setCloudOfflineStatus();
+            closeModal('modal-supabase');
+        };
+    </script>
+</body>
+</html>
