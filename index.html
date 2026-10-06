@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Analytics Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid font-bold fa-chart-line text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-white leading-none">Social Metrics Pro</h1>
+                <p class="text-xs text-slate-400 mt-1">Account-First Analytics Engine</p>
+            </div>
+        </div>
+
+        <!-- Account Workspace Indicator / Switcher -->
+        <div class="flex items-center gap-3">
+            <button id="supabase-config-btn" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-300 flex items-center gap-2 transition">
+                <i class="fa-solid fa-database text-emerald-400"></i>
+                <span id="supabase-status-label">Supabase: Not Configured</span>
+            </button>
+            
+            <div id="active-account-badge" class="hidden flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700 text-xs font-semibold">
+                <img id="badge-account-avatar" class="w-5 h-5 rounded-full object-cover" src="" alt="Avatar">
+                <span id="badge-account-name" class="text-slate-200">Account</span>
+                <button id="switch-account-btn" class="ml-2 text-indigo-400 hover:text-indigo-300 text-xs underline">Switch</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex flex-col max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 gap-6">
+
+        <!-- VIEW 1: Account Selector Landing Hub -->
+        <div id="view-accounts" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Select Account Workspace</h2>
+                    <p class="text-slate-400 text-sm mt-1">Choose a client or social account to view isolated performance metrics & analytics.</p>
+                </div>
+                <button id="btn-add-account" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-indigo-600/20">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add New Account</span>
+                </button>
+            </div>
+
+            <!-- Account Grid -->
+            <div id="account-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- VIEW 2: Account Analytics Dashboard Workspace -->
+        <div id="view-dashboard" class="hidden space-y-6">
+
+            <!-- Back to Hub & Account Details -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                <div class="flex items-center gap-4">
+                    <button id="btn-back-hub" class="p-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <img id="dash-account-avatar" class="w-12 h-12 rounded-xl object-cover border border-slate-700" src="" alt="Avatar">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="dash-account-name" class="text-xl font-bold text-white">Account Name</h2>
+                            <span id="dash-account-category" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Category</span>
+                        </div>
+                        <p id="dash-account-handle" class="text-xs text-slate-400 mt-1">@handle</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="btn-open-add-content" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium flex items-center gap-2 transition shadow-md shadow-indigo-600/20">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Content Log</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Platform Filters and Timeframe Selector -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+                <!-- Platform Tabs -->
+                <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 overflow-x-auto">
+                    <button data-platform="ALL" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white">
+                        <i class="fa-solid fa-globe mr-1.5"></i> All Platforms
+                    </button>
+                    <button data-platform="TikTok" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-tiktok mr-1.5"></i> TikTok
+                    </button>
+                    <button data-platform="Instagram" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-instagram mr-1.5"></i> Instagram
+                    </button>
+                    <button data-platform="YouTube" class="platform-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+                        <i class="fa-brands fa-youtube mr-1.5"></i> YouTube
+                    </button>
+                </div>
+
+                <!-- Date Range & Preset Selector -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs text-slate-300">
+                        <i class="fa-regular fa-calendar text-indigo-400"></i>
+                        <input type="date" id="date-start" class="bg-transparent border-0 text-white text-xs focus:ring-0 focus:outline-none">
+                        <span class="text-slate-500">to</span>
+                        <input type="date" id="date-end" class="bg-transparent border-0 text-white text-xs focus:ring-0 focus:outline-none">
+                    </div>
+
+                    <!-- Preset Timeframes -->
+                    <select id="timeframe-preset" class="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                        <option value="custom">Custom Range</option>
+                        <option value="this-week">This Week (Mon-Sun)</option>
+                        <option value="last-week">Last Week</option>
+                        <option value="this-month" selected>This Month</option>
+                        <option value="last-month">Last Month</option>
+                        <option value="this-year">This Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Metrics Overview Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+                <!-- Impression -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Impressions</span>
+                    <div class="mt-2">
+                        <div id="m-impressions" class="text-lg font-bold text-white">0</div>
+                        <div id="g-impressions" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reach -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Reach</span>
+                    <div class="mt-2">
+                        <div id="m-reach" class="text-lg font-bold text-white">0</div>
+                        <div id="g-reach" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Likes -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Likes</span>
+                    <div class="mt-2">
+                        <div id="m-likes" class="text-lg font-bold text-white">0</div>
+                        <div id="g-likes" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Comments</span>
+                    <div class="mt-2">
+                        <div id="m-comments" class="text-lg font-bold text-white">0</div>
+                        <div id="g-comments" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shares -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Shares</span>
+                    <div class="mt-2">
+                        <div id="m-shares" class="text-lg font-bold text-white">0</div>
+                        <div id="g-shares" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saves -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Saves</span>
+                    <div class="mt-2">
+                        <div id="m-saves" class="text-lg font-bold text-white">0</div>
+                        <div id="g-saves" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Engagement -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">Engagement</span>
+                    <div class="mt-2">
+                        <div id="m-engagement" class="text-lg font-bold text-indigo-400">0</div>
+                        <div id="g-engagement" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engagement Rate % -->
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between">
+                    <span class="text-[11px] font-medium text-slate-400">ER %</span>
+                    <div class="mt-2">
+                        <div id="m-er" class="text-lg font-bold text-emerald-400">0.00%</div>
+                        <div id="g-er" class="text-[10px] font-semibold mt-1 flex items-center gap-1 text-slate-500">
+                            <span>vs prior period</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Visualization -->
+            <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200">Metrics Breakdown Trend</h3>
+                    <div class="text-xs text-slate-400 flex items-center gap-3">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Impressions</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Engagement</span>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Content Data Table -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden space-y-3 p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-bold text-white">Content Performance Table</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Specific color rules applied to the Impression column.</p>
+                    </div>
+
+                    <!-- Impression Color Rule Legend -->
+                    <div class="flex flex-wrap items-center gap-2 text-[11px]">
+                        <span class="text-slate-400 font-medium mr-1">Thresholds:</span>
+                        <span class="px-2 py-0.5 rounded border bg-red-500/20 text-red-400 border-red-500/40">0 (Red)</span>
+                        <span class="px-2 py-0.5 rounded border bg-orange-500/20 text-orange-400 border-orange-500/40">&lt;100 (Orange)</span>
+                        <span class="px-2 py-0.5 rounded border bg-slate-700/50 text-white border-slate-600">100–500 (White)</span>
+                        <span class="px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/40">&gt;500–1k (Green)</span>
+                        <span class="px-2 py-0.5 rounded border bg-sky-500/20 text-sky-400 border-sky-500/40">&gt;1000 (Light Blue)</span>
+                    </div>
+                </div>
+
+                <!-- Table Controls (Search / Sort) -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="text" id="table-search" placeholder="Search caption or post ID..." class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl pl-8 pr-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <label class="text-xs text-slate-400">Sort By:</label>
+                        <select id="table-sort" class="bg-slate-950 border border-slate-800 text-xs rounded-xl px-3 py-2 text-slate-300 focus:outline-none">
+                            <option value="date-desc">Date (Newest)</option>
+                            <option value="date-asc">Date (Oldest)</option>
+                            <option value="imp-desc">Impressions (High to Low)</option>
+                            <option value="imp-asc">Impressions (Low to High)</option>
+                            <option value="eng-desc">Engagement Rate %</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Responsive Table Block -->
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] font-semibold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Platform & Post</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Impressions</th>
+                                <th class="p-3">Reach</th>
+                                <th class="p-3">Likes</th>
+                                <th class="p-3">Comments</th>
+                                <th class="p-3">Shares</th>
+                                <th class="p-3">Saves</th>
+                                <th class="p-3">Total Eng.</th>
+                                <th class="p-3">ER %</th>
+                                <th class="p-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="content-table-body" class="divide-y divide-slate-800">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL 1: Supabase Credentials Modal -->
+    <div id="modal-supabase" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-database text-emerald-400"></i> Supabase Integration
+                </h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <p class="text-xs text-slate-400">
+                Connect your Supabase project to persist data across devices. Leave blank to use local browser memory mode.
+            </p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase Project URL</label>
+                    <input type="text" id="supabase-url" placeholder="https://xyz.supabase.co" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Supabase Anon Key</label>
+                    <input type="password" id="supabase-key" placeholder="eyJhbGciOi..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <!-- SQL Quick Setup Toggle -->
+            <details class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-400">
+                <summary class="cursor-pointer font-semibold text-slate-300">View SQL Schema Setup</summary>
+                <p class="mt-2">Run this in your Supabase SQL Editor to prepare tables:</p>
+                <pre class="mt-2 bg-slate-900 p-2 rounded text-[10px] text-emerald-400 overflow-x-auto select-all">
+CREATE TABLE accounts (
+  id TEXT PRIMARY KEY,
+  name TEXT,
+  handle TEXT,
+  category TEXT,
+  avatar_url TEXT
+);
+
+CREATE TABLE content_posts (
+  id TEXT PRIMARY KEY,
+  account_id TEXT,
+  platform TEXT,
+  post_date DATE,
+  caption TEXT,
+  impressions INT DEFAULT 0,
+  reach INT DEFAULT 0,
+  likes INT DEFAULT 0,
+  comments INT DEFAULT 0,
+  shares INT DEFAULT 0,
+  saves INT DEFAULT 0
+);
+                </pre>
+            </details>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button id="btn-disconnect-supabase" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition">Disconnect</button>
+                <button id="btn-save-supabase" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-xl transition">Save & Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Add Account Modal -->
+    <div id="modal-account" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Add New Account Workspace</h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-add-account" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Account Name</label>
+                    <input type="text" id="acc-input-name" required placeholder="e.g. Alex Rivera" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Social Handle</label>
+                    <input type="text" id="acc-input-handle" required placeholder="e.g. @alexrivera" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Niche / Category</label>
+                    <input type="text" id="acc-input-cat" placeholder="e.g. Creator / Fitness / Tech" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Avatar Image URL (Optional)</label>
+                    <input type="url" id="acc-input-avatar" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3">
+                    <button type="button" class="btn-close-modal px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: New Content Post Log Modal -->
+    <div id="modal-content" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="modal-content-title" class="text-base font-bold text-white">Log Content Post</h3>
+                <button class="btn-close-modal text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-add-content" class="space-y-4">
+                <input type="hidden" id="post-id-edit" value="">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Platform</label>
+                        <select id="post-input-platform" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                            <option value="TikTok">TikTok</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="YouTube">YouTube</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Publish Date</label>
+                        <input type="date" id="post-input-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Post Caption / Title</label>
+                    <input type="text" id="post-input-caption" required placeholder="Describe post or video name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Impressions</label>
+                        <input type="number" id="post-input-imp" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Reach</label>
+                        <input type="number" id="post-input-reach" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Likes</label>
+                        <input type="number" id="post-input-likes" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Comments</label>
+                        <input type="number" id="post-input-comments" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Shares</label>
+                        <input type="number" id="post-input-shares" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Saves</label>
+                        <input type="number" id="post-input-saves" min="0" value="0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                    <button type="button" class="btn-close-modal px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl">Save Content Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Core State
+        let supabaseClient = null;
+        let accounts = [];
+        let posts = [];
+        let activeAccountId = null;
+        let selectedPlatform = 'ALL';
+        let chartInstance = null;
+
+        // Sample Pre-seeded accounts
+        const seedAccounts = [
+            {
+                id: 'acc-1',
+                name: 'Alex Rivera',
+                handle: '@alexrivera_official',
+                category: 'Digital Creator',
+                avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'acc-2',
+                name: 'FitPulse Studio',
+                handle: '@fitpulse.app',
+                category: 'Fitness & Health',
+                avatar_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=150&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'acc-3',
+                name: 'TechDaily Review',
+                handle: '@techdaily',
+                category: 'Tech & Gadgets',
+                avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+            }
+        ];
+
+        // Sample Pre-seeded posts with balanced impression variations to demo the threshold styling
+        const seedPosts = [
+            // Alex Rivera Posts
+            { id: 'p-1', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-10-01', caption: 'Morning Routine for Tech Founders', impressions: 1420, reach: 1100, likes: 210, comments: 45, shares: 18, saves: 32 },
+            { id: 'p-2', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-10-03', caption: 'Desk Setup Tour 2026', impressions: 780, reach: 620, likes: 95, comments: 12, shares: 8, saves: 14 },
+            { id: 'p-3', account_id: 'acc-1', platform: 'YouTube', post_date: '2026-10-04', caption: 'Failed Product Launch Case Study', impressions: 320, reach: 290, likes: 42, comments: 8, shares: 2, saves: 5 },
+            { id: 'p-4', account_id: 'acc-1', platform: 'TikTok', post_date: '2026-09-25', caption: 'Quick Tip for Productivity', impressions: 85, reach: 70, likes: 12, comments: 2, shares: 1, saves: 0 },
+            { id: 'p-5', account_id: 'acc-1', platform: 'Instagram', post_date: '2026-09-20', caption: 'Unreleased Design Draft', impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, saves: 0 },
+
+            // FitPulse Studio Posts
+            { id: 'p-6', account_id: 'acc-2', platform: 'TikTok', post_date: '2026-10-02', caption: '15-Min High Intensity Core Routine', impressions: 3450, reach: 2900, likes: 620, comments: 110, shares: 94, saves: 210 },
+            { id: 'p-7', account_id: 'acc-2', platform: 'Instagram', post_date: '2026-09-28', caption: 'Post Workout Meal Prep Ideas', impressions: 650, reach: 510, likes: 88, comments: 14, shares: 12, saves: 45 },
+            { id: 'p-8', account_id: 'acc-2', platform: 'YouTube', post_date: '2026-09-15', caption: 'Hydration Myth Debunked', impressions: 45, reach: 30, likes: 4, comments: 1, shares: 0, saves: 2 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            setupEventListeners();
+        });
+
+        function initApp() {
+            // Load Supabase credentials if available
+            const savedUrl = localStorage.getItem('sb_url');
+            const savedKey = localStorage.getItem('sb_key');
+
+            if (savedUrl && savedKey) {
+                try {
+                    supabaseClient = supabase.createClient(savedUrl, savedKey);
+                    document.getElementById('supabase-status-label').innerText = 'Supabase: Connected';
+                    document.getElementById('supabase-status-label').classList.add('text-emerald-400');
+                    document.getElementById('supabase-url').value = savedUrl;
+                    document.getElementById('supabase-key').value = savedKey;
+                } catch (e) {
+                    console.error('Supabase init failed', e);
+                }
+            }
+
+            // Load data from Storage or Local Cache
+            loadAccountsData();
+            
+            // Set Default Timeframe to current month
+            setPresetDates('this-month');
+        }
+
+        async function loadAccountsData() {
+            if (supabaseClient) {
+                try {
+                    const { data: accData, error: accErr } = await supabaseClient.from('accounts').select('*');
+                    const { data: postData, error: postErr } = await supabaseClient.from('content_posts').select('*');
+
+                    if (!accErr && accData && accData.length > 0) {
+                        accounts = accData;
+                    } else {
+                        accounts = JSON.parse(localStorage.getItem('analytics_accounts')) || seedAccounts;
+                    }
+
+                    if (!postErr && postData && postData.length > 0) {
+                        posts = postData;
+                    } else {
+                        posts = JSON.parse(localStorage.getItem('analytics_posts')) || seedPosts;
+                    }
+                } catch (err) {
+                    console.warn('Falling back to local cache', err);
+                    accounts = JSON.parse(localStorage.getItem('analytics_accounts')) || seedAccounts;
+                    posts = JSON.parse(localStorage.getItem('analytics_posts')) || seedPosts;
+                }
+            } else {
+                accounts = JSON.parse(localStorage.getItem('analytics_accounts')) || seedAccounts;
+                posts = JSON.parse(localStorage.getItem('analytics_posts')) || seedPosts;
+            }
+
+            saveToLocalStorage();
+            renderAccountsGrid();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('analytics_accounts', JSON.stringify(accounts));
+            localStorage.setItem('analytics_posts', JSON.stringify(posts));
+        }
+
+        /**
+         * Dynamic Impression Badge Stylist according to explicit specifications:
+         * 1. == 0: Red (#ef4444)
+         * 2. > 0 and < 100: Orange (#f97316)
+         * 3. >= 100 and <= 500: White (#ffffff)
+         * 4. > 500 and <= 1000: Green (#22c55e)
+         * 5. > 1000: Light Blue (#38bdf8)
+         */
+        function getImpressionBadgeStyle(impressions) {
+            const imp = Number(impressions) || 0;
+
+            if (imp === 0) {
+                return {
+                    class: 'bg-red-500/20 text-red-400 border-red-500/40',
+                    label: '0'
+                };
+            } else if (imp > 0 && imp < 100) {
+                return {
+                    class: 'bg-orange-500/20 text-orange-400 border-orange-500/40',
+                    label: imp.toLocaleString()
+                };
+            } else if (imp >= 100 && imp <= 500) {
+                return {
+                    class: 'bg-slate-800 text-white border-slate-600',
+                    label: imp.toLocaleString()
+                };
+            } else if (imp > 500 && imp <= 1000) {
+                return {
+                    class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+                    label: imp.toLocaleString()
+                };
+            } else {
+                // > 1000
+                return {
+                    class: 'bg-sky-500/20 text-sky-400 border-sky-500/40',
+                    label: imp.toLocaleString()
+                };
+            }
+        }
+
+        function renderAccountsGrid() {
+            const grid = document.getElementById('account-cards-grid');
+            grid.innerHTML = '';
+
+            accounts.forEach(acc => {
+                const accPosts = posts.filter(p => p.account_id === acc.id);
+                const totalPosts = accPosts.length;
+                const totalImpressions = accPosts.reduce((sum, p) => sum + (p.impressions || 0), 0);
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/50 transition cursor-pointer flex flex-col justify-between group shadow-lg';
+                card.onclick = () => openAccountWorkspace(acc.id);
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${acc.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + acc.name.charAt(0)}" class="w-12 h-12 rounded-xl object-cover border border-slate-700" alt="Avatar" onerror="this.src='https://placehold.co/100x100/1e293b/ffffff?text=${acc.name.charAt(0)}'">
+                            <div>
+                                <h3 class="font-bold text-white text-base group-hover:text-indigo-400 transition">${acc.name}</h3>
+                                <p class="text-xs text-slate-400">${acc.handle}</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">${acc.category || 'General'}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-slate-800/80 text-xs">
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-medium">Logged Content</span>
+                            <span class="font-bold text-slate-200 mt-0.5 block">${totalPosts} Posts</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-[10px] uppercase font-medium">Total Imp.</span>
+                            <span class="font-bold text-indigo-400 mt-0.5 block">${totalImpressions.toLocaleString()}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Open Workspace</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAccountWorkspace(accId) {
+            activeAccountId = accId;
+            const account = accounts.find(a => a.id === accId);
+            if (!account) return;
+
+            // Update Header Switcher Badge
+            document.getElementById('badge-account-avatar').src = account.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + account.name.charAt(0);
+            document.getElementById('badge-account-name').innerText = account.name;
+            document.getElementById('active-account-badge').classList.remove('hidden');
+
+            // Update Dashboard Hero Account Details
+            document.getElementById('dash-account-avatar').src = account.avatar_url || 'https://placehold.co/100x100/1e293b/ffffff?text=' + account.name.charAt(0);
+            document.getElementById('dash-account-name').innerText = account.name;
+            document.getElementById('dash-account-handle').innerText = account.handle;
+            document.getElementById('dash-account-category').innerText = account.category || 'General';
+
+            // Switch views
+            document.getElementById('view-accounts').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+
+            // Initial Dashboard Render
+            refreshDashboard();
+        }
+
+        function backToAccountsHub() {
+            activeAccountId = null;
+            document.getElementById('active-account-badge').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-accounts').classList.remove('hidden');
+            renderAccountsGrid();
+        }
+
+        function refreshDashboard() {
+            if (!activeAccountId) return;
+
+            const startDate = document.getElementById('date-start').value;
+            const endDate = document.getElementById('date-end').value;
+
+            // Filter posts for active account & platform
+            let accountPosts = posts.filter(p => p.account_id === activeAccountId);
+            if (selectedPlatform !== 'ALL') {
+                accountPosts = accountPosts.filter(p => p.platform === selectedPlatform);
+            }
+
+            // Current range posts
+            const currentPeriodPosts = accountPosts.filter(p => {
+                if (!startDate || !endDate) return true;
+                return p.post_date >= startDate && p.post_date <= endDate;
+            });
+
+            // Calculate Prior Equivalent Period Dates for comparative growth stats
+            let priorPeriodPosts = [];
+            if (startDate && endDate) {
+                const startMs = new Date(startDate).getTime();
+                const endMs = new Date(endDate).getTime();
+                const diffMs = endMs - startMs;
+                const priorEnd = new Date(startMs - 86400000).toISOString().split('T')[0];
+                const priorStart = new Date(startMs - 86400000 - diffMs).toISOString().split('T')[0];
+
+                priorPeriodPosts = accountPosts.filter(p => p.post_date >= priorStart && p.post_date <= priorEnd);
+            }
+
+            // Calculate Aggregates
+            const currentStats = aggregateMetrics(currentPeriodPosts);
+            const priorStats = aggregateMetrics(priorPeriodPosts);
+
+            // Render KPI Metrics Cards
+            renderMetricCard('m-impressions', 'g-impressions', currentStats.impressions, priorStats.impressions);
+            renderMetricCard('m-reach', 'g-reach', currentStats.reach, priorStats.reach);
+            renderMetricCard('m-likes', 'g-likes', currentStats.likes, priorStats.likes);
+            renderMetricCard('m-comments', 'g-comments', currentStats.comments, priorStats.comments);
+            renderMetricCard('m-shares', 'g-shares', currentStats.shares, priorStats.shares);
+            renderMetricCard('m-saves', 'g-saves', currentStats.saves, priorStats.saves);
+            renderMetricCard('m-engagement', 'g-engagement', currentStats.engagement, priorStats.engagement);
+
+            // ER Rate Percentage Card
+            document.getElementById('m-er').innerText = currentStats.er.toFixed(2) + '%';
+            renderGrowthTag('g-er', currentStats.er, priorStats.er, true);
+
+            // Render Chart
+            renderAnalyticsChart(currentPeriodPosts);
+
+            // Render Content Table
+            renderContentTable(currentPeriodPosts);
+        }
+
+        function aggregateMetrics(postList) {
+            const impressions = postList.reduce((s, p) => s + (p.impressions || 0), 0);
+            const reach = postList.reduce((s, p) => s + (p.reach || 0), 0);
+            const likes = postList.reduce((s, p) => s + (p.likes || 0), 0);
+            const comments = postList.reduce((s, p) => s + (p.comments || 0), 0);
+            const shares = postList.reduce((s, p) => s + (p.shares || 0), 0);
+            const saves = postList.reduce((s, p) => s + (p.saves || 0), 0);
+
+            const engagement = likes + comments + shares + saves;
+            const er = impressions > 0 ? (engagement / impressions) * 100 : 0;
+
+            return { impressions, reach, likes, comments, shares, saves, engagement, er };
+        }
+
+        function renderMetricCard(valId, growthId, currentVal, priorVal) {
+            document.getElementById(valId).innerText = currentVal.toLocaleString();
+            renderGrowthTag(growthId, currentVal, priorVal);
+        }
+
+        function renderGrowthTag(growthId, current, prior, isPercentage = false) {
+            const el = document.getElementById(growthId);
+            if (!prior || prior === 0) {
+                el.innerHTML = `<span class="text-slate-500">vs prior period</span>`;
+                return;
+            }
+
+            const diff = current - prior;
+            const pct = ((diff / prior) * 100).toFixed(1);
+
+            if (diff > 0) {
+                el.innerHTML = `<span class="text-emerald-400 flex items-center gap-0.5"><i class="fa-solid fa-caret-up"></i> +${pct}%</span> <span class="text-slate-500">vs prior</span>`;
+            } else if (diff < 0) {
+                el.innerHTML = `<span class="text-red-400 flex items-center gap-0.5"><i class="fa-solid fa-caret-down"></i> ${pct}%</span> <span class="text-slate-500">vs prior</span>`;
+            } else {
+                el.innerHTML = `<span class="text-slate-400">0% vs prior</span>`;
+            }
+        }
+
+        function renderAnalyticsChart(postList) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            // Sort posts by date for trendline
+            const sorted = [...postList].sort((a, b) => new Date(a.post_date) - new Date(b.post_date));
+
+            const labels = sorted.map(p => p.post_date);
+            const impressionData = sorted.map(p => p.impressions);
+            const engagementData = sorted.map(p => p.likes + p.comments + p.shares + p.saves);
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length ? labels : ['No Data'],
+                    datasets: [
+                        {
+                            label: 'Impressions',
+                            data: impressionData.length ? impressionData : [0],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Total Engagement',
+                            data: engagementData.length ? engagementData : [0],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderContentTable(postList) {
+            const tbody = document.getElementById('content-table-body');
+            const searchVal = document.getElementById('table-search').value.toLowerCase();
+            const sortVal = document.getElementById('table-sort').value;
+
+            // Search filter
+            let filtered = postList.filter(p => 
+                p.caption.toLowerCase().includes(searchVal) || p.platform.toLowerCase().includes(searchVal)
+            );
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                const totalEngA = a.likes + a.comments + a.shares + a.saves;
+                const totalEngB = b.likes + b.comments + b.shares + b.saves;
+                const erA = a.impressions > 0 ? (totalEngA / a.impressions) * 100 : 0;
+                const erB = b.impressions > 0 ? (totalEngB / b.impressions) * 100 : 0;
+
+                if (sortVal === 'date-desc') return new Date(b.post_date) - new Date(a.post_date);
+                if (sortVal === 'date-asc') return new Date(a.post_date) - new Date(b.post_date);
+                if (sortVal === 'imp-desc') return b.impressions - a.impressions;
+                if (sortVal === 'imp-asc') return a.impressions - b.impressions;
+                if (sortVal === 'eng-desc') return erB - erA;
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="text-center py-8 text-slate-500">
+                            No content posts logged matching criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filtered.forEach(post => {
+                const totalEng = post.likes + post.comments + post.shares + post.saves;
+                const er = post.impressions > 0 ? ((totalEng / post.impressions) * 100).toFixed(2) : '0.00';
+
+                // Get dynamic badge styling for impression column based on rules
+                const impStyle = getImpressionBadgeStyle(post.impressions);
+
+                let platformIcon = 'fa-globe';
+                if (post.platform === 'TikTok') platformIcon = 'fa-brands fa-tiktok text-pink-400';
+                if (post.platform === 'Instagram') platformIcon = 'fa-brands fa-instagram text-purple-400';
+                if (post.platform === 'YouTube') platformIcon = 'fa-brands fa-youtube text-red-400';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition border-b border-slate-800/60';
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="flex items-center gap-2">
+                            <i class="${platformIcon} text-base"></i>
+                            <div>
+                                <p class="font-medium text-slate-200 line-clamp-1 max-w-[180px]">${post.caption}</p>
+                                <span class="text-[10px] text-slate-500 uppercase">${post.platform}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-3 font-medium text-slate-400">${post.post_date}</td>
+                    
+                    <!-- Dynamic Impression Threshold Cell -->
+                    <td class="p-3">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border ${impStyle.class}">
+                            ${impStyle.label}
+                        </span>
+                    </td>
+                    
+                    <td class="p-3 text-slate-300 font-medium">${post.reach.toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${post.likes.toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${post.comments.toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${post.shares.toLocaleString()}</td>
+                    <td class="p-3 text-slate-300">${post.saves.toLocaleString()}</td>
+                    <td class="p-3 text-indigo-400 font-semibold">${totalEng.toLocaleString()}</td>
+                    <td class="p-3 text-emerald-400 font-semibold">${er}%</td>
+                    <td class="p-3 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="editPost('${post.id}')" class="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded transition" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deletePost('${post.id}')" class="p-1.5 hover:bg-slate-700 text-red-400 rounded transition" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function setupEventListeners() {
+            // Navigation
+            document.getElementById('switch-account-btn').onclick = backToAccountsHub;
+            document.getElementById('btn-back-hub').onclick = backToAccountsHub;
+
+            // Platform Filter Tabs
+            document.querySelectorAll('.platform-tab').forEach(tab => {
+                tab.onclick = () => {
+                    document.querySelectorAll('.platform-tab').forEach(t => {
+                        t.classList.remove('bg-indigo-600', 'text-white');
+                        t.classList.add('text-slate-400');
+                    });
+                    tab.classList.add('bg-indigo-600', 'text-white');
+                    tab.classList.remove('text-slate-400');
+
+                    selectedPlatform = tab.getAttribute('data-platform');
+                    refreshDashboard();
+                };
+            });
+
+            // Date Preset Selector
+            document.getElementById('timeframe-preset').onchange = (e) => {
+                setPresetDates(e.target.value);
+                refreshDashboard();
+            };
+
+            document.getElementById('date-start').onchange = () => {
+                document.getElementById('timeframe-preset').value = 'custom';
+                refreshDashboard();
+            };
+
+            document.getElementById('date-end').onchange = () => {
+                document.getElementById('timeframe-preset').value = 'custom';
+                refreshDashboard();
+            };
+
+            // Search & Sort Table listeners
+            document.getElementById('table-search').oninput = refreshDashboard;
+            document.getElementById('table-sort').onchange = refreshDashboard;
+
+            // Modals Trigger Handlers
+            document.getElementById('btn-add-account').onclick = () => openModal('modal-account');
+            document.getElementById('btn-open-add-content').onclick = () => {
+                document.getElementById('form-add-content').reset();
+                document.getElementById('post-id-edit').value = '';
+                document.getElementById('modal-content-title').innerText = 'Log Content Post';
+                // Set default date to today
+                document.getElementById('post-input-date').value = new Date().toISOString().split('T')[0];
+                openModal('modal-content');
+            };
+
+            document.getElementById('supabase-config-btn').onclick = () => openModal('modal-supabase');
+
+            document.querySelectorAll('.btn-close-modal').forEach(btn => {
+                btn.onclick = () => {
+                    closeModal('modal-account');
+                    closeModal('modal-content');
+                    closeModal('modal-supabase');
+                };
+            });
+
+            // Form Submissions
+            document.getElementById('form-add-account').onsubmit = handleAddAccount;
+            document.getElementById('form-add-content').onsubmit = handleSaveContentPost;
+            document.getElementById('btn-save-supabase').onclick = handleSaveSupabaseConfig;
+            document.getElementById('btn-disconnect-supabase').onclick = handleDisconnectSupabase;
+        }
+
+        function setPresetDates(preset) {
+            const startInput = document.getElementById('date-start');
+            const endInput = document.getElementById('date-end');
+            const now = new Date();
+
+            if (preset === 'this-week') {
+                const day = now.getDay() || 7; // Get current day of week (Mon=1)
+                const mon = new Date(now);
+                mon.setDate(now.getDate() - day + 1);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+
+                startInput.value = mon.toISOString().split('T')[0];
+                endInput.value = sun.toISOString().split('T')[0];
+            } else if (preset === 'last-week') {
+                const day = now.getDay() || 7;
+                const prevMon = new Date(now);
+                prevMon.setDate(now.getDate() - day - 6);
+                const prevSun = new Date(prevMon);
+                prevSun.setDate(prevMon.getDate() + 6);
+
+                startInput.value = prevMon.toISOString().split('T')[0];
+                endInput.value = prevSun.toISOString().split('T')[0];
+            } else if (preset === 'this-month') {
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            } else if (preset === 'last-month') {
+                const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            } else if (preset === 'this-year') {
+                const firstDay = new Date(now.getFullYear(), 0, 1);
+                const lastDay = new Date(now.getFullYear(), 11, 31);
+
+                startInput.value = firstDay.toISOString().split('T')[0];
+                endInput.value = lastDay.toISOString().split('T')[0];
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        async function handleAddAccount(e) {
+            e.preventDefault();
+
+            const newAcc = {
+                id: 'acc-' + Date.now(),
+                name: document.getElementById('acc-input-name').value,
+                handle: document.getElementById('acc-input-handle').value,
+                category: document.getElementById('acc-input-cat').value || 'General',
+                avatar_url: document.getElementById('acc-input-avatar').value || ''
+            };
+
+            accounts.push(newAcc);
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('accounts').insert([newAcc]);
+                } catch (err) { console.error('Supabase save account failed', err); }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-account');
+            document.getElementById('form-add-account').reset();
+            renderAccountsGrid();
+        }
+
+        async function handleSaveContentPost(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('post-id-edit').value;
+            const postObj = {
+                id: editId ? editId : 'post-' + Date.now(),
+                account_id: activeAccountId,
+                platform: document.getElementById('post-input-platform').value,
+                post_date: document.getElementById('post-input-date').value,
+                caption: document.getElementById('post-input-caption').value,
+                impressions: parseInt(document.getElementById('post-input-imp').value) || 0,
+                reach: parseInt(document.getElementById('post-input-reach').value) || 0,
+                likes: parseInt(document.getElementById('post-input-likes').value) || 0,
+                comments: parseInt(document.getElementById('post-input-comments').value) || 0,
+                shares: parseInt(document.getElementById('post-input-shares').value) || 0,
+                saves: parseInt(document.getElementById('post-input-saves').value) || 0
+            };
+
+            if (editId) {
+                const idx = posts.findIndex(p => p.id === editId);
+                if (idx !== -1) posts[idx] = postObj;
+
+                if (supabaseClient) {
+                    try { await supabaseClient.from('content_posts').update(postObj).eq('id', editId); }
+                    catch (err) { console.error(err); }
+                }
+            } else {
+                posts.push(postObj);
+
+                if (supabaseClient) {
+                    try { await supabaseClient.from('content_posts').insert([postObj]); }
+                    catch (err) { console.error(err); }
+                }
+            }
+
+            saveToLocalStorage();
+            closeModal('modal-content');
+            refreshDashboard();
+        }
+
+        window.editPost = function(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            document.getElementById('post-id-edit').value = post.id;
+            document.getElementById('post-input-platform').value = post.platform;
+            document.getElementById('post-input-date').value = post.post_date;
+            document.getElementById('post-input-caption').value = post.caption;
+            document.getElementById('post-input-imp').value = post.impressions;
+            document.getElementById('post-input-reach').value = post.reach;
+            document.getElementById('post-input-likes').value = post.likes;
+            document.getElementById('post-input-comments').value = post.comments;
+            document.getElementById('post-input-shares').value = post.shares;
+            document.getElementById('post-input-saves').value = post.saves;
+
+            document.getElementById('modal-content-title').innerText = 'Edit Content Post Log';
+            openModal('modal-content');
+        };
+
+        window.deletePost = async function(postId) {
+            if (!confirm('Are you sure you want to delete this content post log?')) return;
+
+            posts = posts.filter(p => p.id !== postId);
+
+            if (supabaseClient) {
+                try { await supabaseClient.from('content_posts').delete().eq('id', postId); }
+                catch (err) { console.error(err); }
+            }
+
+            saveToLocalStorage();
+            refreshDashboard();
+        };
+
+        function handleSaveSupabaseConfig() {
+            const url = document.getElementById('supabase-url').value.trim();
+            const key = document.getElementById('supabase-key').value.trim();
+
+            if (url && key) {
+                localStorage.setItem('sb_url', url);
+                localStorage.setItem('sb_key', key);
+                initApp();
+                closeModal('modal-supabase');
+            }
+        }
+
+        function handleDisconnectSupabase() {
+            localStorage.removeItem('sb_url');
+            localStorage.removeItem('sb_key');
+            supabaseClient = null;
+            document.getElementById('supabase-status-label').innerText = 'Supabase: Not Configured';
+            document.getElementById('supabase-status-label').classList.remove('text-emerald-400');
+            closeModal('modal-supabase');
+        }
+    </script>
+</body>
+</html>
