@@ -76,7 +76,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.3</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.4</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -261,7 +261,6 @@
             <p class="text-xs text-slate-400 mt-0.5">Sorted by Latest Upload Date & Time</p>
           </div>
 
-          <!-- Real-Time Search Bar -->
           <div class="flex items-center gap-3 w-full md:w-auto">
             <div class="relative w-full md:w-64">
               <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -678,12 +677,47 @@
       document.getElementById('modal-settings').classList.add('flex');
     };
 
-    window.saveSupabaseSettings = function() {
+    window.saveSupabaseSettings = async function() {
       const url = document.getElementById('cfg-url').value.trim();
       const key = document.getElementById('cfg-key').value.trim();
+
       localStorage.setItem('sn_supabase_url', url);
       localStorage.setItem('sn_supabase_key', key);
+
       initSupabaseClient();
+
+      // Push local data up to Supabase FIRST before refreshing
+      if (supabaseClient) {
+        try {
+          if (state.accounts.length > 0) {
+            await supabaseClient.from('accounts').upsert(state.accounts);
+          }
+          if (state.posts.length > 0) {
+            const payload = state.posts.map(p => ({
+              id: p.id,
+              account_id: p.account_id,
+              platform: p.platform,
+              title: p.title,
+              link: p.link || '',
+              publish_date: p.post_date,
+              post_date: p.post_date,
+              publish_time: p.post_time || '00:00',
+              post_time: p.post_time || '00:00',
+              impressions: p.impressions || 0,
+              impression: p.impressions || 0,
+              reach: p.reach || 0,
+              likes: p.likes || 0,
+              comments: p.comments || 0,
+              shares: p.shares || 0,
+              saves: p.saves || 0
+            }));
+            await supabaseClient.from('content_posts').upsert(payload);
+          }
+        } catch (err) {
+          console.warn("Pre-sync cloud upload warning:", err);
+        }
+      }
+
       window.closeModal('modal-settings');
       location.reload();
     };
@@ -714,17 +748,22 @@
     }
 
     async function loadInitialData() {
+      // 1. Load local browser data first
+      loadLocalStorageData();
+
+      // 2. Fetch and merge cloud data
       if (supabaseClient) {
         try {
           const { data: accs, error: accErr } = await supabaseClient.from('accounts').select('*');
-          if (!accErr && accs) {
+          if (!accErr && accs && accs.length > 0) {
             state.accounts = accs;
-          } else {
-            loadLocalStorageAccounts();
+          } else if (state.accounts.length > 0) {
+            // Upload local accounts to cloud if cloud is empty
+            await supabaseClient.from('accounts').upsert(state.accounts);
           }
 
           const { data: pst, error: pstErr } = await supabaseClient.from('content_posts').select('*');
-          if (!pstErr && pst) {
+          if (!pstErr && pst && pst.length > 0) {
             state.posts = pst.map(p => ({
               ...p,
               post_date: p.post_date || p.publish_date,
@@ -737,15 +776,33 @@
               shares: parseInt(p.shares || 0),
               saves: parseInt(p.saves || 0)
             }));
-          } else {
-            loadLocalStoragePosts();
+          } else if (state.posts.length > 0) {
+            // Upload local posts to cloud if cloud is empty
+            const payload = state.posts.map(p => ({
+              id: p.id,
+              account_id: p.account_id,
+              platform: p.platform,
+              title: p.title,
+              link: p.link || '',
+              publish_date: p.post_date,
+              post_date: p.post_date,
+              publish_time: p.post_time || '00:00',
+              post_time: p.post_time || '00:00',
+              impressions: p.impressions || 0,
+              impression: p.impressions || 0,
+              reach: p.reach || 0,
+              likes: p.likes || 0,
+              comments: p.comments || 0,
+              shares: p.shares || 0,
+              saves: p.saves || 0
+            }));
+            await supabaseClient.from('content_posts').upsert(payload);
           }
+
+          saveLocalData();
         } catch (err) {
-          console.warn("Cloud load failed, fallback to local storage", err);
-          loadLocalStorageData();
+          console.warn("Cloud load warning, retaining local storage:", err);
         }
-      } else {
-        loadLocalStorageData();
       }
     }
 
