@@ -76,7 +76,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.4</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.5</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -505,11 +505,15 @@
       if (idx >= 0) state.accounts[idx] = accObj;
       else state.accounts.push(accObj);
 
+      saveLocalData();
+
       if (supabaseClient) {
-        try { await supabaseClient.from('accounts').upsert(accObj); } catch(err){ console.warn(err); }
+        try { 
+          const { error } = await supabaseClient.from('accounts').upsert(accObj); 
+          if (error) console.error("Supabase Save Account Error:", error);
+        } catch(err){ console.warn(err); }
       }
 
-      saveLocalData();
       window.closeModal('modal-account');
       if (state.currentAccountId === id) window.openAccountWorkspace(id);
       else renderHub();
@@ -521,6 +525,8 @@
       state.accounts = state.accounts.filter(a => a.id !== accId);
       state.posts = state.posts.filter(p => p.account_id !== accId);
 
+      saveLocalData();
+
       if (supabaseClient) {
         try {
           await supabaseClient.from('accounts').delete().eq('id', accId);
@@ -528,7 +534,6 @@
         } catch(err){ console.warn(err); }
       }
 
-      saveLocalData();
       window.navigateToHub();
     };
 
@@ -576,7 +581,7 @@
         account_id: state.currentAccountId,
         platform: document.getElementById('post-platform').value,
         title: document.getElementById('post-title').value,
-        link: document.getElementById('post-link').value,
+        link: document.getElementById('post-link').value || '',
         post_date: document.getElementById('post-date').value,
         post_time: document.getElementById('post-time').value || '00:00',
         impressions: parseInt(document.getElementById('post-impressions').value) || 0,
@@ -588,36 +593,37 @@
       };
 
       const idx = state.posts.findIndex(p => p.id === postId);
-      if (idx >= 0) {
-        state.posts[idx] = postObj;
-      } else {
-        state.posts.push(postObj);
-      }
+      if (idx >= 0) state.posts[idx] = postObj;
+      else state.posts.push(postObj);
+
+      saveLocalData();
 
       if (supabaseClient) {
         try {
-          await supabaseClient.from('content_posts').upsert({
+          const { error } = await supabaseClient.from('content_posts').upsert({
             id: postObj.id,
             account_id: postObj.account_id,
             platform: postObj.platform,
             title: postObj.title,
             link: postObj.link,
-            publish_date: postObj.post_date,
             post_date: postObj.post_date,
-            publish_time: postObj.post_time,
             post_time: postObj.post_time,
             impressions: postObj.impressions,
-            impression: postObj.impressions,
             reach: postObj.reach,
             likes: postObj.likes,
             comments: postObj.comments,
             shares: postObj.shares,
             saves: postObj.saves
           });
-        } catch(err){ console.warn(err); }
+
+          if (error) {
+            console.error("Supabase Post Save Error:", error);
+          }
+        } catch (err) {
+          console.warn("Supabase Exception:", err);
+        }
       }
 
-      saveLocalData();
       window.closeModal('modal-post');
       renderDashboard();
     };
@@ -626,11 +632,12 @@
       if (!confirm("Delete this content record?")) return;
       state.posts = state.posts.filter(p => p.id !== postId);
 
+      saveLocalData();
+
       if (supabaseClient) {
         try { await supabaseClient.from('content_posts').delete().eq('id', postId); } catch(err){ console.warn(err); }
       }
 
-      saveLocalData();
       renderDashboard();
     };
 
@@ -686,7 +693,6 @@
 
       initSupabaseClient();
 
-      // Push local data up to Supabase FIRST before refreshing
       if (supabaseClient) {
         try {
           if (state.accounts.length > 0) {
@@ -699,12 +705,9 @@
               platform: p.platform,
               title: p.title,
               link: p.link || '',
-              publish_date: p.post_date,
               post_date: p.post_date,
-              publish_time: p.post_time || '00:00',
               post_time: p.post_time || '00:00',
               impressions: p.impressions || 0,
-              impression: p.impressions || 0,
               reach: p.reach || 0,
               likes: p.likes || 0,
               comments: p.comments || 0,
@@ -748,17 +751,14 @@
     }
 
     async function loadInitialData() {
-      // 1. Load local browser data first
       loadLocalStorageData();
 
-      // 2. Fetch and merge cloud data
       if (supabaseClient) {
         try {
           const { data: accs, error: accErr } = await supabaseClient.from('accounts').select('*');
           if (!accErr && accs && accs.length > 0) {
             state.accounts = accs;
           } else if (state.accounts.length > 0) {
-            // Upload local accounts to cloud if cloud is empty
             await supabaseClient.from('accounts').upsert(state.accounts);
           }
 
@@ -777,19 +777,15 @@
               saves: parseInt(p.saves || 0)
             }));
           } else if (state.posts.length > 0) {
-            // Upload local posts to cloud if cloud is empty
             const payload = state.posts.map(p => ({
               id: p.id,
               account_id: p.account_id,
               platform: p.platform,
               title: p.title,
               link: p.link || '',
-              publish_date: p.post_date,
               post_date: p.post_date,
-              publish_time: p.post_time || '00:00',
               post_time: p.post_time || '00:00',
               impressions: p.impressions || 0,
-              impression: p.impressions || 0,
               reach: p.reach || 0,
               likes: p.likes || 0,
               comments: p.comments || 0,
