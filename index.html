@@ -77,7 +77,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.6</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.7</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -812,7 +812,7 @@
       let pptx = new PptxGenJS();
       pptx.layout = 'LAYOUT_16x9';
 
-      // Cover Slide
+      // --- SLIDE 1: COVER SLIDE ---
       let cover = pptx.addSlide();
       cover.background = { color: '0B0F17' };
       cover.addText('SocioNexus Executive Performance Report', {
@@ -825,7 +825,7 @@
         x: 1.0, y: 3.5, w: '80%', fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF'
       });
 
-      // Per Account Slides
+      // --- SLIDES PER ACCOUNT ---
       selectedAccIds.forEach(accId => {
         const acc = state.accounts.find(a => a.id === accId);
         if (!acc) return;
@@ -833,7 +833,7 @@
         const accPosts = state.posts.filter(p => p.account_id === accId);
         const platforms = ['tiktok', 'instagram', 'youtube'];
 
-        // Table Slide (Sorted by Highest Impressions)
+        // SLIDE: CONTENT LOG TABLE
         let slideAcc = pptx.addSlide();
         slideAcc.background = { color: '0B0F17' };
 
@@ -887,7 +887,7 @@
           }
         });
 
-        // Charts & Insights Slide
+        // SLIDE: GRAPHIC DATA & INSIGHTS
         let slideInsights = pptx.addSlide();
         slideInsights.background = { color: '0B0F17' };
 
@@ -895,14 +895,16 @@
           x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
         });
 
-        if (accPosts.length > 0) {
-          const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
-          const chartImp = sortedChronological.map(p => p.impressions || 0);
-          const chartReach = sortedChronological.map(p => p.reach || 0);
+        const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
+        const chartLabels = sortedChronological.map(p => p.post_date || 'N/A');
+        const chartImp = sortedChronological.map(p => p.impressions || 0);
+        const chartReach = sortedChronological.map(p => p.reach || 0);
 
+        // SAFE GUARD: Ensure chart values are non-empty arrays to prevent length property crash
+        if (chartImp.length > 0 && chartReach.length > 0) {
           const chartData = [
-            { name: "Impressions", values: chartImp },
-            { name: "Reach", values: chartReach }
+            { name: "Impressions", labels: chartLabels, values: chartImp },
+            { name: "Reach", labels: chartLabels, values: chartReach }
           ];
 
           slideInsights.addChart(pptx.ChartType.line, chartData, {
@@ -911,8 +913,17 @@
             chartColors: ['0EA5E9', 'A855F7'],
             showLegend: true, legendPos: 'b'
           });
+        } else {
+          // Fallback display if no posts are logged yet for this account
+          slideInsights.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+            x: 0.8, y: 1.2, w: 6.0, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
+          });
+          slideInsights.addText('No post metrics recorded yet for graphic visualization.', {
+            x: 1.2, y: 3.2, w: 5.2, fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF', align: 'center'
+          });
         }
 
+        // RECOMMENDATIONS BLOCK
         const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
         const totalEng = accPosts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
         const avgEr = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(1) : '0.0';
