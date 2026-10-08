@@ -77,7 +77,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.7</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.8</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -468,6 +468,7 @@
     SocioNexus Dashboard &copy; 2026. Built with Tailwind CSS, Chart.js & Supabase Cloud Sync.
   </footer>
 
+  <!-- JAVASCRIPT APP LOGIC -->
   <script>
     const HARDCODED_URL = "https://utqcoplopcbevtscbaas.supabase.co";
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
@@ -795,9 +796,10 @@
       document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
     };
 
+    // --- STREAMING_CHUNK:PowerPoint Report Export Logic Fix ---
     window.buildPPTXReport = function() {
       if (typeof PptxGenJS === 'undefined') {
-        alert("PPTX Library is loading or unavailable. Please check your network and try again.");
+        alert("PPTX Library is loading or unavailable. Please check your network connection.");
         return;
       }
 
@@ -809,156 +811,188 @@
         return;
       }
 
-      let pptx = new PptxGenJS();
-      pptx.layout = 'LAYOUT_16x9';
+      try {
+        let pptx = new PptxGenJS();
+        pptx.layout = 'LAYOUT_16x9';
 
-      // --- SLIDE 1: COVER SLIDE ---
-      let cover = pptx.addSlide();
-      cover.background = { color: '0B0F17' };
-      cover.addText('SocioNexus Executive Performance Report', {
-        x: 1.0, y: 1.8, w: '80%', fontFace: 'Helvetica', fontSize: 28, color: '0EA5E9', bold: true
-      });
-      cover.addText(`Multi-Account Analytics & Strategic Insights`, {
-        x: 1.0, y: 2.5, w: '80%', fontFace: 'Helvetica', fontSize: 18, color: 'FFFFFF'
-      });
-      cover.addText(`Accounts Included: ${selectedAccIds.length} | Generated on ${new Date().toLocaleDateString()}`, {
-        x: 1.0, y: 3.5, w: '80%', fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF'
-      });
-
-      // --- SLIDES PER ACCOUNT ---
-      selectedAccIds.forEach(accId => {
-        const acc = state.accounts.find(a => a.id === accId);
-        if (!acc) return;
-
-        const accPosts = state.posts.filter(p => p.account_id === accId);
-        const platforms = ['tiktok', 'instagram', 'youtube'];
-
-        // SLIDE: CONTENT LOG TABLE
-        let slideAcc = pptx.addSlide();
-        slideAcc.background = { color: '0B0F17' };
-
-        slideAcc.addText(`${acc.name} (${acc.niche}) — Top Impression & Reach Log`, {
-          x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
+        // --- SLIDE 1: COVER SLIDE ---
+        let cover = pptx.addSlide();
+        cover.background = { color: '0B0F17' };
+        cover.addText('SocioNexus Executive Performance Report', {
+          x: 1.0, y: 1.8, w: '80%', fontFace: 'Helvetica', fontSize: 28, color: '0EA5E9', bold: true
+        });
+        cover.addText(`Multi-Account Analytics & Strategic Insights`, {
+          x: 1.0, y: 2.5, w: '80%', fontFace: 'Helvetica', fontSize: 18, color: 'FFFFFF'
+        });
+        cover.addText(`Accounts Included: ${selectedAccIds.length} | Generated on ${new Date().toLocaleDateString()}`, {
+          x: 1.0, y: 3.5, w: '80%', fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF'
         });
 
-        let startY = 1.2;
-        platforms.forEach(plat => {
-          const platPosts = accPosts
-            .filter(p => p.platform === plat)
-            .sort((a, b) => (b.impressions || 0) - (a.impressions || 0))
-            .slice(0, 3);
+        // --- SLIDES PER ACCOUNT ---
+        selectedAccIds.forEach(accId => {
+          const acc = state.accounts.find(a => a.id === accId);
+          if (!acc) return;
 
-          if (platPosts.length > 0) {
-            slideAcc.addText(`Platform: ${plat.toUpperCase()}`, {
-              x: 0.8, y: startY, fontFace: 'Helvetica', fontSize: 12, color: '0EA5E9', bold: true
+          const accPosts = state.posts.filter(p => p.account_id === accId);
+          const platforms = ['tiktok', 'instagram', 'youtube'];
+
+          // SLIDE: CONTENT LOG TABLE (HIGHEST IMPRESSIONS FIRST)
+          let slideAcc = pptx.addSlide();
+          slideAcc.background = { color: '0B0F17' };
+
+          slideAcc.addText(`${acc.name} (${acc.niche}) — Top Impression & Reach Log`, {
+            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
+          });
+
+          let startY = 1.2;
+          let addedTable = false;
+
+          platforms.forEach(plat => {
+            const platPosts = accPosts
+              .filter(p => p.platform === plat)
+              .sort((a, b) => (b.impressions || 0) - (a.impressions || 0))
+              .slice(0, 3);
+
+            if (platPosts.length > 0) {
+              addedTable = true;
+              slideAcc.addText(`Platform: ${plat.toUpperCase()}`, {
+                x: 0.8, y: startY, fontFace: 'Helvetica', fontSize: 12, color: '0EA5E9', bold: true
+              });
+
+              const rows = [
+                [
+                  { text: 'Title / Caption', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+                  { text: 'Date', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+                  { text: 'Impressions', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
+                  { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
+                  { text: 'ER %', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } }
+                ]
+              ];
+
+              platPosts.forEach(p => {
+                const eng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
+                const er = p.impressions > 0 ? ((eng / p.impressions) * 100).toFixed(1) + '%' : '0.0%';
+                const titleTxt = p.title ? (p.title.length > 30 ? p.title.slice(0, 30) + '...' : p.title) : 'Untitled Post';
+
+                rows.push([
+                  { text: titleTxt, options: { color: 'FFFFFF' } },
+                  { text: `${p.post_date || 'N/A'}`, options: { color: '9CA3AF' } },
+                  { text: (p.impressions || 0).toLocaleString(), options: { color: '0EA5E9', bold: true } },
+                  { text: (p.reach || 0).toLocaleString(), options: { color: 'A855F7' } },
+                  { text: er, options: { color: '10B981' } }
+                ]);
+              });
+
+              slideAcc.addTable(rows, {
+                x: 0.8, y: startY + 0.3, w: 11.5,
+                colW: [4.5, 1.8, 1.8, 1.8, 1.6],
+                fontSize: 9, fontFace: 'Helvetica', fill: '111827',
+                border: { pt: 0.5, color: '1F2937' }
+              });
+
+              startY += (rows.length * 0.35) + 0.5;
+            }
+          });
+
+          if (!addedTable) {
+            slideAcc.addText('No content uploads recorded yet for this workspace.', {
+              x: 0.8, y: 1.5, fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF'
             });
+          }
 
-            const rows = [
-              [
-                { text: 'Title / Caption', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-                { text: 'Date', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-                { text: 'Impressions', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
-                { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
-                { text: 'ER %', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } }
-              ]
+          // SLIDE: GRAPHIC DATA & RECOMMENDATIONS
+          let slideInsights = pptx.addSlide();
+          slideInsights.background = { color: '0B0F17' };
+
+          slideInsights.addText(`${acc.name} — Performance Insights & Strategy`, {
+            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
+          });
+
+          const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
+          
+          // CRITICAL FIX FOR PPTXGENJS addChart BUG:
+          // Ensure arrays are strictly populated and contain at least 2 non-empty valid entries
+          const validChartPosts = sortedChronological.filter(p => (p.impressions || 0) > 0 || (p.reach || 0) > 0);
+
+          if (validChartPosts.length >= 2) {
+            const chartLabels = validChartPosts.map(p => String(p.post_date || 'N/A'));
+            const chartImp = validChartPosts.map(p => Number(p.impressions || 0));
+            const chartReach = validChartPosts.map(p => Number(p.reach || 0));
+
+            // Strictly formatted dataset object required by pptx.addChart
+            const chartData = [
+              { name: "Impressions", labels: chartLabels, values: chartImp },
+              { name: "Reach", labels: chartLabels, values: chartReach }
             ];
 
-            platPosts.forEach(p => {
-              const eng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
-              const er = p.impressions > 0 ? ((eng / p.impressions) * 100).toFixed(1) + '%' : '0.0%';
-
-              rows.push([
-                { text: p.title.length > 30 ? p.title.slice(0, 30) + '...' : p.title, options: { color: 'FFFFFF' } },
-                { text: `${p.post_date}`, options: { color: '9CA3AF' } },
-                { text: (p.impressions || 0).toLocaleString(), options: { color: '0EA5E9', bold: true } },
-                { text: (p.reach || 0).toLocaleString(), options: { color: 'A855F7' } },
-                { text: er, options: { color: '10B981' } }
-              ]);
+            slideInsights.addChart(pptx.ChartType.line, chartData, {
+              x: 0.8, y: 1.2, w: 6.0, h: 4.5,
+              plotArea: { fill: '111827' },
+              chartColors: ['0EA5E9', 'A855F7'],
+              showLegend: true, legendPos: 'b'
             });
-
-            slideAcc.addTable(rows, {
-              x: 0.8, y: startY + 0.3, w: 11.5,
-              colW: [4.5, 1.8, 1.8, 1.8, 1.6],
-              fontSize: 9, fontFace: 'Helvetica', fill: '111827',
-              border: { pt: 0.5, color: '1F2937' }
+          } else {
+            // High quality fallback table card when insufficient chronological data points exist
+            slideInsights.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+              x: 0.8, y: 1.2, w: 6.0, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
             });
+            slideInsights.addText('Performance Metrics Summary', {
+              x: 1.2, y: 1.6, fontFace: 'Helvetica', fontSize: 14, color: '0EA5E9', bold: true
+            });
+            
+            const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
+            const totalReach = accPosts.reduce((a,b) => a + (b.reach || 0), 0);
+            const totalLikes = accPosts.reduce((a,b) => a + (b.likes || 0), 0);
 
-            startY += (rows.length * 0.3) + 0.6;
+            slideInsights.addText(`• Total Impressions: ${totalImp.toLocaleString()}\n• Total Reach: ${totalReach.toLocaleString()}\n• Total Likes: ${totalLikes.toLocaleString()}\n• Total Posts Logged: ${accPosts.length}`, {
+              x: 1.2, y: 2.2, w: 5.2, fontFace: 'Helvetica', fontSize: 12, color: 'E2E8F0'
+            });
+            slideInsights.addText('(Note: Log 2+ posts with view metrics to unlock native line graphs)', {
+              x: 1.2, y: 4.8, fontFace: 'Helvetica', fontSize: 9, color: '6B7280'
+            });
           }
-        });
 
-        // SLIDE: GRAPHIC DATA & INSIGHTS
-        let slideInsights = pptx.addSlide();
-        slideInsights.background = { color: '0B0F17' };
+          // STRATEGIC RECOMMENDATIONS BOX
+          const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
+          const totalEng = accPosts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
+          const avgEr = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(1) : '0.0';
 
-        slideInsights.addText(`${acc.name} — Graphic Data & Strategic Recommendations`, {
-          x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
-        });
+          let bestPlat = 'TikTok';
+          let maxPlatImp = -1;
+          ['tiktok', 'instagram', 'youtube'].forEach(p => {
+            const pImp = accPosts.filter(item => item.platform === p).reduce((a,b) => a + (b.impressions || 0), 0);
+            if (pImp > maxPlatImp) { maxPlatImp = pImp; bestPlat = p.toUpperCase(); }
+          });
 
-        const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
-        const chartLabels = sortedChronological.map(p => p.post_date || 'N/A');
-        const chartImp = sortedChronological.map(p => p.impressions || 0);
-        const chartReach = sortedChronological.map(p => p.reach || 0);
-
-        // SAFE GUARD: Ensure chart values are non-empty arrays to prevent length property crash
-        if (chartImp.length > 0 && chartReach.length > 0) {
-          const chartData = [
-            { name: "Impressions", labels: chartLabels, values: chartImp },
-            { name: "Reach", labels: chartLabels, values: chartReach }
+          const recommendations = [
+            `1. Primary Growth Driver: ${bestPlat} delivers your highest concentration of views and total impression volume.`,
+            `2. Engagement Rate: Average ER is currently ${avgEr}%. Content with ER > 5% should be re-purposed as short-form clips.`,
+            `3. Publishing Cadence: Regular upload rhythms correlate with increased organic reach expansion.`,
+            `4. High Value Actions: Focus on call-to-actions that drive saves and shares to boost algorithmic reach.`
           ];
 
-          slideInsights.addChart(pptx.ChartType.line, chartData, {
-            x: 0.8, y: 1.2, w: 6.0, h: 4.5,
-            plotArea: { fill: '111827' },
-            chartColors: ['0EA5E9', 'A855F7'],
-            showLegend: true, legendPos: 'b'
-          });
-        } else {
-          // Fallback display if no posts are logged yet for this account
           slideInsights.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: 0.8, y: 1.2, w: 6.0, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
+            x: 7.2, y: 1.2, w: 5.2, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
           });
-          slideInsights.addText('No post metrics recorded yet for graphic visualization.', {
-            x: 1.2, y: 3.2, w: 5.2, fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF', align: 'center'
+
+          slideInsights.addText('Key Strategic Recommendations', {
+            x: 7.5, y: 1.5, fontFace: 'Helvetica', fontSize: 14, color: 'F59E0B', bold: true
           });
-        }
 
-        // RECOMMENDATIONS BLOCK
-        const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
-        const totalEng = accPosts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
-        const avgEr = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(1) : '0.0';
-
-        let bestPlat = 'TikTok';
-        let maxPlatImp = -1;
-        ['tiktok', 'instagram', 'youtube'].forEach(p => {
-          const pImp = accPosts.filter(item => item.platform === p).reduce((a,b) => a + (b.impressions || 0), 0);
-          if (pImp > maxPlatImp) { maxPlatImp = pImp; bestPlat = p.toUpperCase(); }
-        });
-
-        const recommendations = [
-          `1. Primary Growth Driver: ${bestPlat} delivers your highest concentration of views and total impression volume.`,
-          `2. Engagement Rate: Average ER is currently ${avgEr}%. Content with ER > 5% should be re-purposed as short-form clips.`,
-          `3. Publishing Cadence: Regular upload rhythms correlate with increased organic reach expansion.`,
-          `4. High Value Actions: Focus on call-to-actions that drive saves and shares to boost algorithmic reach.`
-        ];
-
-        slideInsights.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-          x: 7.2, y: 1.2, w: 5.2, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
-        });
-
-        slideInsights.addText('Key Strategic Recommendations', {
-          x: 7.5, y: 1.5, fontFace: 'Helvetica', fontSize: 14, color: 'F59E0B', bold: true
-        });
-
-        recommendations.forEach((rec, idx) => {
-          slideInsights.addText(rec, {
-            x: 7.5, y: 2.0 + (idx * 0.8), w: 4.6, fontFace: 'Helvetica', fontSize: 10, color: 'E2E8F0'
+          recommendations.forEach((rec, idx) => {
+            slideInsights.addText(rec, {
+              x: 7.5, y: 2.0 + (idx * 0.8), w: 4.6, fontFace: 'Helvetica', fontSize: 10, color: 'E2E8F0'
+            });
           });
         });
-      });
 
-      pptx.writeFile({ fileName: `SocioNexus_Analytics_Report_${new Date().toISOString().slice(0,10)}.pptx` });
-      window.closeModal('modal-report');
+        const fileName = `SocioNexus_Analytics_Report_${new Date().toISOString().slice(0,10)}.pptx`;
+        pptx.writeFile({ fileName });
+        window.closeModal('modal-report');
+      } catch (err) {
+        console.error("PPTX Generation Error:", err);
+        alert("Failed to build PowerPoint report. Details: " + err.message);
+      }
     };
 
     window.closeModal = function(id) {
@@ -1289,3 +1323,4 @@
   </script>
 </body>
 </html>
+```
