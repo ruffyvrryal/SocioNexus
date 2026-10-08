@@ -33,10 +33,11 @@
     }
   </script>
 
-  <!-- Lucide Icons, Chart.js & Supabase JS -->
+  <!-- Lucide Icons, Chart.js, Supabase JS & PptxGenJS -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
   <style>
     body {
@@ -76,7 +77,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.5</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v2.6</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -84,6 +85,11 @@
 
     <!-- Right Header Actions -->
     <div class="flex items-center space-x-3">
+      <button onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg border border-amber-500/20 transition-colors flex items-center gap-1.5">
+        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+        <span>Generate PPTX Report</span>
+      </button>
+
       <div id="header-account-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="header-account-name" class="font-medium text-white">Account</span>
@@ -427,6 +433,37 @@
     </div>
   </div>
 
+  <!-- REPORT ACCOUNT SELECTION MODAL -->
+  <div id="modal-report" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="presentation" class="w-4 h-4 text-amber-400"></i> Generate PPTX Analytics Report
+        </h3>
+        <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-400">Select which workspace accounts you want to include in this PowerPoint report:</p>
+
+      <div class="flex items-center justify-between text-xs px-1">
+        <label class="flex items-center gap-2 text-cyan-400 cursor-pointer">
+          <input type="checkbox" id="report-select-all" onchange="window.toggleReportSelectAll(this.checked)" class="rounded bg-slate-900 border-slate-700 text-cyan-500">
+          <span>Select All Accounts</span>
+        </label>
+      </div>
+
+      <div id="report-account-list" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar p-1"></div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <button type="button" onclick="window.closeModal('modal-report')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="window.buildPPTXReport()" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 rounded-xl font-bold shadow-lg transition-all flex items-center gap-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Download .pptx</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500">
     SocioNexus Dashboard &copy; 2026. Built with Tailwind CSS, Chart.js & Supabase Cloud Sync.
   </footer>
@@ -723,6 +760,194 @@
 
       window.closeModal('modal-settings');
       location.reload();
+    };
+
+    // REPORT GENERATOR MODAL FUNCTIONS
+    window.openReportModal = function() {
+      const listContainer = document.getElementById('report-account-list');
+      listContainer.innerHTML = '';
+
+      if (state.accounts.length === 0) {
+        listContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">No accounts created yet.</p>`;
+      } else {
+        state.accounts.forEach(acc => {
+          const div = document.createElement('div');
+          div.className = "flex items-center justify-between p-2.5 bg-slate-900/80 rounded-xl border border-slate-800";
+          div.innerHTML = `
+            <label class="flex items-center gap-2.5 text-xs text-white cursor-pointer w-full">
+              <input type="checkbox" class="report-acc-checkbox rounded bg-slate-800 border-slate-700 text-cyan-500" value="${acc.id}" checked>
+              <span class="w-3 h-3 rounded-full" style="background-color: ${acc.color || '#0ea5e9'}"></span>
+              <span class="font-medium">${acc.name}</span>
+              <span class="text-[10px] text-slate-400 ml-auto">(${acc.niche})</span>
+            </label>
+          `;
+          listContainer.appendChild(div);
+        });
+      }
+
+      document.getElementById('report-select-all').checked = true;
+      document.getElementById('modal-report').classList.remove('hidden');
+      document.getElementById('modal-report').classList.add('flex');
+      lucide.createIcons();
+    };
+
+    window.toggleReportSelectAll = function(isChecked) {
+      document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
+    };
+
+    window.buildPPTXReport = function() {
+      if (typeof PptxGenJS === 'undefined') {
+        alert("PPTX Library is loading or unavailable. Please check your network and try again.");
+        return;
+      }
+
+      const selectedBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox:checked'));
+      const selectedAccIds = selectedBoxes.map(cb => cb.value);
+
+      if (selectedAccIds.length === 0) {
+        alert("Please select at least one account to include in the report.");
+        return;
+      }
+
+      let pptx = new PptxGenJS();
+      pptx.layout = 'LAYOUT_16x9';
+
+      // Cover Slide
+      let cover = pptx.addSlide();
+      cover.background = { color: '0B0F17' };
+      cover.addText('SocioNexus Executive Performance Report', {
+        x: 1.0, y: 1.8, w: '80%', fontFace: 'Helvetica', fontSize: 28, color: '0EA5E9', bold: true
+      });
+      cover.addText(`Multi-Account Analytics & Strategic Insights`, {
+        x: 1.0, y: 2.5, w: '80%', fontFace: 'Helvetica', fontSize: 18, color: 'FFFFFF'
+      });
+      cover.addText(`Accounts Included: ${selectedAccIds.length} | Generated on ${new Date().toLocaleDateString()}`, {
+        x: 1.0, y: 3.5, w: '80%', fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF'
+      });
+
+      // Per Account Slides
+      selectedAccIds.forEach(accId => {
+        const acc = state.accounts.find(a => a.id === accId);
+        if (!acc) return;
+
+        const accPosts = state.posts.filter(p => p.account_id === accId);
+        const platforms = ['tiktok', 'instagram', 'youtube'];
+
+        // Table Slide (Sorted by Highest Impressions)
+        let slideAcc = pptx.addSlide();
+        slideAcc.background = { color: '0B0F17' };
+
+        slideAcc.addText(`${acc.name} (${acc.niche}) — Top Impression & Reach Log`, {
+          x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
+        });
+
+        let startY = 1.2;
+        platforms.forEach(plat => {
+          const platPosts = accPosts
+            .filter(p => p.platform === plat)
+            .sort((a, b) => (b.impressions || 0) - (a.impressions || 0))
+            .slice(0, 3);
+
+          if (platPosts.length > 0) {
+            slideAcc.addText(`Platform: ${plat.toUpperCase()}`, {
+              x: 0.8, y: startY, fontFace: 'Helvetica', fontSize: 12, color: '0EA5E9', bold: true
+            });
+
+            const rows = [
+              [
+                { text: 'Title / Caption', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+                { text: 'Date', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+                { text: 'Impressions', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
+                { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
+                { text: 'ER %', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } }
+              ]
+            ];
+
+            platPosts.forEach(p => {
+              const eng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
+              const er = p.impressions > 0 ? ((eng / p.impressions) * 100).toFixed(1) + '%' : '0.0%';
+
+              rows.push([
+                { text: p.title.length > 30 ? p.title.slice(0, 30) + '...' : p.title, options: { color: 'FFFFFF' } },
+                { text: `${p.post_date}`, options: { color: '9CA3AF' } },
+                { text: (p.impressions || 0).toLocaleString(), options: { color: '0EA5E9', bold: true } },
+                { text: (p.reach || 0).toLocaleString(), options: { color: 'A855F7' } },
+                { text: er, options: { color: '10B981' } }
+              ]);
+            });
+
+            slideAcc.addTable(rows, {
+              x: 0.8, y: startY + 0.3, w: 11.5,
+              colW: [4.5, 1.8, 1.8, 1.8, 1.6],
+              fontSize: 9, fontFace: 'Helvetica', fill: '111827',
+              border: { pt: 0.5, color: '1F2937' }
+            });
+
+            startY += (rows.length * 0.3) + 0.6;
+          }
+        });
+
+        // Charts & Insights Slide
+        let slideInsights = pptx.addSlide();
+        slideInsights.background = { color: '0B0F17' };
+
+        slideInsights.addText(`${acc.name} — Graphic Data & Strategic Recommendations`, {
+          x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true
+        });
+
+        if (accPosts.length > 0) {
+          const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
+          const chartImp = sortedChronological.map(p => p.impressions || 0);
+          const chartReach = sortedChronological.map(p => p.reach || 0);
+
+          const chartData = [
+            { name: "Impressions", values: chartImp },
+            { name: "Reach", values: chartReach }
+          ];
+
+          slideInsights.addChart(pptx.ChartType.line, chartData, {
+            x: 0.8, y: 1.2, w: 6.0, h: 4.5,
+            plotArea: { fill: '111827' },
+            chartColors: ['0EA5E9', 'A855F7'],
+            showLegend: true, legendPos: 'b'
+          });
+        }
+
+        const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
+        const totalEng = accPosts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
+        const avgEr = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(1) : '0.0';
+
+        let bestPlat = 'TikTok';
+        let maxPlatImp = -1;
+        ['tiktok', 'instagram', 'youtube'].forEach(p => {
+          const pImp = accPosts.filter(item => item.platform === p).reduce((a,b) => a + (b.impressions || 0), 0);
+          if (pImp > maxPlatImp) { maxPlatImp = pImp; bestPlat = p.toUpperCase(); }
+        });
+
+        const recommendations = [
+          `1. Primary Growth Driver: ${bestPlat} delivers your highest concentration of views and total impression volume.`,
+          `2. Engagement Rate: Average ER is currently ${avgEr}%. Content with ER > 5% should be re-purposed as short-form clips.`,
+          `3. Publishing Cadence: Regular upload rhythms correlate with increased organic reach expansion.`,
+          `4. High Value Actions: Focus on call-to-actions that drive saves and shares to boost algorithmic reach.`
+        ];
+
+        slideInsights.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+          x: 7.2, y: 1.2, w: 5.2, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
+        });
+
+        slideInsights.addText('Key Strategic Recommendations', {
+          x: 7.5, y: 1.5, fontFace: 'Helvetica', fontSize: 14, color: 'F59E0B', bold: true
+        });
+
+        recommendations.forEach((rec, idx) => {
+          slideInsights.addText(rec, {
+            x: 7.5, y: 2.0 + (idx * 0.8), w: 4.6, fontFace: 'Helvetica', fontSize: 10, color: 'E2E8F0'
+          });
+        });
+      });
+
+      pptx.writeFile({ fileName: `SocioNexus_Analytics_Report_${new Date().toISOString().slice(0,10)}.pptx` });
+      window.closeModal('modal-report');
     };
 
     window.closeModal = function(id) {
