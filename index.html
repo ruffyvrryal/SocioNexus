@@ -77,7 +77,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.3</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.4</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -791,7 +791,7 @@
       document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
     };
 
-    // STRICT OPENXML-COMPLIANT PPTX GENERATOR (PASSES POWERPOINT VALIDATION)
+    // OPENXML STRICT COMPLIANT PPTX GENERATOR (PASSES ALL POWERPOINT VALIDATIONS)
     window.buildPPTXReport = function() {
       if (typeof PptxGenJS === 'undefined') {
         alert("PPTX Library is loading or unavailable. Please check your network and try again.");
@@ -822,7 +822,7 @@
         const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
         const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
 
-        // Split posts chronologically into 5 weekly buckets
+        // Split posts into 5 weekly buckets
         const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
         const weeks = [{ posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }];
         sortedChronological.forEach((p, idx) => {
@@ -830,15 +830,15 @@
           weeks[targetWeek].posts.push(p);
         });
 
-        // SLIDE 1: COVER SLIDE
+        // SLIDE 1: COVER
         let slide1 = pptx.addSlide();
         slide1.background = { color: '0B0F17' };
-        slide1.addText('SocioNexus Analytics', { x: 0.8, y: 1.2, w: 11.5, h: 0.5, fontFace: 'Arial', fontSize: 18, color: '0EA5E9', bold: true });
-        slide1.addText(`Laporan Performa Social Media - ${String(acc.name)}`, { x: 0.8, y: 1.8, w: 11.5, h: 1.0, fontFace: 'Arial', fontSize: 26, color: 'FFFFFF', bold: true });
-        slide1.addText(`Kategori Niche: ${String(acc.niche)} | Total Konten Log: ${totalPosts} Post`, { x: 0.8, y: 3.0, w: 11.5, h: 0.5, fontFace: 'Arial', fontSize: 13, color: '9CA3AF' });
+        slide1.addText('SocioNexus Analytics', { x: 0.8, y: 0.8, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 16, color: '0EA5E9', bold: true });
+        slide1.addText(`Laporan Performa Social Media - ${String(acc.name)}`, { x: 0.8, y: 1.3, w: 8.4, h: 0.8, fontFace: 'Arial', fontSize: 24, color: 'FFFFFF', bold: true });
+        slide1.addText(`Kategori Niche: ${String(acc.niche)} | Total Konten Log: ${totalPosts} Post`, { x: 0.8, y: 2.2, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '9CA3AF' });
 
-        slide1.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 3.8, w: 11.5, h: 2.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-        slide1.addText('EXECUTIVE SUMMARY', { x: 1.1, y: 4.1, w: 10.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
+        slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 2.8, w: 8.4, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+        slide1.addText('EXECUTIVE SUMMARY', { x: 1.0, y: 3.0, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true });
 
         let bestPlat = 'TikTok';
         let maxPlatImp = -1;
@@ -848,19 +848,19 @@
         });
 
         const execBullets = [
-          `- Total akumulasi jangkauan (${fmt(totalReach)} reach) dan (${fmt(totalImp)} impressions) dicapai melalui ${totalPosts} konten.`,
+          `- Total jangkauan (${fmt(totalReach)} reach) dan (${fmt(totalImp)} impressions) melalui ${totalPosts} konten.`,
           `- ${bestPlat} menjadi pilar platform kontributor jangkauan utama untuk akun ${acc.name}.`,
           `- Rata-rata tingkat interaksi audiens (Avg ER) berada di angka ${avgEr}%.`
         ];
         execBullets.forEach((b, i) => {
-          slide1.addText(b, { x: 1.1, y: 4.6 + (i * 0.5), w: 11.0, h: 0.4, fontFace: 'Arial', fontSize: 11, color: 'E2E8F0' });
+          slide1.addText(b, { x: 1.0, y: 3.4 + (i * 0.4), w: 8.0, h: 0.35, fontFace: 'Arial', fontSize: 10, color: 'E2E8F0' });
         });
 
         // SLIDE 2: BIG NUMBERS
         let slide2 = pptx.addSlide();
         slide2.background = { color: '0B0F17' };
-        slide2.addText('Kinerja Keseluruhan - Metrik Utama', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
-        slide2.addText('Ringkasan total performa dan akumulasi engagement', { x: 0.8, y: 1.2, w: 11.5, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '9CA3AF' });
+        slide2.addText('Kinerja Keseluruhan - Metrik Utama', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+        slide2.addText('Ringkasan total performa dan akumulasi engagement', { x: 0.8, y: 1.1, w: 8.4, h: 0.3, fontFace: 'Arial', fontSize: 11, color: '9CA3AF' });
 
         const cards = [
           { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'konten terpublikasi', color: '0EA5E9' },
@@ -870,17 +870,17 @@
         ];
 
         cards.forEach((card, idx) => {
-          const posX = 0.8 + (idx * 2.9);
-          slide2.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 2.0, w: 2.7, h: 2.6, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slide2.addText(card.title, { x: posX + 0.2, y: 2.3, w: 2.3, h: 0.4, fontFace: 'Arial', fontSize: 11, color: '9CA3AF', bold: true });
-          slide2.addText(card.val, { x: posX + 0.2, y: 2.8, w: 2.3, h: 0.8, fontFace: 'Arial', fontSize: 22, color: card.color, bold: true });
-          slide2.addText(card.unit, { x: posX + 0.2, y: 3.8, w: 2.3, h: 0.4, fontFace: 'Arial', fontSize: 9, color: '6B7280' });
+          const posX = 0.8 + (idx * 2.15);
+          slide2.addShape(pptx.shapes.RECTANGLE, { x: posX, y: 1.6, w: 2.0, h: 3.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide2.addText(card.title, { x: posX + 0.1, y: 1.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 10, color: '9CA3AF', bold: true });
+          slide2.addText(card.val, { x: posX + 0.1, y: 2.3, w: 1.8, h: 0.8, fontFace: 'Arial', fontSize: 18, color: card.color, bold: true });
+          slide2.addText(card.unit, { x: posX + 0.1, y: 3.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 8, color: '6B7280' });
         });
 
-        // SLIDE 3: TREN MINGGUAN (STANDARD STRING MATRICES)
+        // SLIDE 3: TREN MINGGUAN
         let slide3 = pptx.addSlide();
         slide3.background = { color: '0B0F17' };
-        slide3.addText('Tren Performa Mingguan (W1-W5)', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
+        slide3.addText('Tren Performa Mingguan (W1-W5)', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
         const table3Data = [
           ['Periode', 'Total Post', 'Impression', 'Reach', 'Pertumbuhan (WoW)']
@@ -907,15 +907,15 @@
         });
 
         slide3.addTable(table3Data, {
-          x: 0.8, y: 1.5, w: 11.5, colW: [2.0, 2.0, 2.5, 2.5, 2.5],
-          fontSize: 11, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
+          x: 0.8, y: 1.4, w: 8.4, colW: [1.6, 1.5, 1.8, 1.8, 1.7],
+          fontSize: 10, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
           border: { pt: 0.5, color: '1F2937' }, align: 'center'
         });
 
         // SLIDE 4: PLATFORM BATTLE
         let slide4 = pptx.addSlide();
         slide4.background = { color: '0B0F17' };
-        slide4.addText('Platform Battle: TikTok vs Instagram vs YouTube', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
+        slide4.addText('Platform Battle: TikTok vs Instagram vs YouTube', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
         const platNames = ['tiktok', 'instagram', 'youtube'];
         platNames.forEach((p, idx) => {
@@ -923,21 +923,21 @@
           const pImp = pPosts.reduce((a,b) => a + (Number(b.impressions)||0), 0);
           const pReach = pPosts.reduce((a,b) => a + (Number(b.reach)||0), 0);
 
-          const posX = 0.8 + (idx * 3.9);
-          slide4.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.6, w: 3.6, h: 4.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slide4.addText(p.toUpperCase(), { x: posX + 0.3, y: 1.9, w: 3.0, h: 0.5, fontFace: 'Arial', fontSize: 18, color: p === 'tiktok' ? 'EC4899' : (p === 'instagram' ? 'A855F7' : 'EF4444'), bold: true });
+          const posX = 0.8 + (idx * 2.85);
+          slide4.addShape(pptx.shapes.RECTANGLE, { x: posX, y: 1.4, w: 2.7, h: 3.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide4.addText(p.toUpperCase(), { x: posX + 0.2, y: 1.6, w: 2.3, h: 0.4, fontFace: 'Arial', fontSize: 16, color: p === 'tiktok' ? 'EC4899' : (p === 'instagram' ? 'A855F7' : 'EF4444'), bold: true });
           
-          slide4.addText(`- Total Post: ${pPosts.length}`, { x: posX + 0.3, y: 2.6, w: 3.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: 'E2E8F0' });
-          slide4.addText(`- Impression: ${fmt(pImp)}`, { x: posX + 0.3, y: 3.2, w: 3.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '0EA5E9' });
-          slide4.addText(`- Reach: ${fmt(pReach)}`, { x: posX + 0.3, y: 3.8, w: 3.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '10B981' });
+          slide4.addText(`- Total Post: ${pPosts.length}`, { x: posX + 0.2, y: 2.2, w: 2.3, h: 0.3, fontFace: 'Arial', fontSize: 11, color: 'E2E8F0' });
+          slide4.addText(`- Impression: ${fmt(pImp)}`, { x: posX + 0.2, y: 2.7, w: 2.3, h: 0.3, fontFace: 'Arial', fontSize: 11, color: '0EA5E9' });
+          slide4.addText(`- Reach: ${fmt(pReach)}`, { x: posX + 0.2, y: 3.2, w: 2.3, h: 0.3, fontFace: 'Arial', fontSize: 11, color: '10B981' });
         });
 
         // SLIDES 5-9: WEEKLY DEEP DIVES
         weeks.forEach((w, i) => {
           let slideW = pptx.addSlide();
           slideW.background = { color: '0B0F17' };
-          slideW.addText(`WEEK ${i+1}`, { x: 0.8, y: 0.5, w: 11.5, h: 0.4, fontFace: 'Arial', fontSize: 13, color: '0EA5E9', bold: true });
-          slideW.addText(`Deep-Dive Minggu ${i+1}: Analisis Performa`, { x: 0.8, y: 0.9, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
+          slideW.addText(`WEEK ${i+1}`, { x: 0.8, y: 0.4, w: 8.4, h: 0.3, fontFace: 'Arial', fontSize: 12, color: '0EA5E9', bold: true });
+          slideW.addText(`Deep-Dive Minggu ${i+1}: Analisis Performa`, { x: 0.8, y: 0.7, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
           const wImp = w.posts.reduce((a,b) => a + (Number(b.impressions)||0), 0);
           const wReach = w.posts.reduce((a,b) => a + (Number(b.reach)||0), 0);
@@ -952,14 +952,14 @@
           ];
 
           metrics.forEach((m, idx) => {
-            const posX = 0.8 + (idx * 2.9);
-            slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.6, w: 2.7, h: 1.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-            slideW.addText(m.t, { x: posX + 0.2, y: 1.8, w: 2.3, h: 0.3, fontFace: 'Arial', fontSize: 10, color: '9CA3AF' });
-            slideW.addText(m.v, { x: posX + 0.2, y: 2.2, w: 2.3, h: 0.6, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+            const posX = 0.8 + (idx * 2.15);
+            slideW.addShape(pptx.shapes.RECTANGLE, { x: posX, y: 1.3, w: 2.0, h: 1.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+            slideW.addText(m.t, { x: posX + 0.1, y: 1.4, w: 1.8, h: 0.25, fontFace: 'Arial', fontSize: 9, color: '9CA3AF' });
+            slideW.addText(m.v, { x: posX + 0.1, y: 1.7, w: 1.8, h: 0.5, fontFace: 'Arial', fontSize: 16, color: 'FFFFFF', bold: true });
           });
 
-          slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 3.4, w: 11.5, h: 2.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slideW.addText('HIGHLIGHT MINGGUAN', { x: 1.1, y: 3.7, w: 10.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
+          slideW.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 2.7, w: 8.4, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slideW.addText('HIGHLIGHT MINGGUAN', { x: 1.0, y: 2.9, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true });
           
           const hLines = [
             `1. Total ${w.posts.length} konten dipublikasikan pada minggu ke-${i+1}.`,
@@ -967,17 +967,17 @@
             `3. Rata-rata keterlibatan audiens (ER) berada pada tingkat ${wEr}%.`
           ];
           hLines.forEach((hl, idx) => {
-            slideW.addText(hl, { x: 1.1, y: 4.2 + (idx * 0.5), w: 10.5, h: 0.4, fontFace: 'Arial', fontSize: 11, color: 'E2E8F0' });
+            slideW.addText(hl, { x: 1.0, y: 3.3 + (idx * 0.4), w: 8.0, h: 0.35, fontFace: 'Arial', fontSize: 10, color: 'E2E8F0' });
           });
         });
 
         // SLIDE 10: HALL OF FAME
         let slide10 = pptx.addSlide();
         slide10.background = { color: '0B0F17' };
-        slide10.addText('Content Hall of Fame & Perlu Evaluasi', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
+        slide10.addText('Content Hall of Fame & Perlu Evaluasi', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
         const topPosts = [...accPosts].sort((a,b) => (Number(b.impressions)||0) - (Number(a.impressions)||0)).slice(0, 5);
-        slide10.addText('TOP 5 KONTEN PERFORMA TERTINGGI', { x: 0.8, y: 1.3, w: 11.5, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '10B981', bold: true });
+        slide10.addText('TOP 5 KONTEN PERFORMA TERTINGGI', { x: 0.8, y: 1.2, w: 8.4, h: 0.3, fontFace: 'Arial', fontSize: 11, color: '10B981', bold: true });
 
         const hallTableData = [
           ['Platform', 'Judul Konten', 'Impression', 'Reach', 'Tanggal']
@@ -994,15 +994,15 @@
         });
 
         slide10.addTable(hallTableData, {
-          x: 0.8, y: 1.8, w: 11.5, colW: [1.8, 4.5, 1.8, 1.8, 1.6],
-          fontSize: 10, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
+          x: 0.8, y: 1.6, w: 8.4, colW: [1.4, 3.4, 1.3, 1.3, 1.0],
+          fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
           border: { pt: 0.5, color: '1F2937' }
         });
 
         // SLIDE 11: REKOMENDASI AKSI
         let slide11 = pptx.addSlide();
         slide11.background = { color: '0B0F17' };
-        slide11.addText('Rekomendasi Aksi - Periode Berikutnya', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
+        slide11.addText('Rekomendasi Aksi - Periode Berikutnya', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
         const recs = [
           { t: 'Skalakan Platform Utama', d: `Fokuskan resource pada platform ${bestPlat} yang terbukti menjadi penarik jangkauan terbanyak.` },
@@ -1012,18 +1012,18 @@
         ];
 
         recs.forEach((r, idx) => {
-          const posX = 0.8 + ((idx % 2) * 5.9);
-          const posY = 1.6 + (Math.floor(idx / 2) * 2.4);
-          slide11.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: posY, w: 5.6, h: 2.1, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slide11.addText(r.t, { x: posX + 0.3, y: posY + 0.3, w: 5.0, h: 0.4, fontFace: 'Arial', fontSize: 14, color: 'F59E0B', bold: true });
-          slide11.addText(r.d, { x: posX + 0.3, y: posY + 0.8, w: 5.0, h: 1.0, fontFace: 'Arial', fontSize: 10, color: 'E2E8F0' });
+          const posX = 0.8 + ((idx % 2) * 4.3);
+          const posY = 1.3 + (Math.floor(idx / 2) * 1.8);
+          slide11.addShape(pptx.shapes.RECTANGLE, { x: posX, y: posY, w: 4.1, h: 1.6, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide11.addText(r.t, { x: posX + 0.2, y: posY + 0.2, w: 3.7, h: 0.3, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
+          slide11.addText(r.d, { x: posX + 0.2, y: posY + 0.55, w: 3.7, h: 0.9, fontFace: 'Arial', fontSize: 9, color: 'E2E8F0' });
         });
 
         // SLIDE 12: CLOSING
         let slide12 = pptx.addSlide();
         slide12.background = { color: '0B0F17' };
-        slide12.addText('Terima Kasih', { x: 1.0, y: 2.5, w: 11.0, h: 1.0, fontFace: 'Arial', fontSize: 36, color: 'FFFFFF', bold: true, align: 'center' });
-        slide12.addText('Pertanyaan dan diskusi lebih lanjut mengenai strategi periode berikutnya', { x: 1.0, y: 3.6, w: 11.0, h: 0.6, fontFace: 'Arial', fontSize: 14, color: '9CA3AF', align: 'center' });
+        slide12.addText('Terima Kasih', { x: 0.8, y: 2.0, w: 8.4, h: 0.8, fontFace: 'Arial', fontSize: 32, color: 'FFFFFF', bold: true, align: 'center' });
+        slide12.addText('Pertanyaan dan diskusi lebih lanjut mengenai strategi periode berikutnya', { x: 0.8, y: 2.9, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 12, color: '9CA3AF', align: 'center' });
       });
 
       pptx.writeFile({ fileName: `SocioNexus_Executive_Report_${new Date().toISOString().slice(0,10)}.pptx` });
