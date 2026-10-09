@@ -179,7 +179,7 @@
         <span id="header-account-name" class="font-medium text-white max-w-[100px] truncate">Account</span>
       </div>
 
-      <button onclick="window.navigateToHub()" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5">
+      <button id="desktop-hub-button" onclick="window.navigateToHub()" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
         <span>Workspaces</span>
       </button>
@@ -188,9 +188,7 @@
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
-      <button id="share-vault-button" onclick="window.openVaultSharing()" class="hidden px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">Share Vault</button>
-      <span id="signed-in-email" class="max-w-40 truncate text-xs text-slate-400"></span>
-      <button id="sign-out-button" onclick="window.signOut()" class="hidden px-3 py-1.5 text-xs font-medium text-rose-300 hover:text-white bg-slate-800 hover:bg-rose-900/40 rounded-lg transition-colors">Sign out</button>
+      <button id="sign-out-button" onclick="window.signOut()" class="hidden px-3 py-1.5 text-xs font-medium text-rose-300 hover:text-white bg-slate-800 hover:bg-rose-900/40 rounded-lg transition-colors">Lock dashboard</button>
     </div>
 
     <!-- Mobile Header Quick Actions -->
@@ -211,31 +209,25 @@
     <section id="view-auth" class="mx-auto max-w-md py-8 sm:py-16">
       <div class="glass-panel rounded-2xl border border-slate-800 p-5 sm:p-7 space-y-5">
         <div>
-          <h2 class="text-xl font-bold text-white">Sign in to SocioNexus</h2>
-          <p class="mt-1 text-xs leading-relaxed text-slate-400">Your vaults are private. Owners can invite people as viewers or editors.</p>
+          <h2 class="text-xl font-bold text-white">Enter the shared password</h2>
+          <p class="mt-1 text-xs leading-relaxed text-slate-400">Use the shared access password to open the SocioNexus vault. Everyone shares one account and its permissions. This device stays unlocked until you lock it or the session expires.</p>
         </div>
         <form id="auth-form" onsubmit="window.signIn(event)" class="space-y-3">
           <div>
-            <label for="auth-email" class="mb-1 block text-xs font-medium text-slate-300">Email</label>
-            <input id="auth-email" type="email" autocomplete="email" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
-          </div>
-          <div>
-            <label for="auth-password" class="mb-1 block text-xs font-medium text-slate-300">Password</label>
-            <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
+            <label for="auth-password" class="mb-1 block text-xs font-medium text-slate-300">Shared access password</label>
+            <input id="auth-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <p id="auth-message" class="hidden text-xs leading-relaxed" role="status"></p>
           <div id="vault-setup-required" class="hidden space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-100">
             <p id="vault-setup-message" class="leading-relaxed"></p>
             <ol class="list-decimal space-y-1 pl-4 text-amber-100/80">
-              <li>Connect the project URL and anon public key in Cloud Sync Settings, and enable Email sign-in in Supabase Auth.</li>
-              <li>Create the first owner account here and confirm its email if prompted.</li>
-              <li>Open <strong>supabase-vaults.sql</strong> and replace <code>REPLACE_WITH_OWNER_EMAIL</code> with that owner's email.</li>
-              <li>Run the complete script in the same project's Supabase SQL Editor, then refresh.</li>
+              <li>In the configured Supabase project, create or confirm the Auth user <strong>ruffyprasetya@gmail.com</strong> and set its password to the shared access password.</li>
+              <li>Run <strong>supabase-vaults.sql</strong> in that project's SQL Editor. The bootstrap owner email is already set in the file.</li>
+              <li>Refresh this page and enter the shared password.</li>
             </ol>
           </div>
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button type="submit" class="rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400">Sign In</button>
-            <button type="button" onclick="window.signUp()" class="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-700">Create Account</button>
+          <div class="pt-1">
+            <button type="submit" class="w-full rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400">Unlock dashboard</button>
           </div>
         </form>
       </div>
@@ -929,6 +921,8 @@
   <script>
     const HARDCODED_URL = "https://utqcoplopcbevtscbaas.supabase.co";
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
+
+    const SHARED_ACCESS_EMAIL = 'ruffyprasetya@gmail.com';
 
     const state = {
       authUser: null,
@@ -1938,14 +1932,9 @@
         setAuthMessage(message, true);
       }
       ['share-vault-button', 'mobile-report-button', 'desktop-report-button', 'bottom-report-button',
-        'bottom-hub-button', 'add-account-button', 'add-content-button'].forEach(id => {
+        'desktop-hub-button', 'bottom-hub-button', 'add-account-button', 'add-content-button'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
       });
-      const signedInEmail = document.getElementById('signed-in-email');
-      if (signedInEmail) {
-        signedInEmail.textContent = state.authUser?.email || '';
-        signedInEmail.classList.toggle('hidden', !state.authUser);
-      }
       document.getElementById('sign-out-button')?.classList.toggle('hidden', !state.authUser);
       document.querySelectorAll('[data-vault-write]').forEach(element => element.classList.add('hidden'));
     }
@@ -1966,12 +1955,8 @@
         select.classList.toggle('hidden', state.vaults.length <= 1);
       });
       document.getElementById('share-vault-button')?.classList.toggle('hidden', state.activeVaultRole !== 'owner');
-      const email = document.getElementById('signed-in-email');
-      if (email) {
-        email.textContent = state.authUser?.email || '';
-        email.classList.toggle('hidden', !state.authUser);
-      }
       const hasActiveVault = Boolean(state.authUser && state.activeVaultId);
+      document.getElementById('desktop-hub-button')?.classList.toggle('hidden', !hasActiveVault);
       document.getElementById('mobile-report-button')?.classList.toggle('hidden', !hasActiveVault);
       document.getElementById('desktop-report-button')?.classList.toggle('hidden', !hasActiveVault);
       document.getElementById('bottom-report-button')?.classList.toggle('hidden', !hasActiveVault);
@@ -1991,37 +1976,22 @@
     window.signIn = async function(event) {
       event.preventDefault();
       if (!supabaseClient) return setAuthMessage('Supabase is not configured. Open Cloud Sync Settings and enter the project URL and anon public key.', true);
-      const email = document.getElementById('auth-email').value.trim();
       const password = document.getElementById('auth-password').value;
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) return setAuthMessage(error.message, true);
-        if (!data.user) return setAuthMessage('Sign-in succeeded without a user session. Please try again.', true);
-        setAuthMessage('Signed in. Loading your vaults…');
-        await activateAuthenticatedUser(data.user);
-      } catch (error) {
-        console.error('Sign-in request failed:', error);
-        setAuthMessage(`Could not sign in. ${error.message || 'Check your connection and try again.'}`, true);
-      }
-    };
-
-    window.signUp = async function() {
-      if (!supabaseClient) return setAuthMessage('Supabase is not configured. Open Cloud Sync Settings and enter the project URL and anon public key.', true);
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-      if (!email || !password || password.length < 8) return setAuthMessage('Enter a valid email address and a password with at least 8 characters.', true);
-      try {
-        const { data, error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) return setAuthMessage(error.message, true);
-        if (!data.session || !data.user) {
-          setAuthMessage('Account created. Confirm your email, then sign in. The first owner must run the vault setup SQL before opening the vault.');
-          return;
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: SHARED_ACCESS_EMAIL,
+          password
+        });
+        if (error) {
+          const invalidPassword = /invalid login credentials/i.test(error.message || '');
+          return setAuthMessage(invalidPassword ? 'Incorrect shared password.' : error.message, true);
         }
-        setAuthMessage('Account created. Loading your vaults…');
+        if (!data.user) return setAuthMessage('Sign-in succeeded without a user session. Please try again.', true);
+        setAuthMessage('Password accepted. Opening the shared vault…');
         await activateAuthenticatedUser(data.user);
       } catch (error) {
-        console.error('Account creation failed:', error);
-        setAuthMessage(`Could not create your account. ${error.message || 'Check your connection and try again.'}`, true);
+        console.error('Shared-password authentication failed:', error);
+        setAuthMessage(`Could not unlock the dashboard. ${error.message || 'Check your connection and try again.'}`, true);
       }
     };
 
@@ -2048,12 +2018,19 @@
     };
 
     async function activateAuthenticatedUser(user) {
+      if ((user.email || '').toLowerCase() !== SHARED_ACCESS_EMAIL) {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        state.authUser = null;
+        showAuthenticationGate('This device had a different SocioNexus account. Enter the shared access password to continue.');
+        return;
+      }
       state.authUser = user;
       try {
         const { data: vaults, error } = await supabaseClient.rpc('get_my_vaults');
         if (error) throw error;
         if (!Array.isArray(vaults) || vaults.length === 0) {
-          showAuthenticationGate('No vault is available for this account. Ask a vault owner to invite your email.', true);
+          showAuthenticationGate('The shared account does not have a vault yet. Complete the Supabase vault setup steps below, then refresh.', true);
           return;
         }
         state.vaults = vaults;

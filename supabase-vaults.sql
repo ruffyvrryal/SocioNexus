@@ -71,11 +71,12 @@ begin
   select id into owner_id
   from auth.users
   where lower(email) = bootstrap_email
+    and email_confirmed_at is not null
   order by created_at
   limit 1;
 
   if owner_id is null then
-    raise exception 'No Supabase Auth user exists for %. Sign up that email in SocioNexus first, then run this migration.', bootstrap_email;
+    raise exception 'No confirmed Supabase Auth user exists for %. Create or confirm that user in the Supabase Dashboard, then run this migration.', bootstrap_email;
   end if;
 
   select id into owner_vault_id
