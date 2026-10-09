@@ -33,10 +33,11 @@
     }
   </script>
 
-  <!-- Lucide Icons, Chart.js & Supabase JS -->
+  <!-- Lucide Icons, Chart.js, Supabase JS & PptxGenJS Bundle -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
   <style>
     body {
@@ -71,35 +72,12 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #print-report-container, #print-report-container * {
-        visibility: visible;
-      }
-      #print-report-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        background: #0b0f17 !important;
-        color: #ffffff !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .page-break {
-        page-break-after: always;
-        break-after: page;
-      }
-    }
   </style>
 </head>
 <body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-16 md:pb-0">
 
-  <!-- TOP HEADER / NAVBAR (DESKTOP & MOBILE RESPONSIVE) -->
-  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between no-print">
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between">
     <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onclick="window.navigateToHub()">
       <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
         <i data-lucide="share-2" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
@@ -107,13 +85,13 @@
       <div>
         <h1 class="font-bold text-base sm:text-lg tracking-wide text-white flex items-center gap-1.5 sm:gap-2">
           SocioNexus
-          <span class="text-[10px] sm:text-xs font-normal px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v4.2</span>
+          <span class="text-[10px] sm:text-xs font-normal px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v5.0</span>
         </h1>
         <p class="text-[10px] sm:text-xs text-slate-400 hidden xs:block">Multi-Account Creator Workspace</p>
       </div>
     </div>
 
-    <!-- Desktop Header Actions -->
+    <!-- Right Header Actions -->
     <div class="hidden md:flex items-center space-x-3">
       <button onclick="window.exportToCSV()" class="px-3 py-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg border border-emerald-500/20 transition-colors flex items-center gap-1.5">
         <i data-lucide="file-spread-sheet" class="w-3.5 h-3.5"></i>
@@ -121,8 +99,8 @@
       </button>
 
       <button onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg border border-amber-500/20 transition-colors flex items-center gap-1.5">
-        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-        <span>Executive Report</span>
+        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+        <span>Generate PPTX Report</span>
       </button>
 
       <div id="header-account-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
@@ -148,13 +126,13 @@
         <span id="sync-indicator-mobile" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
       <button onclick="window.openReportModal()" class="p-2 text-amber-300 bg-amber-500/10 rounded-xl border border-amber-500/20">
-        <i data-lucide="file-text" class="w-4 h-4"></i>
+        <i data-lucide="presentation" class="w-4 h-4"></i>
       </button>
     </div>
   </header>
 
   <!-- MAIN VIEW CONTAINER -->
-  <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 no-print">
+  <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
 
     <!-- VIEW 1: ACCOUNT SELECTION HUB -->
     <section id="view-account-hub" class="space-y-4 sm:space-y-6">
@@ -229,7 +207,7 @@
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
       </div>
 
-      <!-- PLATFORM TABS (TOUCH-OPTIMIZED HORIZONTAL SCROLL) -->
+      <!-- PLATFORM TABS -->
       <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
         <button id="tab-all" onclick="window.selectPlatform('all')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap shrink-0">
           <i data-lucide="layers" class="w-3.5 h-3.5"></i> All Platforms
@@ -304,7 +282,7 @@
         </div>
       </div>
 
-      <!-- ADAPTIVE CONTENT LOG (DESKTOP TABLE / MOBILE CARDS) -->
+      <!-- CONTENT LOG -->
       <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
@@ -319,14 +297,6 @@
             <div class="relative w-full md:w-64">
               <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input type="text" id="search-input" oninput="window.handleSearchInput(this.value)" placeholder="Search title or link..." class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none">
-            </div>
-
-            <div class="hidden lg:flex items-center gap-1.5 text-[10px]">
-              <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">0</span>
-              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">1-99</span>
-              <span class="px-2 py-0.5 rounded bg-slate-700/50 text-white border border-slate-600">100-499</span>
-              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">500-999</span>
-              <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">1000+</span>
             </div>
           </div>
         </div>
@@ -360,7 +330,7 @@
   </main>
 
   <!-- BOTTOM MOBILE ACTION NAV -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 px-4 py-2 flex items-center justify-around no-print">
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 px-4 py-2 flex items-center justify-around">
     <button onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
       <i data-lucide="layout-grid" class="w-5 h-5"></i>
       <span>Workspaces</span>
@@ -372,13 +342,13 @@
       <span>Add Content</span>
     </button>
     <button onclick="window.openReportModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-amber-400">
-      <i data-lucide="file-text" class="w-5 h-5"></i>
-      <span>Report</span>
+      <i data-lucide="presentation" class="w-5 h-5"></i>
+      <span>PPTX Report</span>
     </button>
   </div>
 
-  <!-- MODALS (MOBILE-FRIENDLY & RESPONSIVE) -->
-  <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+  <!-- MODALS -->
+  <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 id="modal-account-title" class="text-base font-bold text-white">Add New Account</h3>
@@ -406,7 +376,7 @@
     </div>
   </div>
 
-  <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+  <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 id="modal-post-title" class="text-base font-bold text-white">Log Content Performance</h3>
@@ -478,7 +448,7 @@
     </div>
   </div>
 
-  <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+  <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
@@ -503,29 +473,67 @@
     </div>
   </div>
 
-  <!-- REPORT MODAL VIEW -->
-  <div id="modal-report" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto custom-scrollbar">
-    <div class="glass-panel w-full sm:max-w-4xl p-4 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 my-0 sm:my-8 max-h-[92vh] sm:max-h-none overflow-y-auto">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-3 no-print">
-        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-          <i data-lucide="file-text" class="w-5 h-5 text-amber-400"></i> Executive Presentation & Report
+  <!-- PPTX REPORT MODAL WITH DATE RANGE FILTERS -->
+  <div id="modal-report" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="presentation" class="w-4 h-4 text-amber-400"></i> Generate PPTX Report
         </h3>
-        <div class="flex items-center gap-2">
-          <button onclick="window.copyReportToClipboard()" class="flex-1 sm:flex-none px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-            <i data-lucide="copy" class="w-4 h-4"></i> Copy Slide HTML
-          </button>
-          <button onclick="window.printReport()" class="flex-1 sm:flex-none px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-            <i data-lucide="printer" class="w-4 h-4"></i> Save PDF
-          </button>
-          <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <!-- Date Window Type Selection -->
+      <div class="space-y-3">
+        <label class="block text-xs font-semibold text-slate-300">Select Report Timeframe Filter:</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button id="rpt-mode-all" onclick="window.setReportFilterMode('all')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border bg-cyan-500/20 text-cyan-300 border-cyan-500/30">All Time</button>
+          <button id="rpt-mode-month" onclick="window.setReportFilterMode('month')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 bg-slate-900 text-slate-400 hover:text-white">By Month</button>
+          <button id="rpt-mode-range" onclick="window.setReportFilterMode('range')" class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 bg-slate-900 text-slate-400 hover:text-white">Custom Range</button>
+        </div>
+
+        <!-- Month Filter Selector -->
+        <div id="rpt-month-picker" class="hidden">
+          <label class="block text-[11px] text-slate-400 mb-1">Target Month</label>
+          <input type="month" id="rpt-month-val" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+        </div>
+
+        <!-- Custom Range Picker -->
+        <div id="rpt-range-picker" class="hidden grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">Start Date</label>
+            <input type="date" id="rpt-start-date" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] text-slate-400 mb-1">End Date</label>
+            <input type="date" id="rpt-end-date" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+          </div>
         </div>
       </div>
 
-      <div id="print-report-container" class="space-y-6"></div>
+      <!-- Account Checklist -->
+      <div class="space-y-2 pt-2 border-t border-slate-800">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-semibold text-slate-300">Select Workspace Accounts:</span>
+          <label class="flex items-center gap-1.5 text-cyan-400 cursor-pointer">
+            <input type="checkbox" id="report-select-all" onchange="window.toggleReportSelectAll(this.checked)" class="rounded bg-slate-900 border-slate-700 text-cyan-500" checked>
+            <span>Select All</span>
+          </label>
+        </div>
+        <div id="report-account-list" class="space-y-2 max-h-36 overflow-y-auto custom-scrollbar p-1"></div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <button type="button" onclick="window.closeModal('modal-report')" class="w-full sm:w-auto px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="window.buildPPTXReport()" class="w-full sm:w-auto px-4 py-2.5 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Download .pptx File</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500 no-print hidden md:block">
+  <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500 hidden md:block">
     SocioNexus Dashboard &copy; 2026. Built with Tailwind CSS, Chart.js & Supabase Cloud Sync.
   </footer>
 
@@ -540,7 +548,8 @@
       currentPlatform: 'all',
       timeframe: 'all',
       selectedDateVal: '',
-      searchQuery: ''
+      searchQuery: '',
+      reportFilterMode: 'all'
     };
 
     let supabaseClient = null;
@@ -860,118 +869,186 @@
       document.body.removeChild(link);
     };
 
+    // REPORT MODAL FILTER CONTROLS & GENERATOR
     window.openReportModal = function() {
-      const container = document.getElementById('print-report-container');
-      container.innerHTML = '';
+      const listContainer = document.getElementById('report-account-list');
+      listContainer.innerHTML = '';
 
-      const targetAccounts = state.currentAccountId 
-        ? state.accounts.filter(a => a.id === state.currentAccountId)
-        : state.accounts;
-
-      if (targetAccounts.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No account data available to construct the report.</p>`;
+      if (state.accounts.length === 0) {
+        listContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">No accounts created yet.</p>`;
       } else {
-        targetAccounts.forEach((acc, index) => {
-          const accPosts = state.posts.filter(p => p.account_id === acc.id);
-          const totalImp = accPosts.reduce((a,b) => a + (Number(b.impressions) || 0), 0);
-          const totalReach = accPosts.reduce((a,b) => a + (Number(b.reach) || 0), 0);
-          const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
-          const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
-
-          const reportHtml = `
-            <div class="${index > 0 ? 'page-break pt-8' : ''} space-y-4 sm:space-y-6">
-              <div class="border-b border-slate-800 pb-3 sm:pb-4">
-                <span class="text-[10px] sm:text-xs font-bold text-cyan-400 uppercase tracking-widest">SocioNexus Analytics Executive Report</span>
-                <h1 class="text-xl sm:text-2xl font-extrabold text-white mt-1">Performance Overview & Strategic Breakdown</h1>
-                <div class="flex items-center gap-2 sm:gap-3 mt-2 text-xs text-slate-400 flex-wrap">
-                  <span class="font-medium text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${acc.name}</span>
-                  <span>Category: <b>${acc.niche}</b></span>
-                  <span>Posts Logged: <b>${accPosts.length}</b></span>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
-                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Total Posts</span>
-                  <div class="text-lg sm:text-2xl font-black text-cyan-400 mt-0.5 sm:mt-1">${accPosts.length}</div>
-                </div>
-                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Impressions</span>
-                  <div class="text-lg sm:text-2xl font-black text-purple-400 mt-0.5 sm:mt-1">${totalImp.toLocaleString('id-ID')}</div>
-                </div>
-                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Reach</span>
-                  <div class="text-lg sm:text-2xl font-black text-emerald-400 mt-0.5 sm:mt-1">${totalReach.toLocaleString('id-ID')}</div>
-                </div>
-                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Avg ER</span>
-                  <div class="text-lg sm:text-2xl font-black text-amber-400 mt-0.5 sm:mt-1">${avgEr}%</div>
-                </div>
-              </div>
-
-              <div class="space-y-2 sm:space-y-3">
-                <h4 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider text-slate-300">Top Content Log</h4>
-                <div class="overflow-x-auto rounded-xl border border-slate-800">
-                  <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
-                      <tr>
-                        <th class="p-2.5 sm:p-3">Platform</th>
-                        <th class="p-2.5 sm:p-3">Title</th>
-                        <th class="p-2.5 sm:p-3 text-right">Impressions</th>
-                        <th class="p-2.5 sm:p-3 text-right">Reach</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
-                      ${
-                        accPosts.length === 0 
-                          ? `<tr><td colspan="4" class="p-4 text-center text-slate-500">No content records logged.</td></tr>`
-                          : [...accPosts].sort((a,b) => (b.impressions||0) - (a.impressions||0)).slice(0, 5).map(p => `
-                              <tr>
-                                <td class="p-2.5 sm:p-3 font-semibold uppercase text-cyan-400">${p.platform}</td>
-                                <td class="p-2.5 sm:p-3 font-medium text-white truncate max-w-[120px] sm:max-w-none">${p.title}</td>
-                                <td class="p-2.5 sm:p-3 text-right font-bold text-slate-200">${(p.impressions||0).toLocaleString('id-ID')}</td>
-                                <td class="p-2.5 sm:p-3 text-right text-slate-300">${(p.reach||0).toLocaleString('id-ID')}</td>
-                              </tr>
-                            `).join('')
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
-                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Executive Insights</h4>
-                <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
-                  <li>Focus primary video resources towards highest reach engagement platforms.</li>
-                  <li>Maintain publishing rhythm across peak audience interaction windows.</li>
-                </ul>
-              </div>
-            </div>
+        state.accounts.forEach(acc => {
+          const isCurrent = state.currentAccountId ? acc.id === state.currentAccountId : true;
+          const div = document.createElement('div');
+          div.className = "flex items-center justify-between p-2 bg-slate-900/80 rounded-xl border border-slate-800";
+          div.innerHTML = `
+            <label class="flex items-center gap-2 text-xs text-white cursor-pointer w-full">
+              <input type="checkbox" class="report-acc-checkbox rounded bg-slate-800 border-slate-700 text-cyan-500" value="${acc.id}" ${isCurrent ? 'checked' : ''}>
+              <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${acc.color || '#0ea5e9'}"></span>
+              <span class="font-medium">${acc.name}</span>
+              <span class="text-[10px] text-slate-400 ml-auto">(${acc.niche})</span>
+            </label>
           `;
-          container.insertAdjacentHTML('beforeend', reportHtml);
+          listContainer.appendChild(div);
         });
       }
 
+      const now = new Date();
+      document.getElementById('rpt-month-val').value = now.toISOString().slice(0, 7);
+      document.getElementById('rpt-start-date').value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      document.getElementById('rpt-end-date').value = now.toISOString().split('T')[0];
+
+      window.setReportFilterMode('all');
       document.getElementById('modal-report').classList.remove('hidden');
       document.getElementById('modal-report').classList.add('flex');
       lucide.createIcons();
     };
 
-    window.copyReportToClipboard = function() {
-      const el = document.getElementById('print-report-container');
-      const blob = new Blob([el.innerHTML], { type: 'text/html' });
-      const data = [new ClipboardItem({ 'text/html': blob })];
-
-      navigator.clipboard.write(data).then(() => {
-        alert("Report copied to clipboard! Open PowerPoint or Google Slides and paste.");
-      }).catch(err => {
-        console.error("Clipboard copy failed: ", err);
-        alert("Copy failed. Use Save PDF instead.");
+    window.setReportFilterMode = function(mode) {
+      state.reportFilterMode = mode;
+      ['all', 'month', 'range'].forEach(m => {
+        const btn = document.getElementById(`rpt-mode-${m}`);
+        if (m === mode) btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-medium border bg-cyan-500/20 text-cyan-300 border-cyan-500/30";
+        else btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 bg-slate-900 text-slate-400 hover:text-white";
       });
+
+      document.getElementById('rpt-month-picker').className = mode === 'month' ? 'block' : 'hidden';
+      document.getElementById('rpt-range-picker').className = mode === 'range' ? 'grid grid-cols-2 gap-3' : 'hidden';
     };
 
-    window.printReport = function() {
-      window.print();
+    window.toggleReportSelectAll = function(isChecked) {
+      document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
+    };
+
+    // OPENXML STRICT PPTX GENERATOR (PREVENTS POWERPOINT REPAIR ERRORS)
+    window.buildPPTXReport = function() {
+      if (typeof PptxGenJS === 'undefined') {
+        alert("PPTX Generator bundle is still loading. Please wait a moment and try again.");
+        return;
+      }
+
+      const selectedBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox:checked'));
+      const selectedAccIds = selectedBoxes.map(cb => cb.value);
+
+      if (selectedAccIds.length === 0) {
+        alert("Please select at least one account workspace to generate the report.");
+        return;
+      }
+
+      let pptx = new PptxGenJS();
+      pptx.layout = 'LAYOUT_16x9';
+
+      const fmt = (num) => String(Number(num || 0).toLocaleString('en-US'));
+
+      selectedAccIds.forEach(accId => {
+        const acc = state.accounts.find(a => a.id === accId);
+        if (!acc) return;
+
+        let accPosts = state.posts.filter(p => p.account_id === accId);
+
+        // Apply Custom Timeframe Filters
+        if (state.reportFilterMode === 'month') {
+          const mVal = document.getElementById('rpt-month-val').value;
+          if (mVal) accPosts = accPosts.filter(p => p.post_date && p.post_date.startsWith(mVal));
+        } else if (state.reportFilterMode === 'range') {
+          const start = document.getElementById('rpt-start-date').value;
+          const end = document.getElementById('rpt-end-date').value;
+          if (start && end) {
+            accPosts = accPosts.filter(p => p.post_date && p.post_date >= start && p.post_date <= end);
+          }
+        }
+
+        const totalPosts = accPosts.length;
+        const totalImp = accPosts.reduce((a,b) => a + (Number(b.impressions) || 0), 0);
+        const totalReach = accPosts.reduce((a,b) => a + (Number(b.reach) || 0), 0);
+        const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
+        const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
+
+        // SLIDE 1: COVER
+        let slide1 = pptx.addSlide();
+        slide1.background = { color: '0B0F17' };
+        slide1.addText('SocioNexus Analytics', { x: 0.8, y: 0.8, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 16, color: '0EA5E9', bold: true });
+        slide1.addText(`Social Media Executive Performance Report`, { x: 0.8, y: 1.3, w: 8.4, h: 0.8, fontFace: 'Arial', fontSize: 24, color: 'FFFFFF', bold: true });
+        slide1.addText(`Workspace: ${String(acc.name)} | Category: ${String(acc.niche)} | Posts Logged: ${totalPosts}`, { x: 0.8, y: 2.2, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 11, color: '9CA3AF' });
+
+        slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 2.8, w: 8.4, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+        slide1.addText('EXECUTIVE SUMMARY INSIGHTS', { x: 1.0, y: 3.0, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true });
+
+        const execBullets = [
+          `- Total Audience Reach (${fmt(totalReach)}) and Impressions (${fmt(totalImp)}) across ${totalPosts} publications.`,
+          `- Content engagement rate averaged ${avgEr}% relative to unique reach.`,
+          `- Highest engagement concentration observed on video short-form formats.`
+        ];
+        execBullets.forEach((b, i) => {
+          slide1.addText(b, { x: 1.0, y: 3.4 + (i * 0.4), w: 8.0, h: 0.35, fontFace: 'Arial', fontSize: 10, color: 'E2E8F0' });
+        });
+
+        // SLIDE 2: METRIC CARDS
+        let slide2 = pptx.addSlide();
+        slide2.background = { color: '0B0F17' };
+        slide2.addText('Overall Workspace Metrics', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+
+        const cards = [
+          { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'Published Posts', color: '0EA5E9' },
+          { title: 'TOTAL IMPRESSIONS', val: fmt(totalImp), unit: 'Total Views', color: 'A855F7' },
+          { title: 'TOTAL REACH', val: fmt(totalReach), unit: 'Unique Accounts', color: '10B981' },
+          { title: 'AVG ER RATE', val: `${avgEr}%`, unit: 'Interactions / Reach', color: 'F59E0B' }
+        ];
+
+        cards.forEach((card, idx) => {
+          const posX = 0.8 + (idx * 2.15);
+          slide2.addShape(pptx.shapes.RECTANGLE, { x: posX, y: 1.6, w: 2.0, h: 3.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide2.addText(card.title, { x: posX + 0.1, y: 1.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 9, color: '9CA3AF', bold: true });
+          slide2.addText(card.val, { x: posX + 0.1, y: 2.3, w: 1.8, h: 0.8, fontFace: 'Arial', fontSize: 18, color: card.color, bold: true });
+          slide2.addText(card.unit, { x: posX + 0.1, y: 3.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 8, color: '6B7280' });
+        });
+
+        // SLIDE 3: TOP PERFORMING LOG
+        let slide3 = pptx.addSlide();
+        slide3.background = { color: '0B0F17' };
+        slide3.addText('Top Content Performance Log', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+
+        const topPosts = [...accPosts].sort((a,b) => (Number(b.impressions)||0) - (Number(a.impressions)||0)).slice(0, 5);
+        const hallTableData = [
+          ['Platform', 'Title / Caption', 'Impressions', 'Reach', 'Date']
+        ];
+
+        topPosts.forEach(p => {
+          hallTableData.push([
+            String(p.platform).toUpperCase(),
+            p.title.length > 35 ? p.title.slice(0, 35) + '...' : String(p.title),
+            fmt(p.impressions),
+            fmt(p.reach),
+            String(p.post_date)
+          ]);
+        });
+
+        slide3.addTable(hallTableData, {
+          x: 0.8, y: 1.4, w: 8.4, colW: [1.4, 3.4, 1.3, 1.3, 1.0],
+          fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
+          border: { pt: 0.5, color: '1F2937' }, align: 'left'
+        });
+
+        // SLIDE 4: RECOMMENDATIONS
+        let slide4 = pptx.addSlide();
+        slide4.background = { color: '0B0F17' };
+        slide4.addText('Strategic Action Items', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+
+        const recs = [
+          { t: 'Scale Core Platform Focus', d: 'Prioritize resource allocation toward top-performing channel channels demonstrating the highest organic reach baseline.' },
+          { t: 'Optimize Upload Cadence', d: 'Align posting schedules with active audience windows to ensure maximum exposure within the first 24 hours.' }
+        ];
+
+        recs.forEach((r, idx) => {
+          const posY = 1.4 + (idx * 1.8);
+          slide4.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: posY, w: 8.4, h: 1.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide4.addText(r.t, { x: 1.0, y: posY + 0.2, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
+          slide4.addText(r.d, { x: 1.0, y: posY + 0.55, w: 8.0, h: 0.8, fontFace: 'Arial', fontSize: 9, color: 'E2E8F0' });
+        });
+      });
+
+      pptx.writeFile({ fileName: `SocioNexus_Report_${new Date().toISOString().slice(0,10)}.pptx` });
+      window.closeModal('modal-report');
     };
 
     window.closeModal = function(id) {
