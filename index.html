@@ -169,7 +169,7 @@
         <span>Export CSV</span>
       </button>
 
-      <button onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-cyan-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+      <button id="desktop-report-button" onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-cyan-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
         <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
         <span>Executive Presentation</span>
       </button>
@@ -188,15 +188,18 @@
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
+      <button id="share-vault-button" onclick="window.openVaultSharing()" class="hidden px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">Share Vault</button>
+      <span id="signed-in-email" class="max-w-40 truncate text-xs text-slate-400"></span>
+      <button id="sign-out-button" onclick="window.signOut()" class="hidden px-3 py-1.5 text-xs font-medium text-rose-300 hover:text-white bg-slate-800 hover:bg-rose-900/40 rounded-lg transition-colors">Sign out</button>
     </div>
 
     <!-- Mobile Header Quick Actions -->
     <div class="flex md:hidden items-center space-x-2">
-      <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60 relative">
+      <button id="mobile-settings-button" onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60 relative">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator-mobile" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
-      <button onclick="window.openReportModal()" class="p-2 text-cyan-300 bg-slate-800 rounded-xl border border-slate-700">
+      <button id="mobile-report-button" onclick="window.openReportModal()" class="p-2 text-cyan-300 bg-slate-800 rounded-xl border border-slate-700">
         <i data-lucide="presentation" class="w-4 h-4"></i>
       </button>
     </div>
@@ -205,17 +208,53 @@
   <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
 
+    <section id="view-auth" class="mx-auto max-w-md py-8 sm:py-16">
+      <div class="glass-panel rounded-2xl border border-slate-800 p-5 sm:p-7 space-y-5">
+        <div>
+          <h2 class="text-xl font-bold text-white">Sign in to SocioNexus</h2>
+          <p class="mt-1 text-xs leading-relaxed text-slate-400">Your vaults are private. Owners can invite people as viewers or editors.</p>
+        </div>
+        <form id="auth-form" onsubmit="window.signIn(event)" class="space-y-3">
+          <div>
+            <label for="auth-email" class="mb-1 block text-xs font-medium text-slate-300">Email</label>
+            <input id="auth-email" type="email" autocomplete="email" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
+          </div>
+          <div>
+            <label for="auth-password" class="mb-1 block text-xs font-medium text-slate-300">Password</label>
+            <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
+          </div>
+          <p id="auth-message" class="hidden text-xs leading-relaxed" role="status"></p>
+          <div id="vault-setup-required" class="hidden space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-100">
+            <p id="vault-setup-message" class="leading-relaxed"></p>
+            <ol class="list-decimal space-y-1 pl-4 text-amber-100/80">
+              <li>Connect the project URL and anon public key in Cloud Sync Settings, and enable Email sign-in in Supabase Auth.</li>
+              <li>Create the first owner account here and confirm its email if prompted.</li>
+              <li>Open <strong>supabase-vaults.sql</strong> and replace <code>REPLACE_WITH_OWNER_EMAIL</code> with that owner's email.</li>
+              <li>Run the complete script in the same project's Supabase SQL Editor, then refresh.</li>
+            </ol>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="submit" class="rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400">Sign In</button>
+            <button type="button" onclick="window.signUp()" class="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white hover:bg-slate-700">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <!-- VIEW 1: ACCOUNT SELECTION HUB -->
-    <section id="view-account-hub" class="space-y-4 sm:space-y-6">
+    <section id="view-account-hub" class="hidden space-y-4 sm:space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Account Workspace</h2>
           <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Select or create a brand workspace to review metrics.</p>
         </div>
-        <button onclick="window.openAddAccountModal()" class="w-full sm:w-auto px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs sm:text-sm font-semibold rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Add New Account</span>
-        </button>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <select id="vault-selector" onchange="window.switchVault(this.value)" aria-label="Active vault" class="hidden w-full sm:w-56 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none"></select>
+          <button id="add-account-button" onclick="window.openAddAccountModal()" class="w-full sm:w-auto px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs sm:text-sm font-semibold rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add New Account</span>
+          </button>
+        </div>
       </div>
 
       <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-4">
@@ -271,7 +310,7 @@
         </div>
 
         <div class="grid grid-cols-3 gap-2 md:flex md:items-center md:gap-3 w-full md:w-auto">
-          <button onclick="window.openEditAccountModal()" class="px-2.5 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
+          <button data-vault-write onclick="window.openEditAccountModal()" class="px-2.5 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
             <span class="hidden xs:inline">Edit</span>
           </button>
@@ -281,12 +320,12 @@
             <span>CSV</span>
           </button>
           
-          <button onclick="window.confirmDeleteAccount()" class="px-2.5 py-2 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-colors flex items-center justify-center gap-1.5">
+          <button data-vault-write onclick="window.confirmDeleteAccount()" class="px-2.5 py-2 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             <span class="hidden xs:inline">Delete</span>
           </button>
 
-          <button onclick="window.openAddPostModal()" class="col-span-3 md:col-span-1 px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
+          <button id="add-content-button" onclick="window.openAddPostModal()" class="col-span-3 md:col-span-1 px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span>Add Content</span>
           </button>
@@ -390,7 +429,7 @@
             <p id="niche-performance-period" class="text-[10px] sm:text-xs text-slate-400 mt-0.5"></p>
             <p class="text-[10px] text-slate-500 mt-0.5">Interactions include likes, comments, shares, and saves. Rate = interactions ÷ impressions.</p>
           </div>
-          <button onclick="window.openNicheManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
+          <button data-vault-write onclick="window.openNicheManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
             <i data-lucide="tags" class="w-3.5 h-3.5"></i>Manage Niche List
           </button>
         </div>
@@ -411,7 +450,7 @@
             <p id="viewer-location-account" class="text-[10px] sm:text-xs text-slate-400 mt-0.5"></p>
             <p class="text-[10px] text-slate-500 mt-0.5">Audience percentages entered manually; not calculated from content data.</p>
           </div>
-          <button onclick="window.openViewerLocationManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
+          <button data-vault-write onclick="window.openViewerLocationManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
             <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>Manage Countries
           </button>
         </div>
@@ -535,17 +574,17 @@
 
   <!-- BOTTOM MOBILE ACTION NAV -->
   <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around">
-    <button onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
+    <button id="bottom-hub-button" onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
       <i data-lucide="layout-grid" class="w-5 h-5"></i>
       <span>Workspaces</span>
     </button>
-    <button onclick="window.openAddPostModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-cyan-400">
+    <button data-vault-write onclick="window.openAddPostModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-cyan-400">
       <div class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center -mt-4 shadow-lg shadow-cyan-500/30">
         <i data-lucide="plus" class="w-5 h-5 stroke-[2.5]"></i>
       </div>
       <span>Add Content</span>
     </button>
-    <button onclick="window.openReportModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-cyan-300 min-h-[44px] justify-center">
+    <button id="bottom-report-button" onclick="window.openReportModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-cyan-300 min-h-[44px] justify-center">
       <i data-lucide="presentation" class="w-5 h-5"></i>
       <span>Presentation</span>
     </button>
@@ -620,7 +659,7 @@
         <div>
           <div class="flex items-center justify-between gap-2 mb-1">
             <label for="post-niche" class="block text-xs font-medium text-slate-300">Niche</label>
-            <button type="button" onclick="window.openNicheManager()" class="text-[10px] font-medium text-cyan-300 hover:text-cyan-200">Manage niche list</button>
+            <button data-vault-write type="button" onclick="window.openNicheManager()" class="text-[10px] font-medium text-cyan-300 hover:text-cyan-200">Manage niche list</button>
           </div>
           <select id="post-niche" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none"></select>
         </div>
@@ -749,6 +788,45 @@
     </div>
   </div>
 
+  <div id="modal-vault-sharing" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-vault-sharing')">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white">Share Vault</h3>
+          <p id="vault-sharing-title" class="text-[11px] text-slate-400 mt-1"></p>
+        </div>
+        <button onclick="window.closeModal('modal-vault-sharing')" class="text-slate-400 hover:text-white" aria-label="Close vault sharing"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <p id="vault-sharing-message" class="hidden text-xs leading-relaxed" role="status"></p>
+      <p class="text-[11px] leading-relaxed text-slate-400">Invitations are stored in this vault; this browser app does not send email. Tell invitees to create an account or sign in using the invited email address.</p>
+      <form onsubmit="window.inviteVaultMember(event)" class="grid grid-cols-1 sm:grid-cols-[1fr_120px_auto] gap-2 items-end">
+        <div>
+          <label for="vault-invite-email" class="block text-xs font-medium text-slate-300 mb-1">Invite by email</label>
+          <input id="vault-invite-email" type="email" required placeholder="teammate@example.com" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+        </div>
+        <div>
+          <label for="vault-invite-role" class="block text-xs font-medium text-slate-300 mb-1">Role</label>
+          <select id="vault-invite-role" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+            <option value="viewer">Viewer</option>
+            <option value="editor">Editor</option>
+          </select>
+        </div>
+        <button type="submit" class="min-h-[40px] px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl">Invite</button>
+      </form>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Vault members</p>
+        <div id="vault-member-list" class="space-y-2"></div>
+      </div>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Pending invitations</p>
+        <div id="vault-pending-invites" class="space-y-2"></div>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="window.closeModal('modal-vault-sharing')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Done</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -758,6 +836,7 @@
         <button onclick="window.closeModal('modal-settings')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="space-y-3">
+        <p class="text-[11px] leading-relaxed text-slate-400">Use the Supabase project URL and anon public key. Changing projects only reconnects the app; it does not copy vault data between projects.</p>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Project URL</label>
           <input type="text" id="cfg-url" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
@@ -769,7 +848,7 @@
       </div>
       <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
         <button type="button" onclick="window.closeModal('modal-settings')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
-        <button onclick="window.saveSupabaseSettings()" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Connect & Sync</button>
+        <button onclick="window.saveSupabaseSettings()" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Connect & Reload</button>
       </div>
     </div>
   </div>
@@ -852,6 +931,10 @@
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
 
     const state = {
+      authUser: null,
+      vaults: [],
+      activeVaultId: null,
+      activeVaultRole: null,
       accounts: [],
       posts: [],
       niches: [],
@@ -875,7 +958,9 @@
     let engagementChartInstance = null;
 
     window.navigateToHub = function() {
+      if (!state.authUser || !state.activeVaultId) return;
       state.currentAccountId = null;
+      document.getElementById('view-auth').classList.add('hidden');
       document.getElementById('view-account-hub').classList.remove('hidden');
       document.getElementById('view-dashboard').classList.add('hidden');
       document.getElementById('header-account-badge').classList.add('hidden');
@@ -883,23 +968,29 @@
     };
 
     window.openAccountWorkspace = function(accountId) {
+      if (!state.authUser || !state.activeVaultId) return;
       state.currentAccountId = accountId;
       state.contentPage = 1;
       document.getElementById('view-account-hub').classList.add('hidden');
       document.getElementById('view-dashboard').classList.remove('hidden');
       
       const acc = state.accounts.find(a => a.id === accountId);
-      if (acc) {
+      if (acc && String(acc.vault_id) === String(state.activeVaultId)) {
         document.getElementById('current-account-title').innerText = acc.name;
         document.getElementById('current-account-niche').innerText = acc.niche;
         document.getElementById('header-account-name').innerText = acc.name;
         document.getElementById('header-account-badge').classList.remove('hidden');
         document.getElementById('header-account-badge').classList.add('flex');
       }
+      if (!acc || String(acc.vault_id) !== String(state.activeVaultId)) return window.navigateToHub();
+      document.getElementById('view-auth').classList.add('hidden');
+      document.getElementById('view-account-hub').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.remove('hidden');
       renderDashboard();
     };
 
     window.openAddAccountModal = function() {
+      if (!canEditActiveVault()) return;
       document.getElementById('modal-account-title').innerText = "Add New Account";
       document.getElementById('account-id').value = "";
       document.getElementById('account-name').value = "";
@@ -909,6 +1000,7 @@
     };
 
     window.openEditAccountModal = function() {
+      if (!canEditActiveVault()) return;
       const acc = state.accounts.find(a => a.id === state.currentAccountId);
       if (!acc) return;
       document.getElementById('modal-account-title').innerText = "Edit Account";
@@ -922,24 +1014,31 @@
 
     window.saveAccount = async function(e) {
       e.preventDefault();
+      if (!canEditActiveVault()) return;
       const id = document.getElementById('account-id').value || 'acc-' + Date.now();
       const name = document.getElementById('account-name').value;
       const niche = document.getElementById('account-niche').value;
       const color = document.getElementById('account-color').value;
 
-      const accObj = { id, name, niche, color };
+      const accObj = { id, name, niche, color, vault_id: state.activeVaultId };
+      if (!supabaseClient) {
+        alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient.from('accounts').upsert(accObj).select('id').single();
+        if (error) throw error;
+        if (!data) throw new Error('Supabase did not confirm the account save.');
+      } catch (err) {
+        console.error('Supabase account save failed:', err);
+        alert(`Could not save this account to the vault. ${err.message}`);
+        return;
+      }
       const idx = state.accounts.findIndex(a => a.id === id);
       if (idx >= 0) state.accounts[idx] = accObj;
       else state.accounts.push(accObj);
 
       saveLocalData();
-
-      if (supabaseClient) {
-        try { 
-          const { error } = await supabaseClient.from('accounts').upsert(accObj); 
-          if (error) console.error("Supabase Save Account Error:", error);
-        } catch(err){ console.warn(err); }
-      }
 
       window.closeModal('modal-account');
       if (state.currentAccountId === id) window.openAccountWorkspace(id);
@@ -947,26 +1046,40 @@
     };
 
     window.confirmDeleteAccount = async function() {
+      if (!canEditActiveVault()) return;
       if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
       const accId = state.currentAccountId;
+      if (!supabaseClient) {
+        alert('Cloud sync is not configured. Connect Supabase before deleting this account.');
+        return;
+      }
+      try {
+        const { error: postsError } = await supabaseClient.from('content_posts')
+          .delete().eq('account_id', accId).eq('vault_id', state.activeVaultId);
+        if (postsError) throw postsError;
+        const { error: locationsError } = await supabaseClient.from('viewer_locations')
+          .delete().eq('account_id', accId).eq('vault_id', state.activeVaultId);
+        if (locationsError) throw locationsError;
+        const { data: deletedAccounts, error: accountError } = await supabaseClient.from('accounts')
+          .delete().eq('id', accId).eq('vault_id', state.activeVaultId).select('id');
+        if (accountError) throw accountError;
+        if (!deletedAccounts?.length) throw new Error('Supabase did not confirm the account deletion.');
+      } catch (err) {
+        console.error('Supabase account deletion failed:', err);
+        alert(`Could not fully delete this account from the vault. ${err.message}`);
+        return;
+      }
       state.accounts = state.accounts.filter(a => a.id !== accId);
       state.posts = state.posts.filter(p => p.account_id !== accId);
       state.viewerLocations = state.viewerLocations.filter(location => String(location.account_id) !== String(accId));
 
       saveLocalData();
 
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('accounts').delete().eq('id', accId);
-          await supabaseClient.from('content_posts').delete().eq('account_id', accId);
-          await supabaseClient.from('viewer_locations').delete().eq('account_id', accId);
-        } catch(err){ console.warn(err); }
-      }
-
       window.navigateToHub();
     };
 
     window.openAddPostModal = function() {
+      if (!canEditActiveVault()) return;
       document.getElementById('form-post').reset();
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
@@ -984,6 +1097,7 @@
     };
 
     window.openEditPostModal = function(postId) {
+      if (!canEditActiveVault()) return;
       const p = state.posts.find(item => item.id === postId);
       if (!p) return;
 
@@ -1010,11 +1124,13 @@
 
     window.savePost = async function(e) {
       e.preventDefault();
+      if (!canEditActiveVault()) return;
       const existingId = document.getElementById('post-id').value;
       const postId = existingId || ('p-' + Date.now());
 
       const postObj = {
         id: postId,
+        vault_id: state.activeVaultId,
         account_id: state.currentAccountId,
         platform: document.getElementById('post-platform').value,
         content_type: document.getElementById('post-content-type').value,
@@ -1031,33 +1147,46 @@
         saves: parseInt(document.getElementById('post-saves').value) || 0
       };
 
+      if (!supabaseClient) {
+        alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
+        return;
+      }
+      try {
+        await upsertPostsToCloud([postObj]);
+      } catch (err) {
+        console.error('Supabase content save failed:', err);
+        alert(`Could not save this content to the vault. ${err.message || 'Check your connection and try again.'}`);
+        return;
+      }
       const idx = state.posts.findIndex(p => p.id === postId);
       if (idx >= 0) state.posts[idx] = postObj;
       else state.posts.push(postObj);
-
       saveLocalData();
-
-      if (supabaseClient) {
-        try {
-          await upsertPostsToCloud([postObj]);
-        } catch (err) {
-          console.warn("Supabase Exception:", err);
-        }
-      }
 
       window.closeModal('modal-post');
       renderDashboard();
     };
 
     window.deletePost = async function(postId) {
+      if (!canEditActiveVault()) return;
       if (!confirm("Delete this content record?")) return;
+      if (!supabaseClient) {
+        alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient.from('content_posts').delete()
+          .eq('id', postId).eq('vault_id', state.activeVaultId).select('id');
+        if (error) throw error;
+        if (!data?.length) throw new Error('Supabase did not confirm the content deletion.');
+      } catch (error) {
+        console.error('Supabase content deletion failed:', error);
+        alert(`Could not delete this content from the vault. ${error.message || 'Check your connection and try again.'}`);
+        return;
+      }
       state.posts = state.posts.filter(p => p.id !== postId);
 
       saveLocalData();
-
-      if (supabaseClient) {
-        try { await supabaseClient.from('content_posts').delete().eq('id', postId); } catch(err){ console.warn(err); }
-      }
 
       renderDashboard();
     };
@@ -1103,49 +1232,13 @@
     window.saveSupabaseSettings = async function() {
       const url = document.getElementById('cfg-url').value.trim();
       const key = document.getElementById('cfg-key').value.trim();
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url) || !key || key === '******') {
+        alert('Enter a valid Supabase project URL and anon public key.');
+        return;
+      }
 
       localStorage.setItem('sn_supabase_url', url);
       localStorage.setItem('sn_supabase_key', key);
-
-      initSupabaseClient();
-
-      if (supabaseClient) {
-        try {
-          if (state.accounts.length > 0) {
-            await supabaseClient.from('accounts').upsert(state.accounts);
-          }
-          if (state.posts.length > 0) {
-            const payload = state.posts.map(p => ({
-              id: p.id,
-              account_id: p.account_id,
-              platform: p.platform,
-              content_type: p.content_type === 'video' ? 'video' : 'feed',
-              niche: p.niche || getPostNiche(p),
-              title: p.title,
-              link: p.link || '',
-              post_date: p.post_date,
-              post_time: p.post_time || '00:00',
-              impressions: p.impressions || 0,
-              reach: p.reach || 0,
-              likes: p.likes || 0,
-              comments: p.comments || 0,
-              shares: p.shares || 0,
-              saves: p.saves || 0
-            }));
-            await upsertPostsToCloud(payload);
-          }
-        } catch (err) {
-          console.warn("Pre-sync cloud upload warning:", err);
-        }
-        try {
-          await upsertViewerLocationsToCloud(state.viewerLocations);
-          setViewerLocationsSyncStatus('synced');
-        } catch (err) {
-          setViewerLocationsSyncStatus('error', err.message);
-          console.error("Pre-sync viewer country upload failed:", err);
-          alert(`Other data was synced, but viewer country data could not be synced. ${err.message}`);
-        }
-      }
 
       window.closeModal('modal-settings');
       location.reload();
@@ -1244,6 +1337,7 @@
     };
 
     window.openReportModal = function() {
+      if (!state.authUser || !state.activeVaultId) return;
       const listContainer = document.getElementById('report-account-list');
       listContainer.innerHTML = '';
 
@@ -1808,13 +1902,12 @@
       lucide.createIcons();
       initSupabaseClient();
       await loadInitialData();
-      renderApp();
     });
 
     function initSupabaseClient() {
       const url = localStorage.getItem('sn_supabase_url') || HARDCODED_URL;
       const key = localStorage.getItem('sn_supabase_key') || HARDCODED_KEY;
-      if (url && key && window.supabase) {
+      if (url && key && key !== '******' && window.supabase) {
         try {
           supabaseClient = window.supabase.createClient(url, key);
           const ind = document.getElementById('sync-indicator');
@@ -1827,64 +1920,316 @@
       }
     }
 
-    async function loadInitialData() {
-      loadLocalStorageData();
+    function setAuthMessage(message, isError = false) {
+      const element = document.getElementById('auth-message');
+      element.textContent = message;
+      element.className = `text-xs leading-relaxed ${isError ? 'text-rose-300' : 'text-emerald-300'}`;
+    }
 
-      if (supabaseClient) {
-        setViewerLocationsSyncStatus('checking');
-        try {
-          const { data: accs, error: accErr } = await supabaseClient.from('accounts').select('*');
-          if (!accErr && accs && accs.length > 0) {
-            state.accounts = accs;
-          } else if (state.accounts.length > 0) {
-            await supabaseClient.from('accounts').upsert(state.accounts);
-          }
+    function showAuthenticationGate(message = '', requiresSetup = false) {
+      document.getElementById('view-auth').classList.remove('hidden');
+      document.getElementById('view-account-hub').classList.add('hidden');
+      document.getElementById('view-dashboard').classList.add('hidden');
+      document.getElementById('vault-setup-required').classList.toggle('hidden', !requiresSetup);
+      document.getElementById('vault-setup-message').textContent = requiresSetup
+        ? 'Your account is signed in, but private vault tables have not been installed yet.'
+        : '';
+      if (message) {
+        setAuthMessage(message, true);
+      }
+      ['share-vault-button', 'mobile-report-button', 'desktop-report-button', 'bottom-report-button',
+        'bottom-hub-button', 'add-account-button', 'add-content-button'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+      });
+      const signedInEmail = document.getElementById('signed-in-email');
+      if (signedInEmail) {
+        signedInEmail.textContent = state.authUser?.email || '';
+        signedInEmail.classList.toggle('hidden', !state.authUser);
+      }
+      document.getElementById('sign-out-button')?.classList.toggle('hidden', !state.authUser);
+      document.querySelectorAll('[data-vault-write]').forEach(element => element.classList.add('hidden'));
+    }
 
-          const { data: pst, error: pstErr } = await supabaseClient.from('content_posts').select('*');
-          if (!pstErr && pst && pst.length > 0) {
-            const localContentTypes = new Map(state.posts.map(post => [String(post.id), post.content_type]));
-            const localNiches = new Map(state.posts.map(post => [String(post.id), post.niche]));
-            state.posts = pst.map(p => ({
-              ...p,
-              content_type: p.content_type === 'video' || localContentTypes.get(String(p.id)) === 'video' ? 'video' : 'feed',
-              niche: p.niche || localNiches.get(String(p.id)) || '',
-              post_date: p.post_date || p.publish_date,
-              post_time: p.post_time || p.publish_time || '00:00',
-              link: p.link || '',
-              impressions: parseInt(p.impressions || p.impression || 0),
-              reach: parseInt(p.reach || 0),
-              likes: parseInt(p.likes || 0),
-              comments: parseInt(p.comments || 0),
-              shares: parseInt(p.shares || 0),
-              saves: parseInt(p.saves || 0)
-            }));
-          } else if (state.posts.length > 0) {
-            const payload = state.posts.map(p => ({
-              id: p.id,
-              account_id: p.account_id,
-              platform: p.platform,
-              content_type: p.content_type === 'video' ? 'video' : 'feed',
-              niche: p.niche || getPostNiche(p),
-              title: p.title,
-              link: p.link || '',
-              post_date: p.post_date,
-              post_time: p.post_time || '00:00',
-              impressions: p.impressions || 0,
-              reach: p.reach || 0,
-              likes: p.likes || 0,
-              comments: p.comments || 0,
-              shares: p.shares || 0,
-              saves: p.saves || 0
-            }));
-            await upsertPostsToCloud(payload);
-          }
+    function canEditActiveVault() {
+      if (state.activeVaultRole === 'owner' || state.activeVaultRole === 'editor') return true;
+      alert('This vault is read-only for your account. Ask its owner for the editor role to make changes.');
+      return false;
+    }
 
-          await loadViewerLocationsFromCloud();
-          saveLocalData();
-        } catch (err) {
-          setViewerLocationsSyncStatus('error', err.message || 'Supabase could not be reached.');
-          console.warn("Cloud load warning, retaining local storage:", err);
+    function updateVaultControls() {
+      const selectors = [document.getElementById('vault-selector')].filter(Boolean);
+      selectors.forEach(select => {
+        select.innerHTML = state.vaults.map(vault =>
+          `<option value="${escapeReportHtml(vault.vault_id)}">${escapeReportHtml(vault.vault_name)} · ${escapeReportHtml(vault.role)}</option>`
+        ).join('');
+        select.value = state.activeVaultId || '';
+        select.classList.toggle('hidden', state.vaults.length <= 1);
+      });
+      document.getElementById('share-vault-button')?.classList.toggle('hidden', state.activeVaultRole !== 'owner');
+      const email = document.getElementById('signed-in-email');
+      if (email) {
+        email.textContent = state.authUser?.email || '';
+        email.classList.toggle('hidden', !state.authUser);
+      }
+      const hasActiveVault = Boolean(state.authUser && state.activeVaultId);
+      document.getElementById('mobile-report-button')?.classList.toggle('hidden', !hasActiveVault);
+      document.getElementById('desktop-report-button')?.classList.toggle('hidden', !hasActiveVault);
+      document.getElementById('bottom-report-button')?.classList.toggle('hidden', !hasActiveVault);
+      document.getElementById('bottom-hub-button')?.classList.toggle('hidden', !hasActiveVault);
+      document.getElementById('sign-out-button')?.classList.toggle('hidden', !state.authUser);
+      document.getElementById('add-account-button')?.classList.toggle('hidden', !canEditActiveVaultQuietly());
+      document.getElementById('add-content-button')?.classList.toggle('hidden', !canEditActiveVaultQuietly());
+      document.querySelectorAll('[data-vault-write]').forEach(element => {
+        element.classList.toggle('hidden', !canEditActiveVaultQuietly());
+      });
+    }
+
+    function canEditActiveVaultQuietly() {
+      return state.activeVaultRole === 'owner' || state.activeVaultRole === 'editor';
+    }
+
+    window.signIn = async function(event) {
+      event.preventDefault();
+      if (!supabaseClient) return setAuthMessage('Supabase is not configured. Open Cloud Sync Settings and enter the project URL and anon public key.', true);
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) return setAuthMessage(error.message, true);
+        if (!data.user) return setAuthMessage('Sign-in succeeded without a user session. Please try again.', true);
+        setAuthMessage('Signed in. Loading your vaults…');
+        await activateAuthenticatedUser(data.user);
+      } catch (error) {
+        console.error('Sign-in request failed:', error);
+        setAuthMessage(`Could not sign in. ${error.message || 'Check your connection and try again.'}`, true);
+      }
+    };
+
+    window.signUp = async function() {
+      if (!supabaseClient) return setAuthMessage('Supabase is not configured. Open Cloud Sync Settings and enter the project URL and anon public key.', true);
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      if (!email || !password || password.length < 8) return setAuthMessage('Enter a valid email address and a password with at least 8 characters.', true);
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) return setAuthMessage(error.message, true);
+        if (!data.session || !data.user) {
+          setAuthMessage('Account created. Confirm your email, then sign in. The first owner must run the vault setup SQL before opening the vault.');
+          return;
         }
+        setAuthMessage('Account created. Loading your vaults…');
+        await activateAuthenticatedUser(data.user);
+      } catch (error) {
+        console.error('Account creation failed:', error);
+        setAuthMessage(`Could not create your account. ${error.message || 'Check your connection and try again.'}`, true);
+      }
+    };
+
+    window.signOut = async function() {
+      if (!supabaseClient) return;
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+      } catch (error) {
+        console.error('Sign out failed:', error);
+        alert(`Could not sign out. ${error.message || 'Check your connection and try again.'}`);
+        return;
+      }
+      state.authUser = null;
+      state.vaults = [];
+      state.activeVaultId = null;
+      state.activeVaultRole = null;
+      state.currentAccountId = null;
+      state.accounts = [];
+      state.posts = [];
+      state.niches = [];
+      state.viewerLocations = [];
+      showAuthenticationGate();
+    };
+
+    async function activateAuthenticatedUser(user) {
+      state.authUser = user;
+      try {
+        const { data: vaults, error } = await supabaseClient.rpc('get_my_vaults');
+        if (error) throw error;
+        if (!Array.isArray(vaults) || vaults.length === 0) {
+          showAuthenticationGate('No vault is available for this account. Ask a vault owner to invite your email.', true);
+          return;
+        }
+        state.vaults = vaults;
+        const activeVault = vaults.find(vault => vault.role === 'owner') || vaults[0];
+        await loadVaultData(activeVault.vault_id);
+        document.getElementById('view-auth').classList.add('hidden');
+        document.getElementById('view-account-hub').classList.remove('hidden');
+        document.getElementById('view-dashboard').classList.add('hidden');
+        updateVaultControls();
+        renderApp();
+      } catch (error) {
+        console.error('Could not load signed-in vaults:', error);
+        const migrationMissing = /get_my_vaults|vault_members|schema cache|does not exist/i.test(error.message || '');
+        showAuthenticationGate(
+          migrationMissing
+            ? 'Your account is signed in, but the vault database setup is missing. Follow the steps below, run the migration, then refresh.'
+            : `Could not load your vault. ${error.message}`,
+          migrationMissing
+        );
+      }
+    }
+
+    window.switchVault = async function(vaultId) {
+      if (!state.vaults.some(vault => String(vault.vault_id) === String(vaultId))) return;
+      try {
+        await loadVaultData(vaultId);
+        state.currentAccountId = null;
+        updateVaultControls();
+        window.navigateToHub();
+      } catch (error) {
+        console.error('Vault switch failed:', error);
+        alert(`Could not open that vault. ${error.message}`);
+      }
+    };
+
+    function setVaultSharingMessage(message, isError = false) {
+      const element = document.getElementById('vault-sharing-message');
+      element.textContent = message;
+      element.className = `text-xs leading-relaxed ${isError ? 'text-rose-300' : 'text-emerald-300'}`;
+    }
+
+    window.openVaultSharing = async function() {
+      if (state.activeVaultRole !== 'owner') return;
+      document.getElementById('vault-sharing-title').textContent =
+        state.vaults.find(vault => String(vault.vault_id) === String(state.activeVaultId))?.vault_name || 'Vault';
+      setVaultSharingMessage('');
+      const modal = document.getElementById('modal-vault-sharing');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      await refreshVaultSharingLists();
+    };
+
+    async function requestVaultManagementRpc(functionName, params, operationLabel) {
+      try {
+        const { data, error } = await supabaseClient.rpc(functionName, params);
+        if (error) throw error;
+        return { data, error: null };
+      } catch (error) {
+        console.error(`${operationLabel} failed:`, error);
+        return { data: null, error };
+      }
+    }
+
+    async function refreshVaultSharingLists() {
+      const membersContainer = document.getElementById('vault-member-list');
+      const invitesContainer = document.getElementById('vault-pending-invites');
+      membersContainer.innerHTML = '<p class="text-xs text-slate-500">Loading members…</p>';
+      invitesContainer.innerHTML = '<p class="text-xs text-slate-500">Loading invitations…</p>';
+      const [membersResult, invitesResult] = await Promise.all([
+        requestVaultManagementRpc('list_vault_members', { target_vault_id: state.activeVaultId }, 'Vault member list'),
+        requestVaultManagementRpc('list_vault_invites', { target_vault_id: state.activeVaultId }, 'Vault invitation list')
+      ]);
+      if (membersResult.error || invitesResult.error) {
+        const error = membersResult.error || invitesResult.error;
+        membersContainer.textContent = 'Could not load vault members.';
+        invitesContainer.textContent = 'Could not load pending invitations.';
+        setVaultSharingMessage(error.message, true);
+        return;
+      }
+      const members = membersResult.data || [];
+      membersContainer.innerHTML = members.length ? members.map(member => `
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+          <span class="min-w-0 break-all text-xs text-white">${escapeReportHtml(member.email)}${String(member.user_id) === String(state.authUser.id) ? ' <span class="text-slate-500">(you)</span>' : ''}</span>
+          <div class="flex items-center gap-2">
+            ${member.role === 'owner'
+              ? '<span class="text-[10px] font-semibold uppercase text-amber-300">Owner</span>'
+              : `<select aria-label="Role for ${escapeReportHtml(member.email)}" onchange="window.updateVaultMemberRole('${escapeReportHtml(member.user_id)}',this.value)" class="px-2 py-1 bg-slate-950 border border-slate-700 rounded-lg text-[11px] text-white"><option value="viewer" ${member.role === 'viewer' ? 'selected' : ''}>Viewer</option><option value="editor" ${member.role === 'editor' ? 'selected' : ''}>Editor</option></select>
+                 <button type="button" onclick="window.removeVaultMember('${escapeReportHtml(member.user_id)}')" class="text-[11px] text-rose-300 hover:text-rose-200">Remove</button>`}
+          </div>
+        </div>`).join('') : '<p class="text-xs text-slate-500">No members listed yet.</p>';
+      const invites = invitesResult.data || [];
+      invitesContainer.innerHTML = invites.length ? invites.map(invite => `
+        <div class="flex items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+          <span class="min-w-0 break-all text-xs text-slate-300">${escapeReportHtml(invite.email)} <span class="text-slate-500">· ${escapeReportHtml(invite.role)}</span></span>
+          <button type="button" onclick="window.cancelVaultInvite('${escapeReportHtml(invite.invite_id)}')" class="shrink-0 text-[11px] text-rose-300 hover:text-rose-200">Cancel</button>
+        </div>`).join('') : '<p class="text-xs text-slate-500">No pending invitations.</p>';
+    }
+
+    window.inviteVaultMember = async function(event) {
+      event.preventDefault();
+      if (state.activeVaultRole !== 'owner') return;
+      const email = document.getElementById('vault-invite-email').value.trim();
+      const role = document.getElementById('vault-invite-role').value;
+      const { data, error } = await requestVaultManagementRpc('invite_to_vault', {
+        target_vault_id: state.activeVaultId,
+        invite_email: email,
+        invite_role: role
+      }, 'Vault invitation');
+      if (error) {
+        setVaultSharingMessage(error.message, true);
+        return;
+      }
+      document.getElementById('vault-invite-email').value = '';
+      setVaultSharingMessage(data === 'member'
+        ? `${email} now has ${role} access.`
+        : `Invitation saved for ${email}. They can sign up with that email and sign in to accept the vault.`);
+      await refreshVaultSharingLists();
+    };
+
+    window.updateVaultMemberRole = async function(userId, role) {
+      const { error } = await requestVaultManagementRpc('set_vault_member_role', {
+        target_vault_id: state.activeVaultId,
+        target_user_id: userId,
+        new_role: role
+      }, 'Vault role update');
+      if (error) {
+        setVaultSharingMessage(error.message, true);
+      } else {
+        setVaultSharingMessage('Member role updated.');
+      }
+      await refreshVaultSharingLists();
+    };
+
+    window.removeVaultMember = async function(userId) {
+      if (!confirm('Remove this person from the vault? They will lose access immediately.')) return;
+      const { error } = await requestVaultManagementRpc('remove_vault_member', {
+        target_vault_id: state.activeVaultId,
+        target_user_id: userId
+      }, 'Vault member removal');
+      if (error) {
+        setVaultSharingMessage(error.message, true);
+      } else {
+        setVaultSharingMessage('Member removed from the vault.');
+      }
+      await refreshVaultSharingLists();
+    };
+
+    window.cancelVaultInvite = async function(inviteId) {
+      const { error } = await requestVaultManagementRpc('cancel_vault_invite', {
+        target_vault_id: state.activeVaultId,
+        target_invite_id: inviteId
+      }, 'Vault invitation cancellation');
+      if (error) {
+        setVaultSharingMessage(error.message, true);
+      } else {
+        setVaultSharingMessage('Invitation cancelled.');
+      }
+      await refreshVaultSharingLists();
+    };
+
+    async function loadInitialData() {
+      if (!supabaseClient) {
+        showAuthenticationGate('Connect the SocioNexus Supabase project in Cloud Sync Settings to sign in.', false);
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        if (!data.session?.user) {
+          showAuthenticationGate();
+          return;
+        }
+        await activateAuthenticatedUser(data.session.user);
+      } catch (error) {
+        console.error('Could not restore Supabase session:', error);
+        showAuthenticationGate(error.message || 'Could not restore your session. Check your connection and try again.', false);
       }
     }
 
@@ -1895,39 +2240,44 @@
       loadLocalStorageViewerLocations();
     }
 
+    function appStorageKey(key, vaultId = state.activeVaultId) {
+      if (!state.authUser || !vaultId) return key;
+      return `${key}:${state.authUser.id}:${vaultId}`;
+    }
+
     function loadLocalStorageAccounts() {
-      const localAccs = localStorage.getItem('sn_accounts');
+      const localAccs = localStorage.getItem(appStorageKey('sn_accounts'));
       if (localAccs) state.accounts = JSON.parse(localAccs);
       else state.accounts = [];
     }
 
     function loadLocalStoragePosts() {
-      const localPosts = localStorage.getItem('sn_posts');
+      const localPosts = localStorage.getItem(appStorageKey('sn_posts'));
       if (localPosts) state.posts = JSON.parse(localPosts);
       else state.posts = [];
     }
 
     function loadLocalStorageNiches() {
-      const localNiches = localStorage.getItem('sn_niches');
+      const localNiches = localStorage.getItem(appStorageKey('sn_niches'));
       const parsedNiches = localNiches ? JSON.parse(localNiches) : [];
       const savedNiches = Array.isArray(parsedNiches)
         ? parsedNiches.filter(niche => typeof niche === 'string' && niche.trim())
         : [];
-      if (localStorage.getItem('sn_niches_initialized') !== 'true') {
+      if (localStorage.getItem(appStorageKey('sn_niches_initialized')) !== 'true') {
         state.niches = Array.from(new Set([
           ...savedNiches,
           ...state.accounts.map(account => String(account.niche || '').trim()),
           ...state.posts.map(post => String(post.niche || '').trim())
         ].filter(Boolean))).sort((a, b) => a.localeCompare(b));
-        localStorage.setItem('sn_niches', JSON.stringify(state.niches));
-        localStorage.setItem('sn_niches_initialized', 'true');
+        localStorage.setItem(appStorageKey('sn_niches'), JSON.stringify(state.niches));
+        localStorage.setItem(appStorageKey('sn_niches_initialized'), 'true');
         return;
       }
       state.niches = savedNiches;
     }
 
     function loadLocalStorageViewerLocations() {
-      const savedLocations = localStorage.getItem('sn_viewer_locations');
+      const savedLocations = localStorage.getItem(appStorageKey('sn_viewer_locations'));
       const parsedLocations = savedLocations ? JSON.parse(savedLocations) : [];
       state.viewerLocations = Array.isArray(parsedLocations)
         ? parsedLocations.filter(location =>
@@ -1945,12 +2295,125 @@
     }
 
     function saveLocalData() {
-      localStorage.setItem('sn_accounts', JSON.stringify(state.accounts));
-      localStorage.setItem('sn_posts', JSON.stringify(state.posts));
-      localStorage.setItem('sn_niches', JSON.stringify(state.niches));
-      localStorage.setItem('sn_niches_initialized', 'true');
-      localStorage.setItem('sn_viewer_locations', JSON.stringify(state.viewerLocations));
-      localStorage.setItem('sn_last_saved_at', new Date().toISOString());
+      localStorage.setItem(appStorageKey('sn_accounts'), JSON.stringify(state.accounts));
+      localStorage.setItem(appStorageKey('sn_posts'), JSON.stringify(state.posts));
+      localStorage.setItem(appStorageKey('sn_niches'), JSON.stringify(state.niches));
+      localStorage.setItem(appStorageKey('sn_niches_initialized'), 'true');
+      localStorage.setItem(appStorageKey('sn_viewer_locations'), JSON.stringify(state.viewerLocations));
+      localStorage.setItem(appStorageKey('sn_last_saved_at'), new Date().toISOString());
+    }
+
+    async function importLegacyLocalData(vault) {
+      if (vault.role !== 'owner' || vault.legacy_import_allowed !== true) return;
+      const marker = 'sn_legacy_vault_imported';
+      if (localStorage.getItem(marker) === 'true') return;
+      const legacy = {
+        accounts: JSON.parse(localStorage.getItem('sn_accounts') || '[]'),
+        posts: JSON.parse(localStorage.getItem('sn_posts') || '[]'),
+        niches: JSON.parse(localStorage.getItem('sn_niches') || '[]'),
+        viewerLocations: JSON.parse(localStorage.getItem('sn_viewer_locations') || '[]')
+      };
+      if (![legacy.accounts, legacy.posts, legacy.niches, legacy.viewerLocations].some(items => Array.isArray(items) && items.length)) {
+        localStorage.setItem(marker, 'true');
+        return;
+      }
+      const accounts = (Array.isArray(legacy.accounts) ? legacy.accounts : []).map(account => ({
+        ...account, vault_id: vault.vault_id
+      }));
+      if (accounts.length) {
+        const { error } = await supabaseClient.from('accounts').upsert(accounts);
+        if (error) throw error;
+      }
+      const posts = (Array.isArray(legacy.posts) ? legacy.posts : []).map(post => ({
+        ...post, vault_id: vault.vault_id, account_id: String(post.account_id)
+      }));
+      if (posts.length) await upsertPostsToCloud(posts);
+      const viewerLocations = (Array.isArray(legacy.viewerLocations) ? legacy.viewerLocations : []).map(location => ({
+        ...location,
+        id: location.id || getViewerLocationId(location.account_id, location.country),
+        vault_id: vault.vault_id,
+        account_id: String(location.account_id)
+      }));
+      if (viewerLocations.length) await upsertViewerLocationsToCloud(viewerLocations);
+      const niches = Array.isArray(legacy.niches) ? legacy.niches.filter(niche => typeof niche === 'string' && niche.trim()) : [];
+      if (niches.length) {
+        const { error } = await supabaseClient.from('vault_niches').upsert(
+          niches.map(niche => ({ vault_id: vault.vault_id, niche: niche.trim(), created_by: state.authUser.id })),
+          { onConflict: 'vault_id,niche' }
+        );
+        if (error) throw error;
+      }
+      localStorage.setItem(marker, 'true');
+    }
+
+    async function loadVaultData(vaultId) {
+      const vault = state.vaults.find(item => String(item.vault_id) === String(vaultId));
+      if (!vault) throw new Error('That vault is not available to your account.');
+      const previous = {
+        activeVaultId: state.activeVaultId,
+        activeVaultRole: state.activeVaultRole,
+        accounts: state.accounts,
+        posts: state.posts,
+        niches: state.niches,
+        viewerLocations: state.viewerLocations,
+        viewerLocationsSyncStatus: state.viewerLocationsSyncStatus
+      };
+      try {
+        state.activeVaultId = vault.vault_id;
+        state.activeVaultRole = vault.role;
+        await importLegacyLocalData(vault);
+        loadLocalStorageData();
+
+        const [accountsResult, postsResult, locationsResult, nichesResult] = await Promise.all([
+          supabaseClient.from('accounts').select('*').eq('vault_id', vaultId),
+          supabaseClient.from('content_posts').select('*').eq('vault_id', vaultId),
+          supabaseClient.from('viewer_locations').select('id, account_id, country, percentage, vault_id').eq('vault_id', vaultId),
+          supabaseClient.from('vault_niches').select('niche').eq('vault_id', vaultId)
+        ]);
+        const resultError = [accountsResult, postsResult, locationsResult, nichesResult].find(result => result.error);
+        if (resultError) throw resultError.error;
+        state.accounts = (accountsResult.data || []).map(account => ({
+          ...account,
+          id: String(account.id),
+          vault_id: String(account.vault_id)
+        }));
+        state.posts = (postsResult.data || []).map(post => ({
+          ...post,
+          id: String(post.id),
+          account_id: String(post.account_id),
+          vault_id: String(post.vault_id),
+          content_type: post.content_type === 'video' ? 'video' : 'feed',
+          niche: post.niche || '',
+          post_date: post.post_date || post.publish_date,
+          post_time: post.post_time || post.publish_time || '00:00',
+          link: post.link || '',
+          impressions: Number(post.impressions || post.impression || 0),
+          reach: Number(post.reach || 0),
+          likes: Number(post.likes || 0),
+          comments: Number(post.comments || 0),
+          shares: Number(post.shares || 0),
+          saves: Number(post.saves || 0)
+        }));
+        state.viewerLocations = (locationsResult.data || []).map(location => ({
+          id: location.id || getViewerLocationId(location.account_id, location.country),
+          account_id: String(location.account_id),
+          country: location.country,
+          percentage: Number(location.percentage)
+        }));
+        state.niches = (nichesResult.data || []).map(row => row.niche).sort((a, b) => a.localeCompare(b));
+        localStorage.setItem(appStorageKey('sn_niches_initialized'), 'true');
+        setViewerLocationsSyncStatus('synced');
+        saveLocalData();
+      } catch (error) {
+        state.activeVaultId = previous.activeVaultId;
+        state.activeVaultRole = previous.activeVaultRole;
+        state.accounts = previous.accounts;
+        state.posts = previous.posts;
+        state.niches = previous.niches;
+        state.viewerLocations = previous.viewerLocations;
+        state.viewerLocationsSyncStatus = previous.viewerLocationsSyncStatus;
+        throw error;
+      }
     }
 
     function getViewerLocationId(accountId, country) {
@@ -1969,74 +2432,31 @@
     async function upsertViewerLocationsToCloud(locations) {
       if (!supabaseClient) throw new Error('Connect Supabase in Cloud Sync Settings to sync across devices.');
       if (!locations.length) return;
-      const { error } = await supabaseClient.from('viewer_locations')
-        .upsert(locations.map(toViewerLocationCloudRow), { onConflict: 'id' });
+      const { data, error } = await supabaseClient.from('viewer_locations')
+        .upsert(locations.map(toViewerLocationCloudRow), { onConflict: 'id' }).select('id');
       if (error) throw new Error(`${error.message}. Ensure the viewer_locations table exists and has the required API permissions.`);
+      if (!Array.isArray(data) || data.length !== locations.length) {
+        throw new Error('Supabase did not confirm saving every viewer country record.');
+      }
     }
 
-    async function deleteViewerLocationsFromCloud(ids) {
+    async function deleteViewerLocationsFromCloud(ids, requireAll = false) {
       if (!supabaseClient) throw new Error('Connect Supabase in Cloud Sync Settings to sync across devices.');
       if (!ids.length) return;
-      const { error } = await supabaseClient.from('viewer_locations').delete().in('id', ids);
+      const { data, error } = await supabaseClient.from('viewer_locations').delete().in('id', ids).select('id');
       if (error) throw new Error(`${error.message}. Ensure the viewer_locations table exists and has the required API permissions.`);
-    }
-
-    async function loadViewerLocationsFromCloud() {
-      const { data, error } = await supabaseClient.from('viewer_locations').select('id, account_id, country, percentage');
-      if (error) {
-        setViewerLocationsSyncStatus('error', `${error.message}. Ensure the viewer_locations table and API permissions are configured.`);
-        console.warn('Viewer country cloud load failed; local viewer country data was retained. Ensure the viewer_locations table exists and has the required API permissions:', error);
-        return;
+      if (requireAll && (!Array.isArray(data) || data.length !== ids.length)) {
+        throw new Error('Supabase did not confirm deleting the viewer country record.');
       }
-      const localLocations = state.viewerLocations.map(toViewerLocationCloudRow);
-      const cloudLocations = Array.isArray(data) ? data.filter(location =>
-        location && location.account_id != null && typeof location.country === 'string' &&
-        Number.isFinite(Number(location.percentage)) && Number(location.percentage) >= 0 && Number(location.percentage) <= 100
-      ).map(location => ({
-        id: location.id || getViewerLocationId(location.account_id, location.country),
-        account_id: String(location.account_id),
-        country: location.country.trim(),
-        percentage: Number(location.percentage)
-      })) : [];
-      const merged = new Map(cloudLocations.map(location => [location.id, location]));
-      const localOnly = localLocations.filter(location => !merged.has(location.id));
-      localOnly.forEach(location => merged.set(location.id, location));
-      state.viewerLocations = Array.from(merged.values());
-      let migrationFailed = false;
-      if (localOnly.length) {
-        try {
-          await upsertViewerLocationsToCloud(localOnly);
-        } catch (syncError) {
-          migrationFailed = true;
-          setViewerLocationsSyncStatus('error', syncError.message);
-          console.warn('Local viewer country data could not be migrated to Supabase; it remains saved in this browser:', syncError);
-        }
-      }
-      if (!migrationFailed) setViewerLocationsSyncStatus('synced');
     }
 
     async function upsertPostsToCloud(posts) {
-      let payload = posts;
-      const missingFields = new Set();
-      while (true) {
-        const { error } = await supabaseClient.from('content_posts').upsert(payload);
-        if (!error) break;
-        const message = String(error.message || '').toLowerCase();
-        const missingField = ['content_type', 'niche'].find(field =>
-          message.includes(field) && (error.code === '42703' || message.includes('column') || message.includes('schema cache'))
-        );
-        if (!missingField || missingFields.has(missingField)) {
-          console.error("Supabase Post Save Error:", error);
-          return;
-        }
-        missingFields.add(missingField);
-        payload = payload.map(post => {
-          const { [missingField]: omitted, ...legacyPost } = post;
-          return legacyPost;
-        });
-      }
-      if (missingFields.size) {
-        console.warn(`Cloud table is missing ${Array.from(missingFields).join(', ')} column${missingFields.size > 1 ? 's' : ''}; this metadata is saved only in this browser.`);
+      if (!supabaseClient) throw new Error('Supabase is not configured.');
+      if (!posts.length) return;
+      const { data, error } = await supabaseClient.from('content_posts').upsert(posts).select('id');
+      if (error) throw error;
+      if (!Array.isArray(data) || data.length !== posts.length) {
+        throw new Error('Supabase did not confirm saving every content record.');
       }
     }
 
@@ -2144,7 +2564,7 @@
     function renderDataStatus(elementId) {
       const container = document.getElementById(elementId);
       if (!container) return;
-      const savedAt = localStorage.getItem('sn_last_saved_at');
+      const savedAt = localStorage.getItem(appStorageKey('sn_last_saved_at'));
       const date = savedAt ? new Date(savedAt) : null;
       const savedLabel = date && !Number.isNaN(date.getTime())
         ? `Snapshot saved ${date.toLocaleString()}`
@@ -2164,6 +2584,7 @@
       renderNichePerformance();
       renderViewerLocations();
       renderCharts(filteredPosts);
+      updateVaultControls();
       const totalPages = Math.max(1, Math.ceil(filteredPosts.length / state.contentPageSize));
       state.contentPage = Math.min(Math.max(state.contentPage, 1), totalPages);
       const pageStart = (state.contentPage - 1) * state.contentPageSize;
@@ -2225,6 +2646,7 @@
     }
 
     window.openNicheManager = function() {
+      if (!canEditActiveVault()) return;
       renderNicheList();
       const modal = document.getElementById('modal-niche-manager');
       modal.classList.remove('hidden');
@@ -2248,13 +2670,27 @@
       lucide.createIcons();
     }
 
-    window.addNicheType = function(event) {
+    window.addNicheType = async function(event) {
       event.preventDefault();
+      if (!canEditActiveVault()) return;
       const input = document.getElementById('niche-type-input');
       const niche = input.value.trim();
       if (!niche) return;
       if (state.niches.some(existing => existing.toLowerCase() === niche.toLowerCase())) {
         alert('This niche is already in the list.');
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient.from('vault_niches').upsert({
+          vault_id: state.activeVaultId,
+          niche,
+          created_by: state.authUser.id
+        }, { onConflict: 'vault_id,niche' }).select('niche').single();
+        if (error) throw error;
+        if (!data) throw new Error('Supabase did not confirm the niche save.');
+      } catch (error) {
+        console.error('Niche cloud save failed:', error);
+        alert(`Could not sync this niche to the vault. ${error.message || 'Check your connection and try again.'}`);
         return;
       }
       state.niches.push(niche);
@@ -2265,10 +2701,21 @@
       if (state.currentAccountId) renderDashboard();
     };
 
-    window.removeNicheType = function(index) {
+    window.removeNicheType = async function(index) {
+      if (!canEditActiveVault()) return;
       const niche = state.niches[index];
       if (niche === undefined) return;
       if (!confirm(`Remove "${niche}" from the niche list? Existing content records will keep this niche.`)) return;
+      try {
+        const { data, error } = await supabaseClient.from('vault_niches').delete()
+          .eq('vault_id', state.activeVaultId).eq('niche', niche).select('niche');
+        if (error) throw error;
+        if (!data?.length) throw new Error('Supabase did not confirm the niche removal.');
+      } catch (error) {
+        console.error('Niche cloud deletion failed:', error);
+        alert(`Could not remove this niche from the vault. ${error.message || 'Check your connection and try again.'}`);
+        return;
+      }
       state.niches.splice(index, 1);
       saveLocalData();
       renderNicheList();
@@ -2276,6 +2723,7 @@
     };
 
     window.openViewerLocationManager = function() {
+      if (!canEditActiveVault()) return;
       const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
       if (!account) return;
       document.getElementById('viewer-location-manager-account').textContent = account.name;
@@ -2328,6 +2776,7 @@
 
     window.saveViewerLocation = async function(event) {
       event.preventDefault();
+      if (!canEditActiveVault()) return;
       const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
       const country = document.getElementById('viewer-location-country').value.trim();
       const percentage = document.getElementById('viewer-location-percentage').valueAsNumber;
@@ -2386,13 +2835,14 @@
     };
 
     window.removeViewerLocation = async function(index) {
+      if (!canEditActiveVault()) return;
       const location = state.viewerLocations[index];
       if (!location || String(location.account_id) !== String(state.currentAccountId)) return;
       if (!confirm(`Remove ${location.country} from this account's viewer locations?`)) return;
       state.viewerLocations.splice(index, 1);
       saveLocalData();
       try {
-        await deleteViewerLocationsFromCloud([location.id || getViewerLocationId(location.account_id, location.country)]);
+        await deleteViewerLocationsFromCloud([location.id || getViewerLocationId(location.account_id, location.country)], true);
         setViewerLocationsSyncStatus('synced');
       } catch (error) {
         setViewerLocationsSyncStatus('error', error.message);
@@ -2696,6 +3146,7 @@
         window.closeModal('modal-calendar-post');
         window.openEditPostModal(post.id);
       };
+      document.getElementById('calendar-post-edit-button').classList.toggle('hidden', !canEditActiveVaultQuietly());
       const modal = document.getElementById('modal-calendar-post');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -2824,10 +3275,10 @@
           <td class="px-4 py-3 text-right text-slate-300">${(p.shares || 0).toLocaleString()}</td>
           <td class="px-4 py-3 text-right text-slate-300">${(p.saves || 0).toLocaleString()}</td>
           <td class="px-4 py-3 text-right font-semibold text-cyan-400">${er}%</td>
-          <td class="px-4 py-3 text-center flex items-center justify-center space-x-2">
-            <button onclick="window.openEditPostModal('${p.id}')" class="text-slate-500 hover:text-cyan-400 transition-colors" title="Edit Post"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-            <button onclick="window.deletePost('${p.id}')" class="text-slate-500 hover:text-rose-400 transition-colors" title="Delete Post"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
-          </td>
+          <td class="px-4 py-3 text-center">${canEditActiveVaultQuietly() ? `<div class="flex items-center justify-center space-x-2">
+            <button onclick="window.openEditPostModal('${escapeReportHtml(p.id)}')" class="text-slate-500 hover:text-cyan-400 transition-colors" title="Edit Post"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="window.deletePost('${escapeReportHtml(p.id)}')" class="text-slate-500 hover:text-rose-400 transition-colors" title="Delete Post"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+          </div>` : '<span class="text-slate-600">Read only</span>'}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -2857,8 +3308,8 @@
               ${p.link ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:underline break-all mt-1 inline-block">Open content link</a>` : ''}
             </div>
             <div class="flex items-center space-x-1 shrink-0">
-              <button onclick="window.openEditPostModal('${p.id}')" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-              <button onclick="window.deletePost('${p.id}')" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+              ${canEditActiveVaultQuietly() ? `<button onclick="window.openEditPostModal('${escapeReportHtml(p.id)}')" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="window.deletePost('${escapeReportHtml(p.id)}')" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>` : ''}
             </div>
           </div>
 
