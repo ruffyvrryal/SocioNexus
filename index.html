@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SocioNexus | Dasbor Analisis Media Sosial Professional</title>
+  <title>SocioNexus | Account-First Social Media Analytics</title>
   
   <!-- SocioNexus SVG Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%230ea5e9'/><stop offset='100%' stop-color='%232563eb'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><path d='M30 35 C30 25, 70 25, 70 40 C70 55, 30 45, 30 60 C30 75, 70 75, 70 65' stroke='white' stroke-width='10' stroke-linecap='round' fill='none'/><circle cx='30' cy='35' r='7' fill='%23a855f7'/><circle cx='70' cy='65' r='7' fill='%2310b981'/></svg>">
@@ -46,7 +46,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
     .glass-panel {
-      background: rgba(17, 24, 39, 0.75);
+      background: rgba(17, 24, 39, 0.7);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -77,30 +77,30 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.0 Specialist</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.0</span>
         </h1>
-        <p class="text-xs text-slate-400">Dasbor Agensi & Spesialis Media Sosial</p>
+        <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
     </div>
 
     <!-- Right Header Actions -->
     <div class="flex items-center space-x-3">
-      <button onclick="window.openReportModal()" class="px-3.5 py-2 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-xl border border-amber-500/20 transition-all flex items-center gap-2 shadow-lg shadow-amber-500/5">
-        <i data-lucide="presentation" class="w-4 h-4 text-amber-400"></i>
-        <span>Unduh Laporan PPTX</span>
+      <button onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg border border-amber-500/20 transition-colors flex items-center gap-1.5">
+        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+        <span>Generate Executive PPTX Report</span>
       </button>
 
       <div id="header-account-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span id="header-account-name" class="font-medium text-white">Akun</span>
+        <span id="header-account-name" class="font-medium text-white">Account</span>
       </div>
 
       <button onclick="window.navigateToHub()" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-        <span>Ruang Kerja</span>
+        <span>Workspaces</span>
       </button>
 
-      <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors relative" title="Pengaturan Sinkronisasi Awan">
+      <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors relative" title="Cloud Sync Settings">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
@@ -114,12 +114,12 @@
     <section id="view-account-hub" class="space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
-          <h2 class="text-2xl font-bold text-white tracking-tight">Pilih Ruang Kerja Akun</h2>
-          <p class="text-sm text-slate-400 mt-1">Pilih profil klien atau brand untuk mengelola performa analitik media sosial.</p>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Select Account Workspace</h2>
+          <p class="text-sm text-slate-400 mt-1">Choose a persona or brand account to view multi-platform performance metrics.</p>
         </div>
         <button onclick="window.openAddAccountModal()" class="self-start md:self-auto px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-medium rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2">
           <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Tambah Akun Baru</span>
+          <span>Add New Account</span>
         </button>
       </div>
 
@@ -128,7 +128,6 @@
 
     <!-- VIEW 2: ACCOUNT DASHBOARD WORKSPACE -->
     <section id="view-dashboard" class="hidden space-y-6">
-      <!-- Workspace Navigation Banner -->
       <div class="glass-panel p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-800">
         <div class="flex items-center space-x-4">
           <button onclick="window.navigateToHub()" class="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
@@ -136,27 +135,27 @@
           </button>
           <div>
             <div class="flex items-center gap-2">
-              <h2 id="current-account-title" class="text-2xl font-bold text-white tracking-tight">Dasbor Analisis</h2>
-              <span id="current-account-niche" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-medium">Kategori</span>
+              <h2 id="current-account-title" class="text-2xl font-bold text-white tracking-tight">Account Dashboard</h2>
+              <span id="current-account-niche" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-medium">Niche</span>
             </div>
-            <p id="current-account-subtitle" class="text-xs text-slate-400 mt-0.5">Metrik gabungan lintas platform media sosial secara real-time</p>
+            <p id="current-account-subtitle" class="text-xs text-slate-400 mt-0.5">Overviewing all aggregated social platform analytics</p>
           </div>
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto justify-end">
           <button onclick="window.openEditAccountModal()" class="px-3 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-            <span>Edit Akun</span>
+            <span>Edit Account</span>
           </button>
           
           <button onclick="window.confirmDeleteAccount()" class="px-3 py-2 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-colors flex items-center gap-1.5">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Hapus</span>
+            <span>Delete</span>
           </button>
 
           <button onclick="window.openAddPostModal()" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Catat Konten</span>
+            <span>Add Content</span>
           </button>
         </div>
       </div>
@@ -166,12 +165,12 @@
         <div class="flex items-center space-x-2">
           <span class="text-xs font-medium text-slate-400 flex items-center gap-1.5">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
-            Rentang Waktu:
+            Timeframe Range:
           </span>
           <div class="flex items-center bg-slate-900/90 rounded-lg p-1 border border-slate-800 text-xs">
-            <button id="tf-all" onclick="window.setTimeframe('all')" class="px-3 py-1 rounded-md transition-colors text-white bg-slate-800">Semua Waktu</button>
-            <button id="tf-weekly" onclick="window.setTimeframe('weekly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Mingguan</button>
-            <button id="tf-monthly" onclick="window.setTimeframe('monthly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Bulanan</button>
+            <button id="tf-all" onclick="window.setTimeframe('all')" class="px-3 py-1 rounded-md transition-colors text-white bg-slate-800">All Time</button>
+            <button id="tf-weekly" onclick="window.setTimeframe('weekly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Weekly</button>
+            <button id="tf-monthly" onclick="window.setTimeframe('monthly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Monthly</button>
           </div>
         </div>
 
@@ -181,18 +180,15 @@
       <!-- PLATFORM TABS -->
       <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto custom-scrollbar">
         <button id="tab-all" onclick="window.selectPlatform('all')" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap">
-          <i data-lucide="layers" class="w-3.5 h-3.5"></i> Semua Platform
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i> All Platforms
         </button>
-        
         <button id="tab-tiktok" onclick="window.selectPlatform('tiktok')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
           <i data-lucide="video" class="w-3.5 h-3.5 text-pink-400"></i> TikTok
         </button>
-        
         <button id="tab-instagram" onclick="window.selectPlatform('instagram')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
           <svg class="w-3.5 h-3.5 text-purple-400 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           Instagram
         </button>
-
         <button id="tab-youtube" onclick="window.selectPlatform('youtube')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
           <svg class="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
           YouTube
@@ -201,28 +197,28 @@
 
       <!-- OVERVIEW METRICS CARDS GRID -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-cyan-500">
-          <span class="text-xs text-slate-400 font-medium">Impresi (Tayangan)</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Impressions (Views)</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-purple-500">
-          <span class="text-xs text-slate-400 font-medium">Jangkauan Unik</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Reach (Unique)</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-reach">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-sky-500">
-          <span class="text-xs text-slate-400 font-medium">Suka (Likes)</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Likes</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-likes">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-violet-500">
-          <span class="text-xs text-slate-400 font-medium">Komentar</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Comments</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-comments">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-emerald-500">
-          <span class="text-xs text-slate-400 font-medium">Bagikan (Shares)</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Shares</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-shares">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1 border-l-4 border-l-amber-500">
-          <span class="text-xs text-slate-400 font-medium">Simpan (Saves)</span>
+        <div class="glass-panel p-4 rounded-xl space-y-1">
+          <span class="text-xs text-slate-400 font-medium">Saves</span>
           <div class="text-xl font-bold text-white tracking-tight" id="metric-saves">0</div>
         </div>
       </div>
@@ -233,9 +229,9 @@
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
-              Trajektori Performa Perubahan
+              Performance Trajectory
             </h3>
-            <span class="text-xs text-slate-400">Tren Impresi & Jangkauan</span>
+            <span class="text-xs text-slate-400">Impressions & Reach Trend</span>
           </div>
           <div class="h-64 relative">
             <canvas id="trendChart"></canvas>
@@ -246,9 +242,9 @@
           <div class="flex items-center justify-between">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
-              Komposisi Interaksi
+              Engagement Mix
             </h3>
-            <span class="text-xs text-slate-400">Distribusi Engagement</span>
+            <span class="text-xs text-slate-400">Interactions</span>
           </div>
           <div class="h-64 relative flex items-center justify-center">
             <canvas id="engagementChart"></canvas>
@@ -262,15 +258,15 @@
           <div>
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
-              Log Catatan Performa Konten
+              Content Performance Log
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Diurutkan berdasarkan tanggal & waktu unggah terbaru</p>
+            <p class="text-xs text-slate-400 mt-0.5">Sorted by Latest Upload Date & Time</p>
           </div>
 
           <div class="flex items-center gap-3 w-full md:w-auto">
             <div class="relative w-full md:w-64">
               <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="text" id="search-input" oninput="window.handleSearchInput(this.value)" placeholder="Cari judul konten, link..." class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none">
+              <input type="text" id="search-input" oninput="window.handleSearchInput(this.value)" placeholder="Search post title, link..." class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none">
             </div>
 
             <div class="hidden sm:flex flex-wrap items-center gap-1.5 text-[10px]">
@@ -288,16 +284,16 @@
             <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
               <tr>
                 <th class="px-4 py-3">Platform</th>
-                <th class="px-4 py-3">Judul / Keterangan</th>
-                <th class="px-4 py-3">Tanggal & Waktu Unggah</th>
-                <th class="px-4 py-3 text-right">Impresi</th>
-                <th class="px-4 py-3 text-right">Jangkauan</th>
-                <th class="px-4 py-3 text-right">Suka</th>
-                <th class="px-4 py-3 text-right">Komentar</th>
-                <th class="px-4 py-3 text-right">Bagikan</th>
-                <th class="px-4 py-3 text-right">Simpan</th>
+                <th class="px-4 py-3">Title / Caption</th>
+                <th class="px-4 py-3">Upload Date & Time</th>
+                <th class="px-4 py-3 text-right">Impressions</th>
+                <th class="px-4 py-3 text-right">Reach</th>
+                <th class="px-4 py-3 text-right">Likes</th>
+                <th class="px-4 py-3 text-right">Comments</th>
+                <th class="px-4 py-3 text-right">Shares</th>
+                <th class="px-4 py-3 text-right">Saves</th>
                 <th class="px-4 py-3 text-right">ER %</th>
-                <th class="px-4 py-3 text-center">Aksi</th>
+                <th class="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody id="posts-table-body" class="divide-y divide-slate-800/60"></tbody>
@@ -311,26 +307,26 @@
   <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 id="modal-account-title" class="text-base font-bold text-white">Tambah Akun Baru</h3>
+        <h3 id="modal-account-title" class="text-base font-bold text-white">Add New Account</h3>
         <button onclick="window.closeModal('modal-account')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="form-account" onsubmit="window.saveAccount(event)" class="space-y-4">
         <input type="hidden" id="account-id">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Nama Akun / Klien</label>
-          <input type="text" id="account-name" required placeholder="Cth: Brand Fashion Utama" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <label class="block text-xs font-medium text-slate-300 mb-1">Account / Brand Name</label>
+          <input type="text" id="account-name" required placeholder="e.g. Alex Rivera" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Kategori Niche</label>
-          <input type="text" id="account-name-niche" id="account-niche" required placeholder="Cth: Teknologi & Gaya Hidup" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <label class="block text-xs font-medium text-slate-300 mb-1">Niche Category</label>
+          <input type="text" id="account-niche" required placeholder="e.g. Tech & Lifestyle" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Warna Akses Profil</label>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Theme Color</label>
           <input type="color" id="account-color" value="#0ea5e9" class="w-full h-9 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer">
         </div>
         <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-          <button type="button" onclick="window.closeModal('modal-account')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Batal</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Simpan Akun</button>
+          <button type="button" onclick="window.closeModal('modal-account')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Save Account</button>
         </div>
       </form>
     </div>
@@ -339,7 +335,7 @@
   <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-lg p-6 rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 id="modal-post-title" class="text-base font-bold text-white">Catat Performa Konten</h3>
+        <h3 id="modal-post-title" class="text-base font-bold text-white">Log Content Performance</h3>
         <button onclick="window.closeModal('modal-post')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <form id="form-post" onsubmit="window.savePost(event)" class="space-y-4">
@@ -354,55 +350,55 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Tanggal Unggah</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Upload Date</label>
             <input type="date" id="post-date" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Waktu Unggah</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Upload Time</label>
             <input type="time" id="post-time" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Judul / Caption Konten</label>
-          <input type="text" id="post-title" required placeholder="Cth: 5 Tips Optimasi Reels Instagram" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <label class="block text-xs font-medium text-slate-300 mb-1">Content Title / Caption</label>
+          <input type="text" id="post-title" required placeholder="e.g. 5 VS Code Tips for Developers" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Tautan / Link Konten (Opsional)</label>
-          <input type="url" id="post-link" placeholder="https://instagram.com/reel/123..." class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <label class="block text-xs font-medium text-slate-300 mb-1">Video / Post URL (Optional)</label>
+          <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Impresi (Views)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Impressions (Views)</label>
             <input type="number" id="post-impressions" min="0" value="0" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Jangkauan (Reach Unik)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Reach (Unique)</label>
             <input type="number" id="post-reach" min="0" value="0" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Suka (Likes)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Likes</label>
             <input type="number" id="post-likes" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Komentar</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Comments</label>
             <input type="number" id="post-comments" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Bagikan (Shares)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Shares</label>
             <input type="number" id="post-shares" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Simpan (Saves)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Saves</label>
             <input type="number" id="post-saves" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
         <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-          <button type="button" onclick="window.closeModal('modal-post')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Batal</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg transition-all">Simpan Rekaman</button>
+          <button type="button" onclick="window.closeModal('modal-post')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg transition-all">Submit Post</button>
         </div>
       </form>
     </div>
@@ -412,23 +408,23 @@
     <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="cloud" class="w-4 h-4 text-cyan-400"></i> Integrasi Cloud Supabase
+          <i data-lucide="cloud" class="w-4 h-4 text-cyan-400"></i> Supabase Cloud Settings
         </h3>
         <button onclick="window.closeModal('modal-settings')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">URL Proyek</label>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Project URL</label>
           <input type="text" id="cfg-url" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Kunci Anon Publik</label>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Anon Public Key</label>
           <input type="password" id="cfg-key" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
       </div>
       <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-        <button type="button" onclick="window.closeModal('modal-settings')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Batal</button>
-        <button onclick="window.saveSupabaseSettings()" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Hubungkan & Sinkronkan</button>
+        <button type="button" onclick="window.closeModal('modal-settings')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="window.saveSupabaseSettings()" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Connect & Sync</button>
       </div>
     </div>
   </div>
@@ -438,37 +434,36 @@
     <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="presentation" class="w-4 h-4 text-amber-400"></i> Ekspor Laporan PPTX Spesialis Sosmed
+          <i data-lucide="presentation" class="w-4 h-4 text-amber-400"></i> Generate Executive PPTX Report
         </h3>
         <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
-      <p class="text-xs text-slate-400">Pilih akun ruang kerja yang ingin dimasukkan ke dalam presentasi laporan eksekutif PowerPoint:</p>
+      <p class="text-xs text-slate-400">Select which workspace accounts you want to include in this PowerPoint report:</p>
 
       <div class="flex items-center justify-between text-xs px-1">
         <label class="flex items-center gap-2 text-cyan-400 cursor-pointer">
           <input type="checkbox" id="report-select-all" onchange="window.toggleReportSelectAll(this.checked)" class="rounded bg-slate-900 border-slate-700 text-cyan-500">
-          <span>Pilih Semua Akun</span>
+          <span>Select All Accounts</span>
         </label>
       </div>
 
       <div id="report-account-list" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar p-1"></div>
 
       <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-        <button type="button" onclick="window.closeModal('modal-report')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Batal</button>
-        <button onclick="window.buildPPTXReport()" class="px-4.5 py-2.5 text-xs bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold rounded-xl shadow-lg transition-all flex items-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i>
-          <span>Unduh File .pptx</span>
+        <button type="button" onclick="window.closeModal('modal-report')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="window.buildPPTXReport()" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 rounded-xl font-bold shadow-lg transition-all flex items-center gap-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Download .pptx</span>
         </button>
       </div>
     </div>
   </div>
 
   <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500">
-    SocioNexus Dashboard &copy; 2026. Dirancang untuk Agensi & Spesialis Media Sosial Profesional.
+    SocioNexus Dashboard &copy; 2026. Built with Tailwind CSS, Chart.js & Supabase Cloud Sync.
   </footer>
 
-  <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     const HARDCODED_URL = "https://utqcoplopcbevtscbaas.supabase.co";
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
@@ -511,7 +506,7 @@
     };
 
     window.openAddAccountModal = function() {
-      document.getElementById('modal-account-title').innerText = "Tambah Akun Baru";
+      document.getElementById('modal-account-title').innerText = "Add New Account";
       document.getElementById('account-id').value = "";
       document.getElementById('account-name').value = "";
       document.getElementById('account-niche').value = "";
@@ -522,7 +517,7 @@
     window.openEditAccountModal = function() {
       const acc = state.accounts.find(a => a.id === state.currentAccountId);
       if (!acc) return;
-      document.getElementById('modal-account-title').innerText = "Edit Akun Workspace";
+      document.getElementById('modal-account-title').innerText = "Edit Account";
       document.getElementById('account-id').value = acc.id;
       document.getElementById('account-name').value = acc.name;
       document.getElementById('account-niche').value = acc.niche;
@@ -558,7 +553,7 @@
     };
 
     window.confirmDeleteAccount = async function() {
-      if (!confirm("Apakah Anda yakin ingin menghapus akun ini beserta seluruh log data kontennya?")) return;
+      if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
       const accId = state.currentAccountId;
       state.accounts = state.accounts.filter(a => a.id !== accId);
       state.posts = state.posts.filter(p => p.account_id !== accId);
@@ -579,7 +574,7 @@
       document.getElementById('form-post').reset();
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
-      document.getElementById('modal-post-title').innerText = "Catat Performa Konten";
+      document.getElementById('modal-post-title').innerText = "Log Content Performance";
       const now = new Date();
       document.getElementById('post-date').value = now.toISOString().split('T')[0];
       document.getElementById('post-time').value = now.toTimeString().slice(0, 5);
@@ -592,7 +587,7 @@
       if (!p) return;
 
       document.getElementById('post-id').value = p.id;
-      document.getElementById('modal-post-title').innerText = "Edit Rekaman Konten";
+      document.getElementById('modal-post-title').innerText = "Edit Content Record";
       document.getElementById('post-platform').value = p.platform || 'tiktok';
       document.getElementById('post-date').value = p.post_date || new Date().toISOString().split('T')[0];
       document.getElementById('post-time').value = p.post_time || '00:00';
@@ -667,7 +662,7 @@
     };
 
     window.deletePost = async function(postId) {
-      if (!confirm("Hapus rekaman konten ini?")) return;
+      if (!confirm("Delete this content record?")) return;
       state.posts = state.posts.filter(p => p.id !== postId);
 
       saveLocalData();
@@ -769,7 +764,7 @@
       listContainer.innerHTML = '';
 
       if (state.accounts.length === 0) {
-        listContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">Belum ada akun yang dibuat.</p>`;
+        listContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">No accounts created yet.</p>`;
       } else {
         state.accounts.forEach(acc => {
           const div = document.createElement('div');
@@ -796,10 +791,10 @@
       document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
     };
 
-    // --- STREAMING_CHUNK:Building High-End Indonesian Social Media Specialist PPTX Exporter... ---
+    // PROFESSIONAL INDONESIAN PPTX REPORT GENERATOR
     window.buildPPTXReport = function() {
       if (typeof PptxGenJS === 'undefined') {
-        alert("Pustaka PPTX sedang dimuat atau tidak tersedia. Silakan periksa koneksi internet Anda.");
+        alert("PPTX Library is loading or unavailable. Please check your network and try again.");
         return;
       }
 
@@ -807,331 +802,254 @@
       const selectedAccIds = selectedBoxes.map(cb => cb.value);
 
       if (selectedAccIds.length === 0) {
-        alert("Silakan pilih minimal satu akun untuk dimasukkan ke dalam laporan.");
+        alert("Please select at least one account to include in the report.");
         return;
       }
 
-      try {
-        let pptx = new PptxGenJS();
-        pptx.layout = 'LAYOUT_16x9';
+      let pptx = new PptxGenJS();
+      pptx.layout = 'LAYOUT_16x9';
 
-        // DESIGN SYSTEM CONSTANTS
-        const C_DARK_BG = '020617';      // Midnight Slate Base
-        const C_CARD_BG = '0F172A';      // Deep Card Container
-        const C_BORDER   = '1E293B';      // Crisp Subtle Border
-        const C_CYAN     = '0EA5E9';      // Primary Brand Cyan
-        const C_VIOLET   = '8B5CF6';      // Secondary Accent Violet
-        const C_EMERALD  = '10B981';      // Success Green
-        const C_AMBER    = 'F59E0B';      // Highlight Gold/Amber
-        const C_WHITE    = 'FFFFFF';      // Pure White Text
-        const C_MUTED    = '94A3B8';      // Subtitle Gray
+      const fmt = (num) => (num || 0).toLocaleString('id-ID');
 
-        // --- SLIDE 1: COVER EXECUTIVE REPORT ---
-        let cover = pptx.addSlide();
-        cover.background = { color: C_DARK_BG };
+      selectedAccIds.forEach(accId => {
+        const acc = state.accounts.find(a => a.id === accId);
+        if (!acc) return;
 
-        // Decorative Brand Accent Blocks
-        cover.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-          x: 0.8, y: 0.8, w: 0.15, h: 5.6, fill: { color: C_CYAN }
+        const accPosts = state.posts.filter(p => p.account_id === accId);
+        const totalPosts = accPosts.length;
+        const totalImp = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
+        const totalReach = accPosts.reduce((a,b) => a + (b.reach || 0), 0);
+        const totalEng = accPosts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
+        const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
+
+        // Group posts into 5 virtual weekly chunks (W1..W5)
+        const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
+        const weeks = [{ posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }];
+        sortedChronological.forEach((p, idx) => {
+          const targetWeek = Math.min(Math.floor((idx / Math.max(1, sortedChronological.length)) * 5), 4);
+          weeks[targetWeek].posts.push(p);
         });
 
-        cover.addText('LAPORAN KINERJA MEDIA SOSIAL', {
-          x: 1.2, y: 1.5, w: '85%', fontFace: 'Helvetica', fontSize: 28, color: C_CYAN, bold: true, charSpacing: 2
+        // -------------------------------------------------------------
+        // SLIDE 1: COVER SLIDE
+        // -------------------------------------------------------------
+        let slide1 = pptx.addSlide();
+        slide1.background = { color: '0B0F17' };
+        slide1.addText('SocioNexus Analytics', { x: 0.8, y: 1.5, w: 11.0, fontFace: 'Helvetica', fontSize: 18, color: '0EA5E9', bold: true });
+        slide1.addText(`Laporan Performa Social Media — ${acc.name}`, { x: 0.8, y: 2.2, w: 11.0, fontFace: 'Helvetica', fontSize: 28, color: 'FFFFFF', bold: true });
+        slide1.addText(`Kategori Niche: ${acc.niche} | Total Konten Log: ${totalPosts} Post`, { x: 0.8, y: 3.2, w: 11.0, fontFace: 'Helvetica', fontSize: 14, color: '9CA3AF' });
+
+        // Executive Summary Card
+        slide1.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 4.0, w: 11.5, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+        slide1.addText('EXECUTIVE SUMMARY', { x: 1.1, y: 4.2, fontFace: 'Helvetica', fontSize: 12, color: 'F59E0B', bold: true });
+        
+        let bestPlat = 'TikTok';
+        let maxPlatImp = -1;
+        ['tiktok', 'instagram', 'youtube'].forEach(p => {
+          const pImp = accPosts.filter(item => item.platform === p).reduce((a,b) => a + (b.impressions || 0), 0);
+          if (pImp > maxPlatImp) { maxPlatImp = pImp; bestPlat = p.toUpperCase(); }
         });
 
-        cover.addText('Analisis Performa Lintas Platform & Strategi Pertumbuhan Brand', {
-          x: 1.2, y: 2.2, w: '85%', fontFace: 'Helvetica', fontSize: 16, color: C_WHITE
+        const execBullets = [
+          `• Total akumulasi jangkauan (${fmt(totalReach)} reach) dan (${fmt(totalImp)} impressions) dicapai melalui ${totalPosts} konten terpublikasi.`,
+          `• ${bestPlat} menjadi pilar platform kontributor jangkauan utama untuk akun ${acc.name}.`,
+          `• Rata-rata tingkat interaksi audiens (Avg ER) berada di angka ${avgEr}%.`
+        ];
+        execBullets.forEach((b, i) => {
+          slide1.addText(b, { x: 1.1, y: 4.6 + (i * 0.4), w: 11.0, fontFace: 'Helvetica', fontSize: 11, color: 'E2E8F0' });
         });
 
-        // Summary Card Box on Cover
-        cover.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-          x: 1.2, y: 3.2, w: 10.8, h: 2.2, fill: { color: C_CARD_BG }, line: { color: C_BORDER, width: 1 }
+        // -------------------------------------------------------------
+        // SLIDE 2: KINERJA KESELURUHAN (BIG NUMBERS)
+        // -------------------------------------------------------------
+        let slide2 = pptx.addSlide();
+        slide2.background = { color: '0B0F17' };
+        slide2.addText('Kinerja Keseluruhan — Metrik Utama', { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
+        slide2.addText('Ringkasan total performa dan akumulasi engagement', { x: 0.8, y: 1.1, fontFace: 'Helvetica', fontSize: 12, color: '9CA3AF' });
+
+        const cards = [
+          { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'konten terpublikasi', color: '0EA5E9' },
+          { title: 'TOTAL IMPRESSION', val: fmt(totalImp), unit: 'akumulasi tayangan', color: 'A855F7' },
+          { title: 'TOTAL REACH', val: fmt(totalReach), unit: 'jangkauan unik', color: '10B981' },
+          { title: 'AVG ER (REACH)', val: `${avgEr}%`, unit: 'rata-rata interaksi', color: 'F59E0B' }
+        ];
+
+        cards.forEach((card, idx) => {
+          const posX = 0.8 + (idx * 2.9);
+          slide2.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.8, w: 2.7, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide2.addText(card.title, { x: posX + 0.2, y: 2.1, fontFace: 'Helvetica', fontSize: 11, color: '9CA3AF', bold: true });
+          slide2.addText(card.val, { x: posX + 0.2, y: 2.6, fontFace: 'Helvetica', fontSize: 24, color: card.color, bold: true });
+          slide2.addText(card.unit, { x: posX + 0.2, y: 3.4, fontFace: 'Helvetica', fontSize: 9, color: '6B7280' });
         });
 
-        const selectedAccNames = selectedAccIds.map(id => {
-          const a = state.accounts.find(acc => acc.id === id);
-          return a ? a.name : '';
-        }).filter(Boolean).join(', ');
+        // -------------------------------------------------------------
+        // SLIDE 3: TREN PERFORMA MINGGUAN (W1-W5)
+        // -------------------------------------------------------------
+        let slide3 = pptx.addSlide();
+        slide3.background = { color: '0B0F17' };
+        slide3.addText('Tren Performa Mingguan (W1–W5)', { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
 
-        cover.addText(`Profil Akun Yang Dianalisis:\n${selectedAccNames}`, {
-          x: 1.5, y: 3.5, w: 10.2, fontFace: 'Helvetica', fontSize: 13, color: C_WHITE, bold: true
-        });
+        const tableRows = [
+          [
+            { text: 'Periode', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+            { text: 'Total Post', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+            { text: 'Impression', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
+            { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
+            { text: 'Pertumbuhan (WoW)', options: { bold: true, fill: '1F2937', color: '10B981' } }
+          ]
+        ];
 
-        cover.addText(`Periode Laporan: ${new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}  |  Diterbitkan Oleh: SocioNexus Agency Studio`, {
-          x: 1.5, y: 4.6, w: 10.2, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-        });
-
-        // --- SLIDES PER SELECTED ACCOUNT ---
-        selectedAccIds.forEach(accId => {
-          const acc = state.accounts.find(a => a.id === accId);
-          if (!acc) return;
-
-          const accPosts = state.posts.filter(p => p.account_id === accId);
-
-          // SLIDE 2: RINGKASAN EKSEKUTIF & KPI KEY PERFORMANCE INDICATORS
-          let slideKpi = pptx.addSlide();
-          slideKpi.background = { color: C_DARK_BG };
-
-          // Header Title
-          slideKpi.addText(`RINGKASAN EKSEKUTIF & KPI — ${acc.name.toUpperCase()}`, {
-            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 18, color: C_WHITE, bold: true
-          });
-          slideKpi.addText(`Kategori Niche: ${acc.niche}  |  Total Konten Terdaftar: ${accPosts.length}`, {
-            x: 0.8, y: 0.9, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-          });
-
-          // Metrics Calculation
-          const totalImp   = accPosts.reduce((a,b) => a + (b.impressions || 0), 0);
-          const totalReach = accPosts.reduce((a,b) => a + (b.reach || 0), 0);
-          const totalLikes = accPosts.reduce((a,b) => a + (b.likes || 0), 0);
-          const totalComm  = accPosts.reduce((a,b) => a + (b.comments || 0), 0);
-          const totalShare = accPosts.reduce((a,b) => a + (b.shares || 0), 0);
-          const totalSave  = accPosts.reduce((a,b) => a + (b.saves || 0), 0);
-          const totalEng   = totalLikes + totalComm + totalShare + totalSave;
-          const avgEr      = totalImp > 0 ? ((totalEng / totalImp) * 100).toFixed(2) : '0.00';
-
-          // 4 Big KPI Cards
-          const kpis = [
-            { label: 'TOTAL IMPRESI (VIEWS)', val: totalImp.toLocaleString('id-ID'), color: C_CYAN, sub: 'Total Tayangan Konten' },
-            { label: 'JANGKAUAN UNIK (REACH)', val: totalReach.toLocaleString('id-ID'), color: C_VIOLET, sub: 'Audiens Unik Terjangkau' },
-            { label: 'TINGKAT INTERAKSI (ER%)', val: `${avgEr}%`, color: C_EMERALD, sub: 'Engagement Rate Terhadap Impresi' },
-            { label: 'TOTAL INTERAKSI GABUNGAN', val: totalEng.toLocaleString('id-ID'), color: C_AMBER, sub: 'Suka, Komentar, Share & Save' }
-          ];
-
-          kpis.forEach((kpi, idx) => {
-            const posX = 0.8 + (idx * 2.95);
-            slideKpi.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-              x: posX, y: 1.3, w: 2.8, h: 1.8, fill: { color: C_CARD_BG }, line: { color: C_BORDER, width: 1 }
-            });
-            slideKpi.addShape(pptx.shapes.RECTANGLE, {
-              x: posX, y: 1.3, w: 2.8, h: 0.1, fill: { color: kpi.color }
-            });
-            slideKpi.addText(kpi.label, {
-              x: posX + 0.15, y: 1.5, w: 2.5, fontFace: 'Helvetica', fontSize: 8, color: C_MUTED, bold: true
-            });
-            slideKpi.addText(kpi.val, {
-              x: posX + 0.15, y: 1.8, w: 2.5, fontFace: 'Helvetica', fontSize: 20, color: C_WHITE, bold: true
-            });
-            slideKpi.addText(kpi.sub, {
-              x: posX + 0.15, y: 2.6, w: 2.5, fontFace: 'Helvetica', fontSize: 8, color: kpi.color
-            });
-          });
-
-          // Detailed Breakdown Card Container
-          slideKpi.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-            x: 0.8, y: 3.4, w: 11.6, h: 3.2, fill: { color: C_CARD_BG }, line: { color: C_BORDER, width: 1 }
-          });
-
-          slideKpi.addText('Rincian Interaksi Audiens Spesifik', {
-            x: 1.1, y: 3.6, fontFace: 'Helvetica', fontSize: 13, color: C_WHITE, bold: true
-          });
-
-          const subMetrics = [
-            { label: 'Suka (Likes)', val: totalLikes, pct: totalEng > 0 ? ((totalLikes/totalEng)*100).toFixed(1) : 0, color: C_CYAN },
-            { label: 'Komentar (Comments)', val: totalComm, pct: totalEng > 0 ? ((totalComm/totalEng)*100).toFixed(1) : 0, color: C_VIOLET },
-            { label: 'Bagikan (Shares)', val: totalShare, pct: totalEng > 0 ? ((totalShare/totalEng)*100).toFixed(1) : 0, color: C_EMERALD },
-            { label: 'Simpan (Saves)', val: totalSave, pct: totalEng > 0 ? ((totalSave/totalEng)*100).toFixed(1) : 0, color: C_AMBER }
-          ];
-
-          subMetrics.forEach((m, i) => {
-            const posY = 4.1 + (i * 0.55);
-            slideKpi.addText(m.label, { x: 1.1, y: posY, w: 2.5, fontFace: 'Helvetica', fontSize: 10, color: C_WHITE });
-            slideKpi.addText(`${m.val.toLocaleString('id-ID')} interaksi (${m.pct}%)`, {
-              x: 3.8, y: posY, w: 3.0, fontFace: 'Helvetica', fontSize: 10, color: m.color, bold: true
-            });
-
-            // Progress Bar Visual Representation
-            slideKpi.addShape(pptx.shapes.RECTANGLE, {
-              x: 7.0, y: posY + 0.05, w: 5.0, h: 0.15, fill: { color: '1E293B' }
-            });
-            const fillW = Math.max(0.1, (m.pct / 100) * 5.0);
-            slideKpi.addShape(pptx.shapes.RECTANGLE, {
-              x: 7.0, y: posY + 0.05, w: fillW, h: 0.15, fill: { color: m.color }
-            });
-          });
-
-          // SLIDE 3: LOG PERFORMA KONTEN TERBAIK PER PLATFORM
-          let slideTable = pptx.addSlide();
-          slideTable.background = { color: C_DARK_BG };
-
-          slideTable.addText(`${acc.name} — LOG KONTEN PERFORMA TINGGI`, {
-            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 18, color: C_WHITE, bold: true
-          });
-          slideTable.addText('Daftar postingan teratas diurutkan berdasarkan volume impresi tertinggi per platform', {
-            x: 0.8, y: 0.9, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-          });
-
-          let startY = 1.3;
-          let tableCount = 0;
-          const platforms = ['tiktok', 'instagram', 'youtube'];
-
-          platforms.forEach(plat => {
-            const platPosts = accPosts
-              .filter(p => p.platform === plat)
-              .sort((a, b) => (b.impressions || 0) - (a.impressions || 0))
-              .slice(0, 3);
-
-            if (platPosts.length > 0 && tableCount < 2) {
-              tableCount++;
-              slideTable.addText(`PLATFORM: ${plat.toUpperCase()}`, {
-                x: 0.8, y: startY, fontFace: 'Helvetica', fontSize: 11, color: C_CYAN, bold: true
-              });
-
-              const rows = [
-                [
-                  { text: 'Judul Konten / Keterangan', options: { bold: true, fill: C_CARD_BG, color: C_WHITE } },
-                  { text: 'Tanggal', options: { bold: true, fill: C_CARD_BG, color: C_WHITE } },
-                  { text: 'Impresi', options: { bold: true, fill: C_CARD_BG, color: C_CYAN } },
-                  { text: 'Jangkauan', options: { bold: true, fill: C_CARD_BG, color: C_VIOLET } },
-                  { text: 'Interaksi', options: { bold: true, fill: C_CARD_BG, color: C_AMBER } },
-                  { text: 'Tingkat ER%', options: { bold: true, fill: C_CARD_BG, color: C_EMERALD } }
-                ]
-              ];
-
-              platPosts.forEach(p => {
-                const eng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
-                const er = p.impressions > 0 ? ((eng / p.impressions) * 100).toFixed(1) + '%' : '0.0%';
-                const titleTxt = p.title ? (p.title.length > 32 ? p.title.slice(0, 32) + '...' : p.title) : 'Konten Tanpa Judul';
-
-                rows.push([
-                  { text: titleTxt, options: { color: C_WHITE } },
-                  { text: `${p.post_date || 'N/A'}`, options: { color: C_MUTED } },
-                  { text: (p.impressions || 0).toLocaleString('id-ID'), options: { color: C_CYAN, bold: true } },
-                  { text: (p.reach || 0).toLocaleString('id-ID'), options: { color: C_VIOLET } },
-                  { text: eng.toLocaleString('id-ID'), options: { color: C_AMBER } },
-                  { text: er, options: { color: C_EMERALD, bold: true } }
-                ]);
-              });
-
-              slideTable.addTable(rows, {
-                x: 0.8, y: startY + 0.3, w: 11.6,
-                colW: [4.2, 1.4, 1.5, 1.5, 1.5, 1.5],
-                fontSize: 9, fontFace: 'Helvetica', fill: '0B0F17',
-                border: { pt: 0.5, color: C_BORDER }
-              });
-
-              startY += (rows.length * 0.38) + 0.5;
-            }
-          });
-
-          if (tableCount === 0) {
-            slideTable.addText('Belum ada data rekaman konten yang dimasukkan pada ruang kerja ini.', {
-              x: 0.8, y: 1.8, fontFace: 'Helvetica', fontSize: 12, color: C_MUTED
-            });
+        let prevReach = 0;
+        weeks.forEach((w, i) => {
+          const wImp = w.posts.reduce((a,b) => a + (b.impressions||0), 0);
+          const wReach = w.posts.reduce((a,b) => a + (b.reach||0), 0);
+          let wowText = '—';
+          if (i > 0 && prevReach > 0) {
+            const diff = ((wReach - prevReach) / prevReach) * 100;
+            wowText = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
           }
+          prevReach = wReach;
 
-          // SLIDE 4: GRAFIK TREN & ANALISIS PERTUMBUHAN
-          let slideCharts = pptx.addSlide();
-          slideCharts.background = { color: C_DARK_BG };
+          tableRows.push([
+            { text: `Minggu ${i+1}`, options: { color: 'FFFFFF' } },
+            { text: fmt(w.posts.length), options: { color: '9CA3AF' } },
+            { text: fmt(wImp), options: { color: '0EA5E9', bold: true } },
+            { text: fmt(wReach), options: { color: 'A855F7', bold: true } },
+            { text: wowText, options: { color: wowText.startsWith('+') ? '10B981' : (wowText === '—' ? '9CA3AF' : 'EF4444') } }
+          ]);
+        });
 
-          slideCharts.addText(`${acc.name} — GRAFIK TREN & PERTUMBUHAN`, {
-            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 18, color: C_WHITE, bold: true
-          });
-          slideCharts.addText('Visualisasi pertumbuhan tayangan impresi dan jangkauan audiens secara kronologis', {
-            x: 0.8, y: 0.9, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-          });
+        slide3.addTable(tableRows, { x: 0.8, y: 1.5, w: 11.5, colW: [2.0, 2.0, 2.5, 2.5, 2.5], fontSize: 11, fontFace: 'Helvetica', fill: '111827', border: { pt: 0.5, color: '1F2937' } });
 
-          const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
-          const validChartPosts = sortedChronological.filter(p => (p.impressions || 0) > 0 || (p.reach || 0) > 0);
+        // -------------------------------------------------------------
+        // SLIDE 4: PLATFORM BATTLE (TikTok vs IG vs YT)
+        // -------------------------------------------------------------
+        let slide4 = pptx.addSlide();
+        slide4.background = { color: '0B0F17' };
+        slide4.addText('Platform Battle: TikTok vs Instagram vs YouTube', { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
 
-          if (validChartPosts.length >= 2) {
-            const chartLabels = validChartPosts.map(p => String(p.post_date || 'N/A'));
-            const chartImp = validChartPosts.map(p => Number(p.impressions || 0));
-            const chartReach = validChartPosts.map(p => Number(p.reach || 0));
+        const platNames = ['tiktok', 'instagram', 'youtube'];
+        platNames.forEach((p, idx) => {
+          const pPosts = accPosts.filter(item => item.platform === p);
+          const pImp = pPosts.reduce((a,b) => a + (b.impressions||0), 0);
+          const pReach = pPosts.reduce((a,b) => a + (b.reach||0), 0);
 
-            const chartData = [
-              { name: "Impresi (Views)", labels: chartLabels, values: chartImp },
-              { name: "Jangkauan (Reach)", labels: chartLabels, values: chartReach }
-            ];
+          const posX = 0.8 + (idx * 3.9);
+          slide4.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.5, w: 3.6, h: 4.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide4.addText(p.toUpperCase(), { x: posX + 0.3, y: 1.8, fontFace: 'Helvetica', fontSize: 18, color: p === 'tiktok' ? 'EC4899' : (p === 'instagram' ? 'A855F7' : 'EF4444'), bold: true });
+          
+          slide4.addText(`• Total Post: ${pPosts.length}`, { x: posX + 0.3, y: 2.5, fontFace: 'Helvetica', fontSize: 12, color: 'E2E8F0' });
+          slide4.addText(`• Impression: ${fmt(pImp)}`, { x: posX + 0.3, y: 3.0, fontFace: 'Helvetica', fontSize: 12, color: '0EA5E9' });
+          slide4.addText(`• Reach: ${fmt(pReach)}`, { x: posX + 0.3, y: 3.5, fontFace: 'Helvetica', fontSize: 12, color: '10B981' });
+        });
 
-            slideCharts.addChart(pptx.ChartType.line, chartData, {
-              x: 0.8, y: 1.3, w: 11.6, h: 5.0,
-              plotArea: { fill: C_CARD_BG },
-              chartColors: [C_CYAN, C_VIOLET],
-              showLegend: true, legendPos: 'b'
-            });
-          } else {
-            // High-End Fallback Card Presentation
-            slideCharts.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-              x: 0.8, y: 1.3, w: 11.6, h: 5.0, fill: { color: C_CARD_BG }, line: { color: C_BORDER, width: 1 }
-            });
-            slideCharts.addText('Ringkasan Metrik Akumulasi Konten', {
-              x: 1.2, y: 1.8, fontFace: 'Helvetica', fontSize: 14, color: C_CYAN, bold: true
-            });
-            slideCharts.addText(`• Total Akumulasi Tayangan Impresi : ${totalImp.toLocaleString('id-ID')}\n• Total Akumulasi Jangkauan Unik : ${totalReach.toLocaleString('id-ID')}\n• Total Interaksi Audiens Gabungan  : ${totalEng.toLocaleString('id-ID')}\n• Total Postingan Yang Terdaftar    : ${accPosts.length} Konten`, {
-              x: 1.2, y: 2.5, w: 10.0, fontFace: 'Helvetica', fontSize: 13, color: C_WHITE
-            });
-            slideCharts.addText('(Catatan Spesialis: Tambahkan minimal 2 postingan dengan metrik impresi untuk mengaktifkan grafik grafik garis)', {
-              x: 1.2, y: 5.5, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-            });
-          }
+        // -------------------------------------------------------------
+        // SLIDES 5-9: DEEP DIVE MINGGU 1 HINGGA 5
+        // -------------------------------------------------------------
+        weeks.forEach((w, i) => {
+          let slideW = pptx.addSlide();
+          slideW.background = { color: '0B0F17' };
+          slideW.addText(`WEEK ${i+1}`, { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 14, color: '0EA5E9', bold: true });
+          slideW.addText(`Deep-Dive Minggu ${i+1}: Analisis Performa`, { x: 0.8, y: 1.0, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
 
-          // SLIDE 5: REKOMENDASI STRATEGIS & ACTION PLAN SPESIALIS SOSMED
-          let slideStrategy = pptx.addSlide();
-          slideStrategy.background = { color: C_DARK_BG };
+          const wImp = w.posts.reduce((a,b) => a + (b.impressions||0), 0);
+          const wReach = w.posts.reduce((a,b) => a + (b.reach||0), 0);
+          const wEng = w.posts.reduce((a,b) => a + (b.likes||0) + (b.comments||0) + (b.shares||0) + (b.saves||0), 0);
+          const wEr = wReach > 0 ? ((wEng / wReach) * 100).toFixed(2) : '0.00';
 
-          slideStrategy.addText(`${acc.name} — REKOMENDASI STRATEGIS SPESIALIS`, {
-            x: 0.8, y: 0.5, fontFace: 'Helvetica', fontSize: 18, color: C_WHITE, bold: true
-          });
-          slideStrategy.addText('Panduan taktis & rencana aksi perbaikan untuk mengoptimalkan algoritma bulan depan', {
-            x: 0.8, y: 0.9, fontFace: 'Helvetica', fontSize: 10, color: C_MUTED
-          });
-
-          // Determine Top Performing Platform
-          let bestPlat = 'TikTok';
-          let maxPlatImp = -1;
-          ['tiktok', 'instagram', 'youtube'].forEach(p => {
-            const pImp = accPosts.filter(item => item.platform === p).reduce((a,b) => a + (b.impressions || 0), 0);
-            if (pImp > maxPlatImp) { maxPlatImp = pImp; bestPlat = p.toUpperCase(); }
-          });
-
-          const strategies = [
-            {
-              title: `1. Pendorong Utama Pertumbuhan (${bestPlat})`,
-              desc: `Platform ${bestPlat} menghasilkan akumulasi impresi tertinggi. Fokuskan 60% alokasi produksi konten mingguan pada platform ini untuk melipatgandakan jangkauan organik.`,
-              color: C_CYAN
-            },
-            {
-              title: '2. Pengoptimalan Format Konten Berdaya Simpan Tinggi',
-              desc: `Tingkat interaksi rata-rata saat ini adalah ${avgEr}%. Prioritaskan format infografis carousel dan video edukasi durasi pendek yang mendorong tindakan "Save" & "Share".`,
-              color: C_AMBER
-            },
-            {
-              title: '3. Konsistensi Jadwal Posting & Jam Kerja Algoritma',
-              desc: 'Gunakan pola unggah yang teratur pada jam sibuk audiens (12.00 - 13.00 WIB & 19.00 - 21.00 WIB) untuk memastikan konsistensi sinyal positif ke algoritma platform.',
-              color: C_EMERALD
-            },
-            {
-              title: '4. Eksekusi Strategi Komunitas & Call To Action (CTA)',
-              desc: 'Tambahkan ajakan bertindak (CTA) yang jelas di 3 detik pertama video untuk meningkatkan siklus retensi audiens serta balasan komentar interaktif.',
-              color: C_VIOLET
-            }
+          const metrics = [
+            { t: 'TOTAL IMPRESSION', v: fmt(wImp) },
+            { t: 'TOTAL REACH', v: fmt(wReach) },
+            { t: 'AVG ER', v: `${wEr}%` },
+            { t: 'TOTAL POSTS', v: w.posts.length }
           ];
 
-          strategies.forEach((st, idx) => {
-            const posY = 1.4 + (idx * 1.25);
-            slideStrategy.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-              x: 0.8, y: posY, w: 11.6, h: 1.1, fill: { color: C_CARD_BG }, line: { color: C_BORDER, width: 1 }
-            });
-            slideStrategy.addShape(pptx.shapes.RECTANGLE, {
-              x: 0.8, y: posY, w: 0.1, h: 1.1, fill: { color: st.color }
-            });
-            slideStrategy.addText(st.title, {
-              x: 1.1, y: posY + 0.15, w: 11.0, fontFace: 'Helvetica', fontSize: 12, color: st.color, bold: true
-            });
-            slideStrategy.addText(st.desc, {
-              x: 1.1, y: posY + 0.45, w: 11.0, fontFace: 'Helvetica', fontSize: 10, color: C_WHITE
-            });
+          metrics.forEach((m, idx) => {
+            const posX = 0.8 + (idx * 2.9);
+            slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.6, w: 2.7, h: 1.4, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+            slideW.addText(m.t, { x: posX + 0.2, y: 1.8, fontFace: 'Helvetica', fontSize: 10, color: '9CA3AF' });
+            slideW.addText(`${m.v}`, { x: posX + 0.2, y: 2.2, fontFace: 'Helvetica', fontSize: 20, color: 'FFFFFF', bold: true });
+          });
+
+          // Highlight Section
+          slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 3.3, w: 11.5, h: 2.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slideW.addText('HIGHLIGHT MINGGUAN', { x: 1.1, y: 3.6, fontFace: 'Helvetica', fontSize: 12, color: 'F59E0B', bold: true });
+          
+          const hLines = [
+            `1. Total ${w.posts.length} konten berhasil dipublikasikan pada minggu ke-${i+1}.`,
+            `2. Mencapai total akumulasi ${fmt(wReach)} reach unik dan ${fmt(wImp)} impressions.`,
+            `3. Rata-rata keterlibatan audiens (ER) berada pada tingkat ${wEr}%.`
+          ];
+          hLines.forEach((hl, idx) => {
+            slideW.addText(hl, { x: 1.1, y: 4.1 + (idx * 0.5), fontFace: 'Helvetica', fontSize: 11, color: 'E2E8F0' });
           });
         });
 
-        const fileName = `SocioNexus_Laporan_Spesialis_Sosmed_${new Date().toISOString().slice(0,10)}.pptx`;
-        pptx.writeFile({ fileName });
-        window.closeModal('modal-report');
-      } catch (err) {
-        console.error("PPTX Generation Error:", err);
-        alert("Gagal membuat laporan PowerPoint. Detail: " + err.message);
-      }
+        // -------------------------------------------------------------
+        // SLIDE 10: CONTENT HALL OF FAME
+        // -------------------------------------------------------------
+        let slide10 = pptx.addSlide();
+        slide10.background = { color: '0B0F17' };
+        slide10.addText('Content Hall of Fame & Perlu Evaluasi', { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
+
+        const topPosts = [...accPosts].sort((a,b) => (b.impressions||0) - (a.impressions||0)).slice(0, 5);
+        slide10.addText('TOP 5 KONTEN PERFORMA TERTINGGI', { x: 0.8, y: 1.3, fontFace: 'Helvetica', fontSize: 12, color: '10B981', bold: true });
+
+        const hallRows = [
+          [
+            { text: 'Platform', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+            { text: 'Judul Konten', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
+            { text: 'Impression', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
+            { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
+            { text: 'Tanggal', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } }
+          ]
+        ];
+
+        topPosts.forEach(p => {
+          hallRows.push([
+            { text: p.platform.toUpperCase(), options: { color: '9CA3AF' } },
+            { text: p.title.length > 35 ? p.title.slice(0, 35) + '...' : p.title, options: { color: 'FFFFFF' } },
+            { text: fmt(p.impressions), options: { color: '0EA5E9', bold: true } },
+            { text: fmt(p.reach), options: { color: 'A855F7' } },
+            { text: p.post_date, options: { color: '9CA3AF' } }
+          ]);
+        });
+
+        slide10.addTable(hallRows, { x: 0.8, y: 1.7, w: 11.5, colW: [1.8, 4.5, 1.8, 1.8, 1.6], fontSize: 10, fontFace: 'Helvetica', fill: '111827', border: { pt: 0.5, color: '1F2937' } });
+
+        // -------------------------------------------------------------
+        // SLIDE 11: REKOMENDASI AKSI
+        // -------------------------------------------------------------
+        let slide11 = pptx.addSlide();
+        slide11.background = { color: '0B0F17' };
+        slide11.addText('Rekomendasi Aksi — Periode Berikutnya', { x: 0.8, y: 0.6, fontFace: 'Helvetica', fontSize: 22, color: 'FFFFFF', bold: true });
+
+        const recs = [
+          { t: '↗ Skalakan Platform Utama', d: `Fokuskan resource pada platform ${bestPlat} yang terbukti menjadi pilar penarik jangkauan terbanyak.` },
+          { t: '★ Seimbangkan Pilar Konten', d: 'Pertahankan porsi konten edukasi dan optimalkan format hook video untuk meningkatkan ER.' },
+          { t: '▲ Optimasi Jadwal Posting', d: 'Evaluasi ulang waktu unggah terbaik guna memaksimalkan jangkuan awal dalam 24 jam pertama.' },
+          { t: '↻ Re-evaluasi Strategi Visual', d: 'Gunakan ulang pilar visual yang memiliki keterlibatan tertinggi pada periode sebelumnya.' }
+        ];
+
+        recs.forEach((r, idx) => {
+          const posX = 0.8 + ((idx % 2) * 5.9);
+          const posY = 1.5 + (Math.floor(idx / 2) * 2.4);
+          slide11.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: posY, w: 5.6, h: 2.1, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
+          slide11.addText(r.t, { x: posX + 0.3, y: posY + 0.3, fontFace: 'Helvetica', fontSize: 14, color: 'F59E0B', bold: true });
+          slide11.addText(r.d, { x: posX + 0.3, y: posY + 0.8, w: 5.0, fontFace: 'Helvetica', fontSize: 10, color: 'E2E8F0' });
+        });
+
+        // -------------------------------------------------------------
+        // SLIDE 12: TERIMA KASIH (CLOSING)
+        // -------------------------------------------------------------
+        let slide12 = pptx.addSlide();
+        slide12.background = { color: '0B0F17' };
+        slide12.addText('Terima Kasih', { x: 1.0, y: 2.5, w: 11.0, fontFace: 'Helvetica', fontSize: 36, color: 'FFFFFF', bold: true, align: 'center' });
+        slide12.addText('Pertanyaan & diskusi lebih lanjut mengenai strategi periode berikutnya', { x: 1.0, y: 3.5, w: 11.0, fontFace: 'Helvetica', fontSize: 14, color: '9CA3AF', align: 'center' });
+      });
+
+      pptx.writeFile({ fileName: `SocioNexus_Executive_Report_${new Date().toISOString().slice(0,10)}.pptx` });
+      window.closeModal('modal-report');
     };
 
     window.closeModal = function(id) {
@@ -1245,7 +1163,7 @@
       if (state.accounts.length === 0) {
         grid.innerHTML = `<div class="col-span-full text-center py-12 glass-panel rounded-2xl border border-slate-800 space-y-3">
           <i data-lucide="folder-plus" class="w-8 h-8 text-slate-500 mx-auto"></i>
-          <p class="text-slate-400 text-xs">Belum ada ruang kerja yang dibuat. Klik tombol <b>Tambah Akun Baru</b> di atas!</p>
+          <p class="text-slate-400 text-xs">No workspaces created yet. Click <b>Add New Account</b> to get started!</p>
         </div>`;
         lucide.createIcons();
         return;
@@ -1261,18 +1179,18 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg" style="background-color: ${acc.color || '#0ea5e9'}">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg" style="background-color: ${acc.color || '#0ea5e9'}">
               ${acc.name.charAt(0)}
             </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Postingan</span>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Posts</span>
           </div>
           <div>
             <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${acc.name}</h3>
             <p class="text-xs text-slate-400">${acc.niche}</p>
           </div>
           <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Total Impresi</span>
-            <span class="font-bold text-white">${totalViews.toLocaleString('id-ID')}</span>
+            <span class="text-slate-400">Total Impressions</span>
+            <span class="font-bold text-white">${totalViews.toLocaleString()}</span>
           </div>
         `;
         grid.appendChild(card);
@@ -1335,12 +1253,12 @@
 
     function renderMetricsCards(posts) {
       const sum = (key) => posts.reduce((a, b) => a + (parseInt(b[key]) || 0), 0);
-      document.getElementById('metric-impressions').innerText = sum('impressions').toLocaleString('id-ID');
-      document.getElementById('metric-reach').innerText = sum('reach').toLocaleString('id-ID');
-      document.getElementById('metric-likes').innerText = sum('likes').toLocaleString('id-ID');
-      document.getElementById('metric-comments').innerText = sum('comments').toLocaleString('id-ID');
-      document.getElementById('metric-shares').innerText = sum('shares').toLocaleString('id-ID');
-      document.getElementById('metric-saves').innerText = sum('saves').toLocaleString('id-ID');
+      document.getElementById('metric-impressions').innerText = sum('impressions').toLocaleString();
+      document.getElementById('metric-reach').innerText = sum('reach').toLocaleString();
+      document.getElementById('metric-likes').innerText = sum('likes').toLocaleString();
+      document.getElementById('metric-comments').innerText = sum('comments').toLocaleString();
+      document.getElementById('metric-shares').innerText = sum('shares').toLocaleString();
+      document.getElementById('metric-saves').innerText = sum('saves').toLocaleString();
     }
 
     function getImpressionBadge(impressions) {
@@ -1349,14 +1267,14 @@
       else if (val < 100) return `<span class="px-2 py-0.5 rounded font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">${val}</span>`;
       else if (val < 500) return `<span class="px-2 py-0.5 rounded font-semibold bg-slate-700/50 text-white border border-slate-600">${val}</span>`;
       else if (val < 1000) return `<span class="px-2 py-0.5 rounded font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">${val}</span>`;
-      else return `<span class="px-2 py-0.5 rounded font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">${val.toLocaleString('id-ID')}</span>`;
+      else return `<span class="px-2 py-0.5 rounded font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">${val.toLocaleString()}</span>`;
     }
 
     function renderTable(posts) {
       const tbody = document.getElementById('posts-table-body');
       tbody.innerHTML = '';
       if (posts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-500 text-xs">Belum ada konten yang dicatat untuk filter ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
         return;
       }
       posts.forEach(p => {
@@ -1364,7 +1282,7 @@
         const er = p.impressions > 0 ? ((totalEng / p.impressions) * 100).toFixed(1) : '0.0';
 
         const titleDisplay = p.link 
-          ? `<a href="${p.link}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Buka Tautan: ${p.link}">
+          ? `<a href="${p.link}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Open Link: ${p.link}">
               <span class="truncate">${p.title}</span>
               <i data-lucide="external-link" class="w-3 h-3 shrink-0"></i>
              </a>`
@@ -1377,15 +1295,15 @@
           <td class="px-4 py-3">${titleDisplay}</td>
           <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${p.post_date} <span class="text-cyan-400 ml-1">${p.post_time || '00:00'}</span></td>
           <td class="px-4 py-3 text-right">${getImpressionBadge(p.impressions)}</td>
-          <td class="px-4 py-3 text-right text-slate-300">${(p.reach || 0).toLocaleString('id-ID')}</td>
-          <td class="px-4 py-3 text-right text-slate-300">${(p.likes || 0).toLocaleString('id-ID')}</td>
-          <td class="px-4 py-3 text-right text-slate-300">${(p.comments || 0).toLocaleString('id-ID')}</td>
-          <td class="px-4 py-3 text-right text-slate-300">${(p.shares || 0).toLocaleString('id-ID')}</td>
-          <td class="px-4 py-3 text-right text-slate-300">${(p.saves || 0).toLocaleString('id-ID')}</td>
+          <td class="px-4 py-3 text-right text-slate-300">${(p.reach || 0).toLocaleString()}</td>
+          <td class="px-4 py-3 text-right text-slate-300">${(p.likes || 0).toLocaleString()}</td>
+          <td class="px-4 py-3 text-right text-slate-300">${(p.comments || 0).toLocaleString()}</td>
+          <td class="px-4 py-3 text-right text-slate-300">${(p.shares || 0).toLocaleString()}</td>
+          <td class="px-4 py-3 text-right text-slate-300">${(p.saves || 0).toLocaleString()}</td>
           <td class="px-4 py-3 text-right font-semibold text-cyan-400">${er}%</td>
           <td class="px-4 py-3 text-center flex items-center justify-center space-x-2">
-            <button onclick="window.openEditPostModal('${p.id}')" class="text-slate-500 hover:text-cyan-400 transition-colors" title="Edit Postingan"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-            <button onclick="window.deletePost('${p.id}')" class="text-slate-500 hover:text-rose-400 transition-colors" title="Hapus Postingan"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+            <button onclick="window.openEditPostModal('${p.id}')" class="text-slate-500 hover:text-cyan-400 transition-colors" title="Edit Post"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="window.deletePost('${p.id}')" class="text-slate-500 hover:text-rose-400 transition-colors" title="Delete Post"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1403,10 +1321,10 @@
       trendChartInstance = new Chart(ctxTrend, {
         type: 'line',
         data: {
-          labels: dates.length ? dates : ['Tidak Ada Data'],
+          labels: dates.length ? dates : ['No Data'],
           datasets: [
             {
-              label: 'Impresi',
+              label: 'Impressions',
               data: impressionsData.length ? impressionsData : [0],
               borderColor: '#0ea5e9',
               backgroundColor: 'rgba(14, 165, 233, 0.1)',
@@ -1414,10 +1332,10 @@
               tension: 0.3
             },
             {
-              label: 'Jangkauan',
+              label: 'Reach',
               data: reachData.length ? reachData : [0],
-              borderColor: '#8b5cf6',
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+              borderColor: '#a855f7',
+              backgroundColor: 'rgba(168, 85, 247, 0.1)',
               fill: true,
               tension: 0.3
             }
@@ -1445,10 +1363,10 @@
       engagementChartInstance = new Chart(ctxEng, {
         type: 'doughnut',
         data: {
-          labels: ['Suka', 'Komentar', 'Bagikan', 'Simpan'],
+          labels: ['Likes', 'Comments', 'Shares', 'Saves'],
           datasets: [{
             data: [totalLikes, totalComments, totalShares, totalSaves],
-            backgroundColor: ['#0ea5e9', '#8b5cf6', '#10b981', '#f59e0b'],
+            backgroundColor: ['#0ea5e9', '#a855f7', '#10b981', '#f59e0b'],
             borderWidth: 0
           }]
         },
@@ -1462,4 +1380,3 @@
   </script>
 </body>
 </html>
-```
