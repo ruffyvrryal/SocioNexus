@@ -77,7 +77,7 @@
       <div>
         <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.2</span>
+          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v3.3</span>
         </h1>
         <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
       </div>
@@ -791,7 +791,7 @@
       document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
     };
 
-    // BULLETPROOF PPTX GENERATOR (PREVENTS REPAIR PROMPT & CORRUPTION)
+    // STRICT OPENXML-COMPLIANT PPTX GENERATOR (PASSES POWERPOINT VALIDATION)
     window.buildPPTXReport = function() {
       if (typeof PptxGenJS === 'undefined') {
         alert("PPTX Library is loading or unavailable. Please check your network and try again.");
@@ -809,7 +809,7 @@
       let pptx = new PptxGenJS();
       pptx.layout = 'LAYOUT_16x9';
 
-      const fmt = (num) => Number(num || 0).toLocaleString('id-ID');
+      const fmt = (num) => String(Number(num || 0).toLocaleString('id-ID'));
 
       selectedAccIds.forEach(accId => {
         const acc = state.accounts.find(a => a.id === accId);
@@ -822,7 +822,7 @@
         const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
         const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
 
-        // Split posts into 5 weekly buckets
+        // Split posts chronologically into 5 weekly buckets
         const sortedChronological = [...accPosts].sort((a,b) => new Date(a.post_date) - new Date(b.post_date));
         const weeks = [{ posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }, { posts: [] }];
         sortedChronological.forEach((p, idx) => {
@@ -830,12 +830,12 @@
           weeks[targetWeek].posts.push(p);
         });
 
-        // SLIDE 1: COVER
+        // SLIDE 1: COVER SLIDE
         let slide1 = pptx.addSlide();
         slide1.background = { color: '0B0F17' };
         slide1.addText('SocioNexus Analytics', { x: 0.8, y: 1.2, w: 11.5, h: 0.5, fontFace: 'Arial', fontSize: 18, color: '0EA5E9', bold: true });
-        slide1.addText(`Laporan Performa Social Media - ${acc.name}`, { x: 0.8, y: 1.8, w: 11.5, h: 1.0, fontFace: 'Arial', fontSize: 26, color: 'FFFFFF', bold: true });
-        slide1.addText(`Kategori Niche: ${acc.niche} | Total Konten Log: ${totalPosts} Post`, { x: 0.8, y: 3.0, w: 11.5, h: 0.5, fontFace: 'Arial', fontSize: 13, color: '9CA3AF' });
+        slide1.addText(`Laporan Performa Social Media - ${String(acc.name)}`, { x: 0.8, y: 1.8, w: 11.5, h: 1.0, fontFace: 'Arial', fontSize: 26, color: 'FFFFFF', bold: true });
+        slide1.addText(`Kategori Niche: ${String(acc.niche)} | Total Konten Log: ${totalPosts} Post`, { x: 0.8, y: 3.0, w: 11.5, h: 0.5, fontFace: 'Arial', fontSize: 13, color: '9CA3AF' });
 
         slide1.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 3.8, w: 11.5, h: 2.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
         slide1.addText('EXECUTIVE SUMMARY', { x: 1.1, y: 4.1, w: 10.0, h: 0.4, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
@@ -877,19 +877,13 @@
           slide2.addText(card.unit, { x: posX + 0.2, y: 3.8, w: 2.3, h: 0.4, fontFace: 'Arial', fontSize: 9, color: '6B7280' });
         });
 
-        // SLIDE 3: TREN MINGGUAN
+        // SLIDE 3: TREN MINGGUAN (STANDARD STRING MATRICES)
         let slide3 = pptx.addSlide();
         slide3.background = { color: '0B0F17' };
         slide3.addText('Tren Performa Mingguan (W1-W5)', { x: 0.8, y: 0.6, w: 11.5, h: 0.6, fontFace: 'Arial', fontSize: 22, color: 'FFFFFF', bold: true });
 
-        const tableRows = [
-          [
-            { text: 'Periode', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-            { text: 'Total Post', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-            { text: 'Impression', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
-            { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
-            { text: 'Pertumbuhan (WoW)', options: { bold: true, fill: '1F2937', color: '10B981' } }
-          ]
+        const table3Data = [
+          ['Periode', 'Total Post', 'Impression', 'Reach', 'Pertumbuhan (WoW)']
         ];
 
         let prevReach = 0;
@@ -903,16 +897,20 @@
           }
           prevReach = wReach;
 
-          tableRows.push([
-            { text: `Minggu ${i+1}`, options: { color: 'FFFFFF' } },
-            { text: fmt(w.posts.length), options: { color: '9CA3AF' } },
-            { text: fmt(wImp), options: { color: '0EA5E9', bold: true } },
-            { text: fmt(wReach), options: { color: 'A855F7', bold: true } },
-            { text: wowText, options: { color: wowText.startsWith('+') ? '10B981' : (wowText === '-' ? '9CA3AF' : 'EF4444') } }
+          table3Data.push([
+            `Minggu ${i+1}`,
+            fmt(w.posts.length),
+            fmt(wImp),
+            fmt(wReach),
+            wowText
           ]);
         });
 
-        slide3.addTable(tableRows, { x: 0.8, y: 1.5, w: 11.5, colW: [2.0, 2.0, 2.5, 2.5, 2.5], fontSize: 10, fontFace: 'Arial', fill: '111827', border: { pt: 0.5, color: '1F2937' } });
+        slide3.addTable(table3Data, {
+          x: 0.8, y: 1.5, w: 11.5, colW: [2.0, 2.0, 2.5, 2.5, 2.5],
+          fontSize: 11, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
+          border: { pt: 0.5, color: '1F2937' }, align: 'center'
+        });
 
         // SLIDE 4: PLATFORM BATTLE
         let slide4 = pptx.addSlide();
@@ -950,14 +948,14 @@
             { t: 'TOTAL IMPRESSION', v: fmt(wImp) },
             { t: 'TOTAL REACH', v: fmt(wReach) },
             { t: 'AVG ER', v: `${wEr}%` },
-            { t: 'TOTAL POSTS', v: w.posts.length }
+            { t: 'TOTAL POSTS', v: String(w.posts.length) }
           ];
 
           metrics.forEach((m, idx) => {
             const posX = 0.8 + (idx * 2.9);
             slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: posX, y: 1.6, w: 2.7, h: 1.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
             slideW.addText(m.t, { x: posX + 0.2, y: 1.8, w: 2.3, h: 0.3, fontFace: 'Arial', fontSize: 10, color: '9CA3AF' });
-            slideW.addText(`${m.v}`, { x: posX + 0.2, y: 2.2, w: 2.3, h: 0.6, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+            slideW.addText(m.v, { x: posX + 0.2, y: 2.2, w: 2.3, h: 0.6, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
           });
 
           slideW.addShape(pptx.shapes.ROUNDED_RECTANGLE, { x: 0.8, y: 3.4, w: 11.5, h: 2.8, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
@@ -981,27 +979,25 @@
         const topPosts = [...accPosts].sort((a,b) => (Number(b.impressions)||0) - (Number(a.impressions)||0)).slice(0, 5);
         slide10.addText('TOP 5 KONTEN PERFORMA TERTINGGI', { x: 0.8, y: 1.3, w: 11.5, h: 0.4, fontFace: 'Arial', fontSize: 12, color: '10B981', bold: true });
 
-        const hallRows = [
-          [
-            { text: 'Platform', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-            { text: 'Judul Konten', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } },
-            { text: 'Impression', options: { bold: true, fill: '1F2937', color: '0EA5E9' } },
-            { text: 'Reach', options: { bold: true, fill: '1F2937', color: 'A855F7' } },
-            { text: 'Tanggal', options: { bold: true, fill: '1F2937', color: 'FFFFFF' } }
-          ]
+        const hallTableData = [
+          ['Platform', 'Judul Konten', 'Impression', 'Reach', 'Tanggal']
         ];
 
         topPosts.forEach(p => {
-          hallRows.push([
-            { text: String(p.platform).toUpperCase(), options: { color: '9CA3AF' } },
-            { text: p.title.length > 35 ? p.title.slice(0, 35) + '...' : p.title, options: { color: 'FFFFFF' } },
-            { text: fmt(p.impressions), options: { color: '0EA5E9', bold: true } },
-            { text: fmt(p.reach), options: { color: 'A855F7' } },
-            { text: String(p.post_date), options: { color: '9CA3AF' } }
+          hallTableData.push([
+            String(p.platform).toUpperCase(),
+            p.title.length > 35 ? p.title.slice(0, 35) + '...' : String(p.title),
+            fmt(p.impressions),
+            fmt(p.reach),
+            String(p.post_date)
           ]);
         });
 
-        slide10.addTable(hallRows, { x: 0.8, y: 1.8, w: 11.5, colW: [1.8, 4.5, 1.8, 1.8, 1.6], fontSize: 10, fontFace: 'Arial', fill: '111827', border: { pt: 0.5, color: '1F2937' } });
+        slide10.addTable(hallTableData, {
+          x: 0.8, y: 1.8, w: 11.5, colW: [1.8, 4.5, 1.8, 1.8, 1.6],
+          fontSize: 10, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
+          border: { pt: 0.5, color: '1F2937' }
+        });
 
         // SLIDE 11: REKOMENDASI AKSI
         let slide11 = pptx.addSlide();
