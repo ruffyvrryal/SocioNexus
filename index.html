@@ -529,6 +529,14 @@
 
         <!-- Mobile Card List View -->
         <div id="posts-mobile-cards" class="md:hidden p-3 space-y-3"></div>
+        <div id="content-log-pagination" class="hidden border-t border-slate-800 px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p id="content-log-pagination-summary" class="text-[11px] text-slate-400"></p>
+          <div class="flex items-center justify-end gap-2">
+            <button id="content-log-previous" type="button" onclick="window.changeContentPage(-1)" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 border border-slate-700 rounded-lg hover:text-white disabled:opacity-40 disabled:cursor-not-allowed">Previous</button>
+            <span id="content-log-page-label" class="min-w-16 text-center text-[11px] text-slate-400"></span>
+            <button id="content-log-next" type="button" onclick="window.changeContentPage(1)" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 border border-slate-700 rounded-lg hover:text-white disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -852,7 +860,9 @@
       reportFilterMode: 'all',
       comparisonAccountIds: null,
       calendarMonth: '',
-      contentTypeFilter: 'all'
+      contentTypeFilter: 'all',
+      contentPage: 1,
+      contentPageSize: 10
     };
 
     let supabaseClient = null;
@@ -869,6 +879,7 @@
 
     window.openAccountWorkspace = function(accountId) {
       state.currentAccountId = accountId;
+      state.contentPage = 1;
       document.getElementById('view-account-hub').classList.add('hidden');
       document.getElementById('view-dashboard').classList.remove('hidden');
       
@@ -1046,11 +1057,13 @@
 
     window.handleSearchInput = function(query) {
       state.searchQuery = query.toLowerCase().trim();
+      state.contentPage = 1;
       renderDashboard();
     };
 
     window.setTimeframe = function(type) {
       state.timeframe = type;
+      state.contentPage = 1;
       ['all', 'weekly', 'monthly'].forEach(t => {
         const btn = document.getElementById(`tf-${t}`);
         if (t === type) btn.className = "flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-white bg-slate-800 text-center font-semibold";
@@ -1066,11 +1079,13 @@
 
     window.updateDateVal = function(val) {
       state.selectedDateVal = val;
+      state.contentPage = 1;
       renderDashboard();
     };
 
     window.selectPlatform = function(plat) {
       state.currentPlatform = plat;
+      state.contentPage = 1;
       ['all', 'tiktok', 'instagram', 'youtube'].forEach(p => {
         const btn = document.getElementById(`tab-${p}`);
         if (p === plat) {
@@ -2077,15 +2092,50 @@
       renderNichePerformance();
       renderViewerLocations();
       renderCharts(filteredPosts);
-      renderTable(filteredPosts);
-      renderMobileCards(filteredPosts);
+      const totalPages = Math.max(1, Math.ceil(filteredPosts.length / state.contentPageSize));
+      state.contentPage = Math.min(Math.max(state.contentPage, 1), totalPages);
+      const pageStart = (state.contentPage - 1) * state.contentPageSize;
+      const pagePosts = filteredPosts.slice(pageStart, pageStart + state.contentPageSize);
+      renderTable(pagePosts);
+      renderMobileCards(pagePosts);
+      renderContentLogPagination(filteredPosts.length, pageStart, pagePosts.length, totalPages);
       renderContentCalendar();
       lucide.createIcons();
+    }
+
+    window.changeContentPage = function(direction) {
+      const filteredCount = getFilteredPosts().length;
+      const totalPages = Math.max(1, Math.ceil(filteredCount / state.contentPageSize));
+      const nextPage = state.contentPage + direction;
+      if (nextPage < 1 || nextPage > totalPages) return;
+      state.contentPage = nextPage;
+      renderDashboard();
+    };
+
+    function renderContentLogPagination(totalPosts, pageStart, pageCount, totalPages) {
+      const container = document.getElementById('content-log-pagination');
+      const summary = document.getElementById('content-log-pagination-summary');
+      const pageLabel = document.getElementById('content-log-page-label');
+      const previous = document.getElementById('content-log-previous');
+      const next = document.getElementById('content-log-next');
+      if (!container || !summary || !pageLabel || !previous || !next) return;
+      if (totalPages <= 1) {
+        container.classList.add('hidden');
+        container.classList.remove('flex');
+        return;
+      }
+      container.classList.remove('hidden');
+      container.classList.add('flex');
+      summary.textContent = `Showing ${pageStart + 1}–${pageStart + pageCount} of ${totalPosts} posts`;
+      pageLabel.textContent = `Page ${state.contentPage} of ${totalPages}`;
+      previous.disabled = state.contentPage <= 1;
+      next.disabled = state.contentPage >= totalPages;
     }
 
     window.setContentTypeFilter = function(type) {
       if (!['all', 'feed', 'video'].includes(type)) return;
       state.contentTypeFilter = type;
+      state.contentPage = 1;
       renderDashboard();
     };
 
