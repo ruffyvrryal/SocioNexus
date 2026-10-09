@@ -715,6 +715,18 @@
         </div>
         <button onclick="window.closeModal('modal-viewer-location-manager')" class="text-slate-400 hover:text-white" aria-label="Close viewer country manager"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
+      <details class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+        <summary class="cursor-pointer text-[11px] font-medium text-cyan-300">Set up cross-device sync</summary>
+        <p class="mt-2 text-[11px] text-slate-400">Viewer data is saved locally and synced through Supabase. For cross-device sync, create this table in the same Supabase project used by SocioNexus, then give it the same API permissions and row-level security policies as your content data.</p>
+        <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-950 p-3 text-[10px] text-slate-300"><code>create table if not exists public.viewer_locations (
+  id text primary key,
+  account_id text not null,
+  country text not null,
+  percentage numeric(5,2) not null check (percentage &gt;= 0 and percentage &lt;= 100),
+  unique (account_id, country)
+);</code></pre>
+      </details>
+      <p id="viewer-location-sync-status" class="text-[11px] text-slate-400" role="status"></p>
       <form onsubmit="window.saveViewerLocation(event)" class="grid grid-cols-1 sm:grid-cols-[1fr_120px_auto] gap-2 items-end">
         <input id="viewer-location-edit-country" type="hidden">
         <div>
@@ -844,6 +856,7 @@
       posts: [],
       niches: [],
       viewerLocations: [],
+      viewerLocationsSyncStatus: { status: 'local', message: '' },
       currentAccountId: null,
       currentPlatform: 'all',
       timeframe: 'all',
@@ -938,6 +951,7 @@
       const accId = state.currentAccountId;
       state.accounts = state.accounts.filter(a => a.id !== accId);
       state.posts = state.posts.filter(p => p.account_id !== accId);
+      state.viewerLocations = state.viewerLocations.filter(location => String(location.account_id) !== String(accId));
 
       saveLocalData();
 
@@ -945,6 +959,7 @@
         try {
           await supabaseClient.from('accounts').delete().eq('id', accId);
           await supabaseClient.from('content_posts').delete().eq('account_id', accId);
+          await supabaseClient.from('viewer_locations').delete().eq('account_id', accId);
         } catch(err){ console.warn(err); }
       }
 
@@ -1121,6 +1136,14 @@
           }
         } catch (err) {
           console.warn("Pre-sync cloud upload warning:", err);
+        }
+        try {
+          await upsertViewerLocationsToCloud(state.viewerLocations);
+          setViewerLocationsSyncStatus('synced');
+        } catch (err) {
+          setViewerLocationsSyncStatus('error', err.message);
+          console.error("Pre-sync viewer country upload failed:", err);
+          alert(`Other data was synced, but viewer country data could not be synced. ${err.message}`);
         }
       }
 
@@ -1808,6 +1831,7 @@
       loadLocalStorageData();
 
       if (supabaseClient) {
+        setViewerLocationsSyncStatus('checking');
         try {
           const { data: accs, error: accErr } = await supabaseClient.from('accounts').select('*');
           if (!accErr && accs && accs.length > 0) {
@@ -1855,8 +1879,10 @@
             await upsertPostsToCloud(payload);
           }
 
+          await loadViewerLocationsFromCloud();
           saveLocalData();
         } catch (err) {
+          setViewerLocationsSyncStatus('error', err.message || 'Supabase could not be reached.');
           console.warn("Cloud load warning, retaining local storage:", err);
         }
       }
@@ -1910,6 +1936,7 @@
           Number.isFinite(Number(location.percentage)) &&
           Number(location.percentage) >= 0 && Number(location.percentage) <= 100
         ).map(location => ({
+          id: location.id || getViewerLocationId(location.account_id, location.country),
           account_id: String(location.account_id),
           country: location.country.trim(),
           percentage: Number(location.percentage)
@@ -1924,6 +1951,68 @@
       localStorage.setItem('sn_niches_initialized', 'true');
       localStorage.setItem('sn_viewer_locations', JSON.stringify(state.viewerLocations));
       localStorage.setItem('sn_last_saved_at', new Date().toISOString());
+    }
+
+    function getViewerLocationId(accountId, country) {
+      return `vl-${encodeURIComponent(String(accountId))}-${encodeURIComponent(String(country).trim().toLocaleLowerCase())}`;
+    }
+
+    function toViewerLocationCloudRow(location) {
+      return {
+        id: location.id || getViewerLocationId(location.account_id, location.country),
+        account_id: String(location.account_id),
+        country: location.country,
+        percentage: location.percentage
+      };
+    }
+
+    async function upsertViewerLocationsToCloud(locations) {
+      if (!supabaseClient) throw new Error('Connect Supabase in Cloud Sync Settings to sync across devices.');
+      if (!locations.length) return;
+      const { error } = await supabaseClient.from('viewer_locations')
+        .upsert(locations.map(toViewerLocationCloudRow), { onConflict: 'id' });
+      if (error) throw new Error(`${error.message}. Ensure the viewer_locations table exists and has the required API permissions.`);
+    }
+
+    async function deleteViewerLocationsFromCloud(ids) {
+      if (!supabaseClient) throw new Error('Connect Supabase in Cloud Sync Settings to sync across devices.');
+      if (!ids.length) return;
+      const { error } = await supabaseClient.from('viewer_locations').delete().in('id', ids);
+      if (error) throw new Error(`${error.message}. Ensure the viewer_locations table exists and has the required API permissions.`);
+    }
+
+    async function loadViewerLocationsFromCloud() {
+      const { data, error } = await supabaseClient.from('viewer_locations').select('id, account_id, country, percentage');
+      if (error) {
+        setViewerLocationsSyncStatus('error', `${error.message}. Ensure the viewer_locations table and API permissions are configured.`);
+        console.warn('Viewer country cloud load failed; local viewer country data was retained. Ensure the viewer_locations table exists and has the required API permissions:', error);
+        return;
+      }
+      const localLocations = state.viewerLocations.map(toViewerLocationCloudRow);
+      const cloudLocations = Array.isArray(data) ? data.filter(location =>
+        location && location.account_id != null && typeof location.country === 'string' &&
+        Number.isFinite(Number(location.percentage)) && Number(location.percentage) >= 0 && Number(location.percentage) <= 100
+      ).map(location => ({
+        id: location.id || getViewerLocationId(location.account_id, location.country),
+        account_id: String(location.account_id),
+        country: location.country.trim(),
+        percentage: Number(location.percentage)
+      })) : [];
+      const merged = new Map(cloudLocations.map(location => [location.id, location]));
+      const localOnly = localLocations.filter(location => !merged.has(location.id));
+      localOnly.forEach(location => merged.set(location.id, location));
+      state.viewerLocations = Array.from(merged.values());
+      let migrationFailed = false;
+      if (localOnly.length) {
+        try {
+          await upsertViewerLocationsToCloud(localOnly);
+        } catch (syncError) {
+          migrationFailed = true;
+          setViewerLocationsSyncStatus('error', syncError.message);
+          console.warn('Local viewer country data could not be migrated to Supabase; it remains saved in this browser:', syncError);
+        }
+      }
+      if (!migrationFailed) setViewerLocationsSyncStatus('synced');
     }
 
     async function upsertPostsToCloud(posts) {
@@ -2192,6 +2281,7 @@
       document.getElementById('viewer-location-manager-account').textContent = account.name;
       resetViewerLocationForm();
       renderViewerLocationList();
+      renderViewerLocationSyncStatus();
       const modal = document.getElementById('modal-viewer-location-manager');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -2236,7 +2326,7 @@
       document.getElementById('viewer-location-country').focus();
     };
 
-    window.saveViewerLocation = function(event) {
+    window.saveViewerLocation = async function(event) {
       event.preventDefault();
       const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
       const country = document.getElementById('viewer-location-country').value.trim();
@@ -2261,26 +2351,81 @@
           String(location.account_id) === String(account.id) && location.country === originalCountry
         );
         if (!existing) return;
+        const oldCountry = existing.country;
         existing.country = country;
         existing.percentage = percentage;
+        existing.id = getViewerLocationId(account.id, country);
+        saveLocalData();
+        try {
+          await upsertViewerLocationsToCloud([existing]);
+          if (oldCountry.toLowerCase() !== country.toLowerCase()) {
+            await deleteViewerLocationsFromCloud([getViewerLocationId(account.id, oldCountry)]);
+          }
+          setViewerLocationsSyncStatus('synced');
+        } catch (error) {
+          setViewerLocationsSyncStatus('error', error.message);
+          console.error('Viewer country cloud sync failed:', error);
+          alert(`Saved on this device, but viewer country changes could not sync to Supabase. ${error.message}`);
+        }
       } else {
-        state.viewerLocations.push({ account_id: account.id, country, percentage });
+        const location = { id: getViewerLocationId(account.id, country), account_id: String(account.id), country, percentage };
+        state.viewerLocations.push(location);
+        saveLocalData();
+        try {
+          await upsertViewerLocationsToCloud([location]);
+          setViewerLocationsSyncStatus('synced');
+        } catch (error) {
+          setViewerLocationsSyncStatus('error', error.message);
+          console.error('Viewer country cloud sync failed:', error);
+          alert(`Saved on this device, but viewer country data could not sync to Supabase. ${error.message}`);
+        }
       }
-      saveLocalData();
       resetViewerLocationForm();
       renderViewerLocationList();
       renderDashboard();
     };
 
-    window.removeViewerLocation = function(index) {
+    window.removeViewerLocation = async function(index) {
       const location = state.viewerLocations[index];
       if (!location || String(location.account_id) !== String(state.currentAccountId)) return;
       if (!confirm(`Remove ${location.country} from this account's viewer locations?`)) return;
       state.viewerLocations.splice(index, 1);
       saveLocalData();
+      try {
+        await deleteViewerLocationsFromCloud([location.id || getViewerLocationId(location.account_id, location.country)]);
+        setViewerLocationsSyncStatus('synced');
+      } catch (error) {
+        setViewerLocationsSyncStatus('error', error.message);
+        console.error('Viewer country cloud deletion failed:', error);
+        alert(`Removed from this device, but the country could not be removed from Supabase. ${error.message}`);
+      }
       renderViewerLocationList();
       renderDashboard();
     };
+
+    function setViewerLocationsSyncStatus(status, message = '') {
+      state.viewerLocationsSyncStatus = { status, message };
+      renderViewerLocationSyncStatus();
+    }
+
+    function renderViewerLocationSyncStatus() {
+      const element = document.getElementById('viewer-location-sync-status');
+      if (!element) return;
+      const { status, message } = state.viewerLocationsSyncStatus;
+      if (status === 'synced') {
+        element.className = 'text-[11px] text-emerald-300';
+        element.textContent = 'Viewer country data is synced with Supabase for this account.';
+      } else if (status === 'checking') {
+        element.className = 'text-[11px] text-slate-400';
+        element.textContent = 'Checking viewer country sync…';
+      } else if (status === 'error') {
+        element.className = 'text-[11px] text-amber-300';
+        element.textContent = `Saved on this device; cloud sync needs attention. ${message}`;
+      } else {
+        element.className = 'text-[11px] text-amber-300';
+        element.textContent = 'Local only. Connect Supabase to sync viewer country data across devices.';
+      }
+    }
 
     function renderViewerLocations() {
       const tbody = document.getElementById('viewer-location-body');
