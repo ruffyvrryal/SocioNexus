@@ -72,9 +72,17 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    .calendar-day {
+      min-height: 5.5rem;
+    }
+    @media (max-width: 640px) {
+      .calendar-day {
+        min-height: 4.5rem;
+      }
+    }
   </style>
 </head>
-<body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-16 md:pb-0">
+<body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
 
   <!-- TOP HEADER / NAVBAR -->
   <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between">
@@ -147,6 +155,38 @@
         </button>
       </div>
 
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-white">Account Comparison</h3>
+            <p class="text-xs text-slate-400 mt-1">Compare logged performance for a selected month. Choose the accounts and platform to include.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:flex">
+            <label class="text-[10px] text-slate-400">Month
+              <input id="comparison-month" type="month" class="mt-1 block w-full sm:w-36 px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderComparison()">
+            </label>
+            <label class="text-[10px] text-slate-400">Platform
+              <select id="comparison-platform" class="mt-1 block w-full sm:w-36 px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderComparison()">
+                <option value="all">All platforms</option>
+                <option value="tiktok">TikTok</option>
+                <option value="instagram">Instagram</option>
+                <option value="youtube">YouTube</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div id="comparison-account-filters" class="flex flex-wrap gap-2"></div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full min-w-[520px] text-left text-xs text-slate-300">
+            <thead class="text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr><th class="px-3 py-2">Account</th><th class="px-3 py-2 text-right">Posts</th><th class="px-3 py-2 text-right">Impressions</th><th class="px-3 py-2 text-right">Reach</th><th class="px-3 py-2 text-right">Engagement</th></tr>
+            </thead>
+            <tbody id="comparison-table-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="hub-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
       <div id="accounts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6"></div>
     </section>
 
@@ -189,6 +229,7 @@
           </button>
         </div>
       </div>
+      <div id="dashboard-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
 
       <!-- Timeframe Filter Toolbar -->
       <div class="glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
@@ -230,26 +271,32 @@
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Impressions</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-impressions">Select a period to compare</div>
         </div>
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Reach</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-reach">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-reach">Select a period to compare</div>
         </div>
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Likes</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-likes">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-likes">Select a period to compare</div>
         </div>
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Comments</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-comments">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-comments">Select a period to compare</div>
         </div>
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Shares</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-shares">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-shares">Select a period to compare</div>
         </div>
         <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
           <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Saves</span>
           <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-saves">0</div>
+          <div class="text-[10px] text-slate-500" id="comparison-saves">Select a period to compare</div>
         </div>
       </div>
 
@@ -278,6 +325,29 @@
           </div>
           <div class="h-52 sm:h-64 relative flex items-center justify-center">
             <canvas id="engagementChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT CALENDAR -->
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-cyan-400"></i>Content Calendar</h3>
+            <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Logged content for this account and selected platform. This is a history view, not a publishing scheduler.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.shiftCalendarMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-white" aria-label="Previous month"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <input id="content-calendar-month" type="month" class="px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderContentCalendar()">
+            <button onclick="window.shiftCalendarMonth(1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-white" aria-label="Next month"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <div class="min-w-[560px]">
+            <div class="grid grid-cols-7 text-center text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-800 pb-2">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div id="content-calendar-grid" class="grid grid-cols-7 gap-1.5 pt-2"></div>
           </div>
         </div>
       </div>
@@ -330,7 +400,7 @@
   </main>
 
   <!-- BOTTOM MOBILE ACTION NAV -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 px-4 py-2 flex items-center justify-around">
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around">
     <button onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
       <i data-lucide="layout-grid" class="w-5 h-5"></i>
       <span>Workspaces</span>
@@ -494,17 +564,17 @@
 
         <div id="rpt-month-picker" class="hidden">
           <label class="block text-[11px] text-slate-400 mb-1">Target Month</label>
-          <input type="month" id="rpt-month-val" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+          <input type="month" id="rpt-month-val" onchange="window.updateReportPreview()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
         </div>
 
         <div id="rpt-range-picker" class="hidden grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] text-slate-400 mb-1">Start Date</label>
-            <input type="date" id="rpt-start-date" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+            <input type="date" id="rpt-start-date" onchange="window.updateReportPreview()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
           </div>
           <div>
             <label class="block text-[11px] text-slate-400 mb-1">End Date</label>
-            <input type="date" id="rpt-end-date" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+            <input type="date" id="rpt-end-date" onchange="window.updateReportPreview()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
           </div>
         </div>
       </div>
@@ -534,7 +604,7 @@
           <i data-lucide="copy" class="w-4 h-4"></i>
           <span>Copy Slide HTML</span>
         </button>
-        <button onclick="window.buildPPTXReport()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5">
+        <button id="report-download-button" onclick="window.buildPPTXReport()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5">
           <i data-lucide="download" class="w-4 h-4"></i>
           <span>Download .pptx File</span>
         </button>
@@ -558,7 +628,9 @@
       timeframe: 'all',
       selectedDateVal: '',
       searchQuery: '',
-      reportFilterMode: 'all'
+      reportFilterMode: 'all',
+      comparisonAccountIds: null,
+      calendarMonth: ''
     };
 
     let supabaseClient = null;
@@ -879,23 +951,77 @@
     };
 
     // REPORT MODAL FILTER CONTROLS & RENDER
+    const escapeReportHtml = (value) => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+
+    const localDateString = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const getReportData = () => {
+      const selectedIds = Array.from(document.querySelectorAll('.report-acc-checkbox:checked')).map(cb => cb.value);
+      if (selectedIds.length === 0) return { error: 'Please select at least one account to generate the report.' };
+
+      let period = 'All time';
+      let start = '';
+      let end = '';
+      if (state.reportFilterMode === 'month') {
+        const month = document.getElementById('rpt-month-val').value;
+        if (!/^\d{4}-\d{2}$/.test(month)) return { error: 'Choose a month for this report.' };
+        start = `${month}-01`;
+        end = localDateString(new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0));
+        period = new Date(`${month}-01T12:00:00`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      } else if (state.reportFilterMode === 'range') {
+        start = document.getElementById('rpt-start-date').value;
+        end = document.getElementById('rpt-end-date').value;
+        if (!start || !end) return { error: 'Choose both a start date and an end date.' };
+        if (start > end) return { error: 'The start date must be on or before the end date.' };
+        period = `${new Date(`${start}T12:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} – ${new Date(`${end}T12:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+      }
+
+      const accounts = state.accounts.filter(acc => selectedIds.includes(String(acc.id))).map(account => {
+        const posts = state.posts.filter(post => {
+          if (String(post.account_id) !== String(account.id)) return false;
+          if (!post.post_date) return state.reportFilterMode === 'all';
+          return (!start || post.post_date >= start) && (!end || post.post_date <= end);
+        });
+        const metrics = posts.reduce((sum, post) => {
+          sum.impressions += Number(post.impressions) || 0;
+          sum.reach += Number(post.reach) || 0;
+          sum.engagement += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+            (Number(post.shares) || 0) + (Number(post.saves) || 0);
+          return sum;
+        }, { impressions: 0, reach: 0, engagement: 0 });
+        metrics.engagementRate = metrics.reach > 0 ? (metrics.engagement / metrics.reach) * 100 : 0;
+        return { account, posts, metrics };
+      });
+
+      if (accounts.length === 0) return { error: 'The selected accounts are no longer available. Reopen the report and try again.' };
+      return { accounts, period };
+    };
+
     window.openReportModal = function() {
       const listContainer = document.getElementById('report-account-list');
       listContainer.innerHTML = '';
 
       if (state.accounts.length === 0) {
-        listContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">No accounts created yet.</p>`;
+        listContainer.innerHTML = '<p class="text-xs text-slate-500 py-2">No accounts created yet.</p>';
       } else {
         state.accounts.forEach(acc => {
           const isCurrent = state.currentAccountId ? acc.id === state.currentAccountId : true;
           const div = document.createElement('div');
+          const color = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
           div.className = "flex items-center justify-between p-2 bg-slate-900/80 rounded-xl border border-slate-800";
           div.innerHTML = `
             <label class="flex items-center gap-2 text-xs text-white cursor-pointer w-full">
-              <input type="checkbox" class="report-acc-checkbox rounded bg-slate-800 border-slate-700 text-cyan-500" value="${acc.id}" ${isCurrent ? 'checked' : ''} onchange="window.updateReportPreview()">
-              <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${acc.color || '#0ea5e9'}"></span>
-              <span class="font-medium">${acc.name}</span>
-              <span class="text-[10px] text-slate-400 ml-auto">(${acc.niche})</span>
+              <input type="checkbox" class="report-acc-checkbox rounded bg-slate-800 border-slate-700 text-cyan-500" value="${escapeReportHtml(acc.id)}" ${isCurrent ? 'checked' : ''} onchange="window.updateReportPreview()">
+              <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${color}"></span>
+              <span class="font-medium">${escapeReportHtml(acc.name)}</span>
+              <span class="text-[10px] text-slate-400 ml-auto">(${escapeReportHtml(acc.niche)})</span>
             </label>
           `;
           listContainer.appendChild(div);
@@ -903,9 +1029,9 @@
       }
 
       const now = new Date();
-      document.getElementById('rpt-month-val').value = now.toISOString().slice(0, 7);
-      document.getElementById('rpt-start-date').value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-      document.getElementById('rpt-end-date').value = now.toISOString().split('T')[0];
+      document.getElementById('rpt-month-val').value = localDateString(now).slice(0, 7);
+      document.getElementById('rpt-start-date').value = localDateString(new Date(now.getFullYear(), now.getMonth(), 1));
+      document.getElementById('rpt-end-date').value = localDateString(now);
 
       window.setReportFilterMode('all');
       document.getElementById('modal-report').classList.remove('hidden');
@@ -915,6 +1041,7 @@
     };
 
     window.setReportFilterMode = function(mode) {
+      if (!['all', 'month', 'range'].includes(mode)) return;
       state.reportFilterMode = mode;
       ['all', 'month', 'range'].forEach(m => {
         const btn = document.getElementById(`rpt-mode-${m}`);
@@ -934,254 +1061,503 @@
 
     window.updateReportPreview = function() {
       const container = document.getElementById('print-report-container');
-      container.innerHTML = '';
-
-      const selectedBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox:checked'));
-      const selectedAccIds = selectedBoxes.map(cb => cb.value);
-
-      if (selectedAccIds.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">No accounts selected for presentation.</p>`;
+      if (!container) return;
+      const allBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox'));
+      document.getElementById('report-select-all').checked = allBoxes.length > 0 && allBoxes.every(cb => cb.checked);
+      const report = getReportData();
+      if (report.error) {
+        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">${escapeReportHtml(report.error)}</p>`;
         return;
       }
 
-      selectedAccIds.forEach(accId => {
-        const acc = state.accounts.find(a => a.id === accId);
-        if (!acc) return;
-
-        let accPosts = state.posts.filter(p => p.account_id === accId);
-        if (state.reportFilterMode === 'month') {
-          const mVal = document.getElementById('rpt-month-val').value;
-          if (mVal) accPosts = accPosts.filter(p => p.post_date && p.post_date.startsWith(mVal));
-        } else if (state.reportFilterMode === 'range') {
-          const start = document.getElementById('rpt-start-date').value;
-          const end = document.getElementById('rpt-end-date').value;
-          if (start && end) {
-            accPosts = accPosts.filter(p => p.post_date && p.post_date >= start && p.post_date <= end);
-          }
-        }
-
-        const totalImp = accPosts.reduce((a,b) => a + (Number(b.impressions) || 0), 0);
-        const totalReach = accPosts.reduce((a,b) => a + (Number(b.reach) || 0), 0);
-        const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
-        const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
-
-        const slideHtml = `
-          <div class="space-y-3 border-b border-slate-800/80 pb-3 last:border-0">
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-white text-sm">${acc.name} (${acc.niche})</span>
-              <span class="text-[10px] text-cyan-400 font-mono">${accPosts.length} Posts</span>
-            </div>
-            <div class="grid grid-cols-3 gap-2 text-[11px]">
-              <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Views: <b class="text-white">${totalImp.toLocaleString()}</b></div>
-              <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Reach: <b class="text-white">${totalReach.toLocaleString()}</b></div>
-              <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Avg ER: <b class="text-amber-400">${avgEr}%</b></div>
-            </div>
+      const totals = report.accounts.reduce((sum, item) => ({
+        posts: sum.posts + item.posts.length,
+        impressions: sum.impressions + item.metrics.impressions,
+        reach: sum.reach + item.metrics.reach
+      }), { posts: 0, impressions: 0, reach: 0 });
+      const ranking = report.accounts.slice().sort((a, b) => b.metrics.impressions - a.metrics.impressions);
+      const slideOutline = ['Ringkasan Eksekutif', 'Tren Performa', 'Performa per Akun', 'Peringkat Tayangan & Jangkauan', 'Rekomendasi', 'Penutup'];
+      container.innerHTML = `
+        <div class="space-y-3 border-b border-slate-800 pb-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-bold text-white">Periode: ${escapeReportHtml(report.period)}</span>
+            <span class="text-[10px] text-cyan-300">${report.accounts.length} akun · ${totals.posts} konten</span>
           </div>
-        `;
-        container.insertAdjacentHTML('beforeend', slideHtml);
-      });
+          <div class="grid grid-cols-3 gap-2 text-[10px]">
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Total tayangan <b class="block text-white text-xs mt-1">${totals.impressions.toLocaleString('id-ID')}</b></div>
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Total jangkauan <b class="block text-white text-xs mt-1">${totals.reach.toLocaleString('id-ID')}</b></div>
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Akun teratas <b class="block text-white text-xs mt-1 truncate">${escapeReportHtml(ranking[0].account.name)}</b></div>
+          </div>
+          <div>
+            <span class="block text-[10px] font-semibold text-slate-400 mb-1">Isi presentasi</span>
+            <ol class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-1 text-[10px] text-slate-300 list-decimal list-inside">
+              ${slideOutline.map(title => `<li>${title}</li>`).join('')}
+            </ol>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <h5 class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Ringkasan setiap akun</h5>
+          ${ranking.map(({ account, posts, metrics }, index) => `
+            <div class="space-y-2 border-b border-slate-800/80 pb-3 last:border-0">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-white text-xs">${index + 1}. ${escapeReportHtml(account.name)} <span class="font-normal text-slate-400">(${escapeReportHtml(account.niche)})</span></span>
+                <span class="text-[10px] text-slate-400">${posts.length} konten</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-[10px]">
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Tayangan: <b class="text-white">${metrics.impressions.toLocaleString('id-ID')}</b></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Jangkauan: <b class="text-white">${metrics.reach.toLocaleString('id-ID')}</b></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Interaksi: <b class="text-amber-400">${metrics.engagementRate.toFixed(2)}%</b></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
     };
 
     window.copyReportToClipboard = function() {
       const container = document.getElementById('print-report-container');
+      if (!navigator.clipboard || typeof ClipboardItem === 'undefined') {
+        alert("Clipboard access is unavailable in this browser. Download the PPTX report instead.");
+        return;
+      }
       const blob = new Blob([container.innerHTML], { type: 'text/html' });
       const data = [new ClipboardItem({ 'text/html': blob })];
 
       navigator.clipboard.write(data).then(() => {
-        alert("Slide HTML copied to clipboard! Open PowerPoint or Google Slides and press Ctrl+V / Cmd+V on your canvas.");
+        alert("Slide HTML copied to clipboard! Open PowerPoint or Google Slides and press Ctrl+V / Cmd+V.");
       }).catch(err => {
         console.error("Clipboard Copy Error:", err);
         alert("Copy failed automatically. Try downloading the PPTX file instead.");
       });
     };
 
-    // SAFE OPENXML PPTX GENERATOR
-    window.buildPPTXReport = function() {
-      if (typeof PptxGenJS === 'undefined') {
-        alert("PPTX Generator library is still loading. Please try again in a moment.");
+    window.buildPPTXReport = async function() {
+      const PptxConstructor = window.pptxgen || window.PptxGenJS;
+      if (typeof PptxConstructor !== 'function') {
+        alert("The presentation library did not load. Check your internet connection, refresh the page, and try again.");
         return;
       }
 
-      const selectedBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox:checked'));
-      const selectedAccIds = selectedBoxes.map(cb => cb.value);
-
-      if (selectedAccIds.length === 0) {
-        alert("Please select at least one account workspace to generate the report.");
+      const report = getReportData();
+      if (report.error) {
+        alert(report.error);
         return;
       }
 
-      let pptx = new PptxGenJS();
-      pptx.layout = 'LAYOUT_16x9';
-      pptx.author = 'SocioNexus Analytics';
-      pptx.company = 'SocioNexus';
-      pptx.title = 'Executive Social Media Report';
+      const button = document.getElementById('report-download-button');
+      button.disabled = true;
+      const originalLabel = button.innerHTML;
+      button.innerHTML = '<span>Building presentation...</span>';
+      try {
+        const pptx = new PptxConstructor();
+        pptx.layout = 'LAYOUT_WIDE';
+        pptx.author = 'SocioNexus Analytics';
+        pptx.company = 'SocioNexus';
+        pptx.subject = 'Laporan performa media sosial';
+        pptx.title = 'Laporan Performa Media Sosial';
+        const rect = pptx.ShapeType && pptx.ShapeType.rect ? pptx.ShapeType.rect : 'rect';
+        const colors = {
+          background: '0B1220', surface: '111C2E', border: '24324A',
+          text: 'F8FAFC', muted: '94A3B8', cyan: '38BDF8',
+          teal: '34D399', purple: 'C084FC', amber: 'FBBF24', white: 'FFFFFF'
+        };
+        const fmt = value => (Number(value) || 0).toLocaleString('id-ID');
+        const formatReportDate = value => {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return String(value || '—');
+          return new Date(`${value}T12:00:00`).toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'short', year: 'numeric'
+          });
+        };
+        const allPosts = report.accounts.flatMap(item => item.posts);
+        const totals = allPosts.reduce((sum, post) => {
+          sum.impressions += Number(post.impressions) || 0;
+          sum.reach += Number(post.reach) || 0;
+          sum.engagement += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+            (Number(post.shares) || 0) + (Number(post.saves) || 0);
+          return sum;
+        }, { impressions: 0, reach: 0, engagement: 0 });
+        const overallEr = totals.reach ? (totals.engagement / totals.reach) * 100 : 0;
+        const platformTotals = {};
+        allPosts.forEach(post => {
+          const key = String(post.platform || 'Lainnya');
+          if (!platformTotals[key]) platformTotals[key] = { posts: 0, impressions: 0, reach: 0, engagement: 0 };
+          const row = platformTotals[key];
+          row.posts++;
+          row.impressions += Number(post.impressions) || 0;
+          row.reach += Number(post.reach) || 0;
+          row.engagement += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+            (Number(post.shares) || 0) + (Number(post.saves) || 0);
+        });
+        const platforms = Object.entries(platformTotals).sort((a, b) => b[1].reach - a[1].reach);
+        const rankedAccounts = [...report.accounts].sort((a, b) =>
+          b.metrics.impressions - a.metrics.impressions ||
+          b.metrics.reach - a.metrics.reach ||
+          String(a.account.name || '').localeCompare(String(b.account.name || ''))
+        );
+        const accountRankingPageSize = 12;
+        const accountRankingPageCount = Math.ceil(rankedAccounts.length / accountRankingPageSize);
+        const slideCount = 5 + report.accounts.length * 2 + accountRankingPageCount;
+        let page = 0;
 
-      const fmt = (num) => String(Number(num || 0).toLocaleString('en-US'));
+        const addText = (slide, text, options) => slide.addText(String(text == null ? '' : text), {
+          fontFace: 'Arial', color: colors.text, margin: 0, breakLine: false, lang: 'id-ID',
+          fit: 'shrink', ...options
+        });
+        const addHeader = (slide, eyebrow, title, subtitle) => {
+          slide.background = { color: colors.background };
+          slide.addShape(rect, { x: 0, y: 0, w: 13.333, h: 0.12, line: { color: colors.cyan, transparency: 100 }, fill: { color: colors.cyan } });
+          addText(slide, eyebrow.toUpperCase(), { x: 0.7, y: 0.48, w: 11.9, h: 0.22, fontSize: 9, bold: true, charSpacing: 1.2, color: colors.cyan });
+          addText(slide, title, { x: 0.7, y: 0.82, w: 11.9, h: 0.48, fontSize: 23, bold: true });
+          addText(slide, subtitle, { x: 0.7, y: 1.39, w: 11.9, h: 0.3, fontSize: 10, color: colors.muted });
+        };
+        const addFooter = slide => {
+          page++;
+          slide.addShape(rect, { x: 0.7, y: 7.02, w: 11.93, h: 0.01, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+          addText(slide, `SocioNexus  ·  Laporan Performa Media Sosial  ·  ${report.period}`, {
+            x: 0.7, y: 7.12, w: 10.8, h: 0.16, fontSize: 7, color: colors.muted
+          });
+          addText(slide, `${page} / ${slideCount}`, { x: 11.75, y: 7.12, w: 0.88, h: 0.16, fontSize: 7, color: colors.muted, align: 'right' });
+        };
+        const addMetricCard = (slide, x, label, value, note, accent) => {
+          slide.addShape(rect, { x, y: 2.0, w: 2.87, h: 1.55, rectRadius: 0.08, line: { color: colors.border, width: 0.8 }, fill: { color: colors.surface } });
+          slide.addShape(rect, { x, y: 2.0, w: 0.055, h: 1.55, line: { color: accent, transparency: 100 }, fill: { color: accent } });
+          addText(slide, label.toUpperCase(), { x: x + 0.22, y: 2.23, w: 2.45, h: 0.2, fontSize: 8, bold: true, color: colors.muted, charSpacing: 0.8 });
+          addText(slide, value, { x: x + 0.22, y: 2.62, w: 2.45, h: 0.42, fontSize: 22, bold: true, color: accent });
+          addText(slide, note, { x: x + 0.22, y: 3.16, w: 2.45, h: 0.18, fontSize: 8, color: colors.muted });
+        };
 
-      selectedAccIds.forEach(accId => {
-        const acc = state.accounts.find(a => a.id === accId);
-        if (!acc) return;
+        let slide = pptx.addSlide();
+        slide.background = { color: colors.background };
+        slide.addShape(rect, { x: 0, y: 0, w: 13.333, h: 0.14, line: { color: colors.cyan, transparency: 100 }, fill: { color: colors.cyan } });
+        slide.addShape(rect, { x: 8.8, y: 1.15, w: 3.85, h: 4.95, line: { color: colors.border, width: 1 }, fill: { color: colors.surface } });
+        addText(slide, 'SOCIONEXUS  /  ANALITIK', { x: 0.85, y: 0.78, w: 7.3, h: 0.28, fontSize: 11, bold: true, color: colors.cyan, charSpacing: 1.2 });
+        addText(slide, 'Laporan Performa\nMedia Sosial', { x: 0.85, y: 1.62, w: 7.3, h: 1.55, fontSize: 31, bold: true, breakLine: false, valign: 'mid' });
+        addText(slide, report.period, { x: 0.88, y: 3.46, w: 7.3, h: 0.42, fontSize: 16, bold: true, color: colors.amber });
+        addText(slide, `${report.accounts.length} akun dipilih  ·  ${allPosts.length} konten pada periode ini`, {
+          x: 0.88, y: 4.02, w: 7.3, h: 0.28, fontSize: 11, color: colors.muted
+        });
+        addText(slide, 'RINGKASAN EKSEKUTIF', { x: 9.18, y: 1.58, w: 3.2, h: 0.3, fontSize: 10, bold: true, color: colors.amber, charSpacing: 1 });
+        const coverInsights = [
+          `Total jangkauan dari akun terpilih mencapai ${fmt(totals.reach)}.`,
+          `${fmt(totals.impressions)} tayangan dari ${allPosts.length} konten yang tercatat.`,
+          `Rasio interaksi terhadap jangkauan: ${overallEr.toFixed(2)}%.`
+        ];
+        coverInsights.forEach((text, index) => {
+          slide.addShape(rect, { x: 9.18, y: 2.1 + index * 1.0, w: 0.06, h: 0.66, line: { color: [colors.cyan, colors.teal, colors.amber][index], transparency: 100 }, fill: { color: [colors.cyan, colors.teal, colors.amber][index] } });
+          addText(slide, text, { x: 9.42, y: 2.12 + index * 1.0, w: 2.88, h: 0.62, fontSize: 11, color: colors.text, valign: 'mid' });
+        });
+        addFooter(slide);
 
-        let accPosts = state.posts.filter(p => p.account_id === accId);
+        slide = pptx.addSlide();
+        addHeader(slide, 'Ringkasan eksekutif', 'Ikhtisar performa', `${report.accounts.length} akun terpilih · ${report.period}`);
+        addMetricCard(slide, 0.7, 'Total konten', fmt(allPosts.length), 'Konten yang tercatat pada periode ini', colors.cyan);
+        addMetricCard(slide, 3.76, 'Total tayangan', fmt(totals.impressions), 'Akumulasi tayangan konten', colors.purple);
+        addMetricCard(slide, 6.82, 'Total jangkauan', fmt(totals.reach), 'Akumulasi jangkauan konten', colors.teal);
+        addMetricCard(slide, 9.88, 'Rata-rata rasio interaksi', `${overallEr.toFixed(2)}%`, 'Interaksi ÷ total jangkauan', colors.amber);
+        addText(slide, 'PERFORMA AKUN', { x: 0.72, y: 4.08, w: 5.5, h: 0.22, fontSize: 9, bold: true, color: colors.cyan, charSpacing: 0.9 });
+        addText(slide, 'AKUN', { x: 0.72, y: 4.48, w: 4.8, h: 0.2, fontSize: 8, bold: true, color: colors.muted });
+        addText(slide, 'TAYANGAN', { x: 6.35, y: 4.48, w: 2.0, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+        addText(slide, 'JANGKAUAN', { x: 9.15, y: 4.48, w: 2.2, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+        rankedAccounts.slice(0, 7).forEach((item, index) => {
+          const y = 4.86 + index * 0.28;
+          addText(slide, `${index + 1}.  ${item.account.name || 'Akun tanpa nama'}${item.account.niche ? `  ·  ${item.account.niche}` : ''}`, { x: 0.72, y, w: 5.5, h: 0.2, fontSize: 9, color: colors.text });
+          addText(slide, fmt(item.metrics.impressions), { x: 6.35, y, w: 2.0, h: 0.2, fontSize: 9, color: colors.purple, align: 'right' });
+          addText(slide, fmt(item.metrics.reach), { x: 9.15, y, w: 2.2, h: 0.2, fontSize: 9, color: colors.teal, align: 'right' });
+        });
+        if (report.accounts.length > 7) addText(slide, `+ ${report.accounts.length - 7} akun lainnya tercantum pada tabel peringkat`, { x: 0.72, y: 6.84, w: 8, h: 0.16, fontSize: 8, color: colors.muted });
+        addFooter(slide);
 
-        if (state.reportFilterMode === 'month') {
-          const mVal = document.getElementById('rpt-month-val').value;
-          if (mVal) accPosts = accPosts.filter(p => p.post_date && p.post_date.startsWith(mVal));
-        } else if (state.reportFilterMode === 'range') {
-          const start = document.getElementById('rpt-start-date').value;
-          const end = document.getElementById('rpt-end-date').value;
-          if (start && end) {
-            accPosts = accPosts.filter(p => p.post_date && p.post_date >= start && p.post_date <= end);
+        for (let offset = 0; offset < rankedAccounts.length; offset += accountRankingPageSize) {
+          const pageAccounts = rankedAccounts.slice(offset, offset + accountRankingPageSize);
+          slide = pptx.addSlide();
+          addHeader(slide, 'Peringkat akun', 'Tayangan & jangkauan per akun', `Diurutkan berdasarkan tayangan tertinggi · ${report.period}${accountRankingPageCount > 1 ? ` · Bagian ${Math.floor(offset / accountRankingPageSize) + 1} dari ${accountRankingPageCount}` : ''}`);
+          const accountColumns = [
+            { title: 'PERINGKAT', x: 0.78, w: 0.8, align: 'center' },
+            { title: 'AKUN', x: 1.82, w: 5.0, align: 'left' },
+            { title: 'TAYANGAN', x: 7.15, w: 2.25, align: 'right' },
+            { title: 'JANGKAUAN', x: 9.95, w: 2.55, align: 'right' }
+          ];
+          accountColumns.forEach(column => addText(slide, column.title, {
+            x: column.x, y: 2.0, w: column.w, h: 0.24, fontSize: 9, bold: true, color: colors.cyan, align: column.align, charSpacing: 0.8
+          }));
+          slide.addShape(rect, { x: 0.72, y: 2.38, w: 11.9, h: 0.012, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+          pageAccounts.forEach((item, index) => {
+            const rank = offset + index + 1;
+            const y = 2.58 + index * 0.34;
+            if (index % 2 === 0) {
+              slide.addShape(rect, { x: 0.72, y: y - 0.055, w: 11.9, h: 0.31, line: { color: colors.surface, transparency: 100 }, fill: { color: colors.surface } });
+            }
+            addText(slide, String(rank).padStart(2, '0'), { x: accountColumns[0].x, y, w: accountColumns[0].w, h: 0.19, fontSize: 9, bold: rank <= 3, color: rank === 1 ? colors.amber : colors.muted, align: accountColumns[0].align });
+            addText(slide, `${item.account.name || 'Akun tanpa nama'}${item.account.niche ? `  ·  ${item.account.niche}` : ''}`, {
+              x: accountColumns[1].x, y, w: accountColumns[1].w, h: 0.19, fontSize: 10, bold: rank === 1, color: colors.text
+            });
+            addText(slide, fmt(item.metrics.impressions), {
+              x: accountColumns[2].x, y, w: accountColumns[2].w, h: 0.19, fontSize: 10, bold: rank === 1, color: colors.purple, align: accountColumns[2].align
+            });
+            addText(slide, fmt(item.metrics.reach), {
+              x: accountColumns[3].x, y, w: accountColumns[3].w, h: 0.19, fontSize: 10, color: colors.teal, align: accountColumns[3].align
+            });
+          });
+          addFooter(slide);
+        }
+
+        slide = pptx.addSlide();
+        const rangeDays = state.reportFilterMode === 'all' ? Infinity :
+          Math.ceil((new Date(`${document.getElementById('rpt-end-date').value}T12:00:00`) -
+            new Date(`${document.getElementById('rpt-start-date').value}T12:00:00`)) / 86400000);
+        const groupTrendByMonth = state.reportFilterMode === 'all' || rangeDays > 62;
+        const trendBuckets = {};
+        allPosts.forEach(post => {
+          const postDate = String(post.post_date || '');
+          const date = new Date(`${postDate}T12:00:00`);
+          let key;
+          let label;
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(postDate)) {
+            key = 'undated';
+            label = 'Tanpa tanggal';
+          } else if (groupTrendByMonth) {
+            key = postDate.slice(0, 7);
+            label = date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+          } else {
+            const weekStart = new Date(date);
+            weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+            key = localDateString(weekStart);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            label = `${weekStart.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} – ${weekEnd.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
           }
-        }
-
-        const totalPosts = accPosts.length;
-        const totalImp = accPosts.reduce((a, b) => a + (Number(b.impressions) || 0), 0);
-        const totalReach = accPosts.reduce((a, b) => a + (Number(b.reach) || 0), 0);
-        const totalEng = accPosts.reduce((a, b) => a + (Number(b.likes) || 0) + (Number(b.comments) || 0) + (Number(b.shares) || 0) + (Number(b.saves) || 0), 0);
-        const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
-
-        // SLIDE 1: COVER
-        let slide1 = pptx.addSlide();
-        slide1.background = { color: '0B0F17' };
-
-        slide1.addText('SocioNexus Analytics', {
-          x: 0.8, y: 0.8, w: 8.4, h: 0.4,
-          fontFace: 'Arial', fontSize: 14, color: '0EA5E9', bold: true
+          if (!trendBuckets[key]) trendBuckets[key] = { label, posts: 0, impressions: 0, reach: 0 };
+          trendBuckets[key].posts++;
+          trendBuckets[key].impressions += Number(post.impressions) || 0;
+          trendBuckets[key].reach += Number(post.reach) || 0;
         });
-
-        slide1.addText('Social Media Executive Performance Report', {
-          x: 0.8, y: 1.3, w: 8.4, h: 0.8,
-          fontFace: 'Arial', fontSize: 24, color: 'FFFFFF', bold: true
-        });
-
-        slide1.addText(`Workspace: ${acc.name}  |  Category: ${acc.niche}  |  Posts: ${totalPosts}`, {
-          x: 0.8, y: 2.1, w: 8.4, h: 0.4,
-          fontFace: 'Arial', fontSize: 11, color: '9CA3AF'
-        });
-
-        slide1.addShape(pptx.shapes.RECTANGLE, {
-          x: 0.8, y: 2.8, w: 8.4, h: 2.2,
-          fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
-        });
-
-        slide1.addText('EXECUTIVE SUMMARY INSIGHTS', {
-          x: 1.0, y: 3.0, w: 8.0, h: 0.3,
-          fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true
-        });
-
-        const execBullets = [
-          `Total Audience Reach of ${fmt(totalReach)} with ${fmt(totalImp)} impressions across ${totalPosts} published posts.`,
-          `Overall content engagement rate averaged ${avgEr}% relative to audience reach.`,
-          `Performance metrics reflect active channels and top content logged in the selected window.`
-        ];
-
-        execBullets.forEach((bulletText, i) => {
-          slide1.addText(bulletText, {
-            x: 1.0, y: 3.4 + (i * 0.4), w: 8.0, h: 0.35,
-            fontFace: 'Arial', fontSize: 10, color: 'E2E8F0', bullet: true
-          });
-        });
-
-        // SLIDE 2: METRIC CARDS
-        let slide2 = pptx.addSlide();
-        slide2.background = { color: '0B0F17' };
-
-        slide2.addText('Workspace Performance Overview', {
-          x: 0.8, y: 0.6, w: 8.4, h: 0.5,
-          fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true
-        });
-
-        const cards = [
-          { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'Published', color: '0EA5E9' },
-          { title: 'IMPRESSIONS', val: fmt(totalImp), unit: 'Total Views', color: 'A855F7' },
-          { title: 'TOTAL REACH', val: fmt(totalReach), unit: 'Unique Accounts', color: '10B981' },
-          { title: 'AVG ER RATE', val: `${avgEr}%`, unit: 'Engagement Rate', color: 'F59E0B' }
-        ];
-
-        cards.forEach((card, idx) => {
-          const posX = 0.8 + (idx * 2.15);
-
-          slide2.addShape(pptx.shapes.RECTANGLE, {
-            x: posX, y: 1.5, w: 2.0, h: 3.2,
-            fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
-          });
-
-          slide2.addText(card.title, {
-            x: posX + 0.1, y: 1.7, w: 1.8, h: 0.3,
-            fontFace: 'Arial', fontSize: 9, color: '9CA3AF', bold: true, align: 'center'
-          });
-
-          slide2.addText(card.val, {
-            x: posX + 0.1, y: 2.3, w: 1.8, h: 0.8,
-            fontFace: 'Arial', fontSize: 18, color: card.color, bold: true, align: 'center'
-          });
-
-          slide2.addText(card.unit, {
-            x: posX + 0.1, y: 3.8, w: 1.8, h: 0.3,
-            fontFace: 'Arial', fontSize: 8, color: '6B7280', align: 'center'
-          });
-        });
-
-        // SLIDE 3: CONTENT TABLE
-        let slide3 = pptx.addSlide();
-        slide3.background = { color: '0B0F17' };
-
-        slide3.addText('Top Performing Content Log', {
-          x: 0.8, y: 0.6, w: 8.4, h: 0.5,
-          fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true
-        });
-
-        const topPosts = [...accPosts].sort((a, b) => (Number(b.impressions) || 0) - (Number(a.impressions) || 0)).slice(0, 5);
-
-        const tableRows = [
-          [
-            { text: 'Platform', options: { bold: true, color: '0EA5E9', fill: '1F2937' } },
-            { text: 'Title / Caption', options: { bold: true, color: 'FFFFFF', fill: '1F2937' } },
-            { text: 'Impressions', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'right' } },
-            { text: 'Reach', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'right' } },
-            { text: 'Date', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'center' } }
-          ]
-        ];
-
-        if (topPosts.length === 0) {
-          tableRows.push([
-            { text: 'N/A', options: { color: '9CA3AF' } },
-            { text: 'No content recorded in this range.', options: { color: '9CA3AF' } },
-            { text: '0', options: { color: '9CA3AF', align: 'right' } },
-            { text: '0', options: { color: '9CA3AF', align: 'right' } },
-            { text: '-', options: { color: '9CA3AF', align: 'center' } }
-          ]);
+        let trendRows = Object.entries(trendBuckets).sort((a, b) => a[0].localeCompare(b[0]));
+        const hasEarlierTrendRows = trendRows.length > 10;
+        if (hasEarlierTrendRows) trendRows = trendRows.slice(-10);
+        addHeader(slide, 'Tren & perkembangan', 'Performa dari waktu ke waktu', `${groupTrendByMonth ? 'Bulanan' : 'Mingguan'} · jangkauan dan tayangan · ${report.period}`);
+        if (trendRows.length === 0) {
+          addText(slide, 'Tidak ada konten bertanggal yang tercatat pada periode ini.', { x: 0.72, y: 2.3, w: 10.8, h: 0.35, fontSize: 11, color: colors.muted });
         } else {
-          topPosts.forEach(p => {
-            tableRows.push([
-              { text: String(p.platform || 'General').toUpperCase(), options: { color: '0EA5E9', bold: true } },
-              { text: p.title ? (p.title.length > 35 ? p.title.slice(0, 35) + '...' : p.title) : 'Untitled', options: { color: 'FFFFFF' } },
-              { text: fmt(p.impressions), options: { color: 'E2E8F0', align: 'right' } },
-              { text: fmt(p.reach), options: { color: 'E2E8F0', align: 'right' } },
-              { text: String(p.post_date || ''), options: { color: '9CA3AF', align: 'center' } }
-            ]);
+          const maxReach = Math.max(...trendRows.map(([, row]) => row.reach), 1);
+          addText(slide, 'PERIODE', { x: 0.72, y: 2.02, w: 2.1, h: 0.2, fontSize: 8, bold: true, color: colors.muted });
+          addText(slide, 'JANGKAUAN', { x: 9.75, y: 2.02, w: 1.1, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          addText(slide, 'TAYANGAN', { x: 11.02, y: 2.02, w: 1.55, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          trendRows.forEach(([key, row], index) => {
+            const y = 2.42 + index * 0.4;
+            addText(slide, row.label, { x: 0.72, y, w: 2.1, h: 0.2, fontSize: 9, color: colors.text });
+            const barWidth = Math.max(0.04, 5.8 * row.reach / maxReach);
+            slide.addShape(rect, { x: 3.0, y: y + 0.025, w: 5.8, h: 0.16, line: { color: colors.cyan, transparency: 100 }, fill: { color: colors.cyan, transparency: 16 } });
+            slide.addShape(rect, { x: 3.0, y: y + 0.025, w: barWidth, h: 0.16, line: { color: colors.cyan, transparency: 100 }, fill: { color: colors.cyan } });
+            addText(slide, fmt(row.reach), { x: 9.75, y, w: 1.1, h: 0.2, fontSize: 9, color: colors.teal, align: 'right' });
+            addText(slide, fmt(row.impressions), { x: 11.02, y, w: 1.55, h: 0.2, fontSize: 9, color: colors.text, align: 'right' });
+          });
+          addText(slide, `${allPosts.length} konten bertanggal${hasEarlierTrendRows ? ' · menampilkan 10 periode terbaru' : ''}`, {
+            x: 0.72, y: 6.65, w: 8.5, h: 0.18, fontSize: 8, color: colors.muted
+          });
+        }
+        addFooter(slide);
+
+        report.accounts.forEach(({ account, posts, metrics }) => {
+          slide = pptx.addSlide();
+          addHeader(slide, 'Perbandingan platform', account.name || 'Performa akun', `${account.niche || 'Akun media sosial'} · ${report.period}`);
+          const accountPlatforms = Object.entries(posts.reduce((groups, post) => {
+            const key = String(post.platform || 'Lainnya');
+            if (!groups[key]) groups[key] = { posts: 0, impressions: 0, reach: 0, engagement: 0 };
+            groups[key].posts++;
+            groups[key].impressions += Number(post.impressions) || 0;
+            groups[key].reach += Number(post.reach) || 0;
+            groups[key].engagement += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+              (Number(post.shares) || 0) + (Number(post.saves) || 0);
+            return groups;
+          }, {})).sort((a, b) => b[1].reach - a[1].reach);
+          addMetricCard(slide, 0.7, 'Total konten', fmt(posts.length), 'Konten yang tercatat', colors.cyan);
+          addMetricCard(slide, 3.76, 'Total tayangan', fmt(metrics.impressions), 'Akumulasi tayangan konten', colors.purple);
+          addMetricCard(slide, 6.82, 'Total jangkauan', fmt(metrics.reach), 'Akumulasi jangkauan konten', colors.teal);
+          addMetricCard(slide, 9.88, 'Rata-rata rasio interaksi', `${metrics.engagementRate.toFixed(2)}%`, 'Interaksi ÷ total jangkauan', colors.amber);
+          addText(slide, 'RINCIAN PER PLATFORM', { x: 0.72, y: 4.05, w: 5.5, h: 0.22, fontSize: 9, bold: true, color: colors.cyan, charSpacing: 0.9 });
+          addText(slide, 'PLATFORM', { x: 0.72, y: 4.43, w: 2.6, h: 0.2, fontSize: 8, bold: true, color: colors.muted });
+          addText(slide, 'KONTEN', { x: 4.05, y: 4.43, w: 0.8, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          addText(slide, 'TAYANGAN', { x: 5.4, y: 4.43, w: 1.65, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          addText(slide, 'JANGKAUAN', { x: 7.2, y: 4.43, w: 1.5, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          addText(slide, 'RASIO INTERAKSI', { x: 9.15, y: 4.43, w: 2.55, h: 0.2, fontSize: 8, bold: true, color: colors.muted, align: 'right' });
+          if (accountPlatforms.length === 0) {
+            addText(slide, 'Tidak ada konten untuk akun ini pada periode yang dipilih.', { x: 0.72, y: 4.95, w: 10.9, h: 0.35, fontSize: 11, color: colors.muted });
+          } else {
+            accountPlatforms.slice(0, 7).forEach(([platform, row], index) => {
+              const y = 4.85 + index * 0.3;
+              addText(slide, platform.toUpperCase(), { x: 0.72, y, w: 2.6, h: 0.2, fontSize: 9, bold: true, color: colors.text });
+              addText(slide, fmt(row.posts), { x: 4.05, y, w: 0.8, h: 0.2, fontSize: 9, color: colors.text, align: 'right' });
+              addText(slide, fmt(row.impressions), { x: 5.4, y, w: 1.65, h: 0.2, fontSize: 9, color: colors.text, align: 'right' });
+              addText(slide, fmt(row.reach), { x: 7.2, y, w: 1.5, h: 0.2, fontSize: 9, color: colors.text, align: 'right' });
+              addText(slide, `${(row.reach ? row.engagement / row.reach * 100 : 0).toFixed(2)}%`, { x: 9.15, y, w: 2.55, h: 0.2, fontSize: 9, color: colors.amber, align: 'right' });
+            });
+          }
+          addFooter(slide);
+
+          slide = pptx.addSlide();
+          addHeader(slide, 'Konten berkinerja terbaik', 'Konten dengan performa tertinggi', `${account.name || 'Akun'} · diurutkan berdasarkan tayangan · ${report.period}`);
+          const topPosts = [...posts].sort((a, b) => (Number(b.impressions) || 0) - (Number(a.impressions) || 0)).slice(0, 5);
+          const columns = [
+            { title: 'PLATFORM', x: 0.72, w: 1.35, align: 'left' },
+            { title: 'KONTEN', x: 2.25, w: 4.2, align: 'left' },
+            { title: 'TAYANGAN', x: 6.68, w: 1.55, align: 'right' },
+            { title: 'JANGKAUAN', x: 8.48, w: 1.3, align: 'right' },
+            { title: 'INTERAKSI', x: 10.03, w: 1.75, align: 'right' }
+          ];
+          columns.forEach(column => addText(slide, column.title, { x: column.x, y: 2.02, w: column.w, h: 0.24, fontSize: 8, bold: true, color: colors.cyan, align: column.align }));
+          slide.addShape(rect, { x: 0.72, y: 2.39, w: 11.06, h: 0.012, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+          if (topPosts.length === 0) {
+            addText(slide, 'Tidak ada konten yang tercatat pada periode ini.', { x: 0.72, y: 2.75, w: 10.8, h: 0.32, fontSize: 11, color: colors.muted });
+          } else {
+            topPosts.forEach((post, index) => {
+              const y = 2.68 + index * 0.72;
+              const engagement = (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+                (Number(post.shares) || 0) + (Number(post.saves) || 0);
+              const er = Number(post.reach) ? engagement / Number(post.reach) * 100 : 0;
+              addText(slide, String(post.platform || 'Lainnya').toUpperCase(), { x: columns[0].x, y, w: columns[0].w, h: 0.22, fontSize: 8, bold: true, color: colors.cyan });
+              const title = String(post.title || 'Konten tanpa judul');
+              addText(slide, title.length > 72 ? `${title.slice(0, 69)}...` : title, { x: columns[1].x, y, w: columns[1].w, h: 0.22, fontSize: 9, color: colors.text });
+              addText(slide, formatReportDate(post.post_date), { x: columns[1].x, y: y + 0.27, w: columns[1].w, h: 0.16, fontSize: 7, color: colors.muted });
+              addText(slide, fmt(post.impressions), { x: columns[2].x, y, w: columns[2].w, h: 0.22, fontSize: 9, color: colors.text, align: 'right' });
+              addText(slide, fmt(post.reach), { x: columns[3].x, y, w: columns[3].w, h: 0.22, fontSize: 9, color: colors.text, align: 'right' });
+              addText(slide, `${er.toFixed(2)}%`, { x: columns[4].x, y, w: columns[4].w, h: 0.22, fontSize: 9, color: colors.amber, align: 'right' });
+              if (index < topPosts.length - 1) slide.addShape(rect, { x: 0.72, y: y + 0.54, w: 11.06, h: 0.008, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+            });
+          }
+          addFooter(slide);
+        });
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Rencana selanjutnya', 'Langkah yang disarankan', `Berdasarkan data ${report.period}`);
+        const recommendations = [];
+        const latestTrend = trendRows.length >= 2 ? trendRows[trendRows.length - 1][1] : null;
+        const previousTrend = trendRows.length >= 2 ? trendRows[trendRows.length - 2][1] : null;
+        if (latestTrend && previousTrend) {
+          const change = latestTrend.reach - previousTrend.reach;
+          const changePct = previousTrend.reach > 0 ? Math.abs(change / previousTrend.reach) * 100 : null;
+          const changeDescription = previousTrend.reach > 0
+            ? `${change >= 0 ? 'naik' : 'turun'} ${changePct.toFixed(1)}%`
+            : change > 0 ? 'naik dari 0' : 'tetap 0';
+          recommendations.push({
+            title: change < 0 ? 'Perbaiki jangkauan sebelum menambah konten' : 'Pertahankan tren jangkauan',
+            evidence: `Jangkauan ${latestTrend.label}: ${fmt(latestTrend.reach)}, sebelumnya ${fmt(previousTrend.reach)} (${changeDescription}). Ada ${fmt(latestTrend.posts)} konten pada periode terbaru.`,
+            action: change < 0
+              ? 'Bandingkan jenis dan jadwal konten dengan periode sebelumnya. Uji satu perubahan, lalu cek jangkauan tiap konten sebelum menambah jumlah unggahan.'
+              : 'Lanjutkan jadwal konten saat ini. Uji satu perubahan dan pastikan hasilnya tetap baik pada periode berikutnya.'
+          });
+        } else {
+          recommendations.push({
+            title: 'Catat data untuk melihat tren',
+            evidence: `Baru ada data dari ${trendRows.length} periode. Tren jangkauan belum bisa dibandingkan.`,
+            action: 'Catat tanggal unggahan dan jangkauan selama minimal dua periode sebelum mengubah jumlah konten.'
           });
         }
 
-        slide3.addTable(tableRows, {
-          x: 0.8, y: 1.4, w: 8.4,
-          colW: [1.4, 3.4, 1.3, 1.3, 1.0],
-          fontSize: 9, fontFace: 'Arial',
-          fill: '111827',
-          border: { pt: 0.5, color: '1F2937' },
-          autoPage: false
-        });
-      });
+        const leadingPlatform = [...platforms].sort((a, b) => b[1].impressions - a[1].impressions)[0];
+        if (leadingPlatform && totals.impressions > 0) {
+          const impressionShare = leadingPlatform[1].impressions / totals.impressions * 100;
+          const platformEr = leadingPlatform[1].reach > 0
+            ? leadingPlatform[1].engagement / leadingPlatform[1].reach * 100
+            : 0;
+          recommendations.push({
+            title: 'Fokuskan uji coba pada kanal yang aktif',
+            evidence: `${leadingPlatform[0]} mendapat ${fmt(leadingPlatform[1].impressions)} tayangan (${impressionShare.toFixed(1)}% dari total) dari ${fmt(leadingPlatform[1].posts)} konten. Rasio interaksinya ${platformEr.toFixed(2)}%.`,
+            action: 'Terus gunakan kanal ini dan coba kanal aktif lainnya. Bandingkan tayangan, jangkauan, dan interaksi sebelum mengubah fokus.'
+          });
+        } else {
+          recommendations.push({
+            title: 'Lengkapi data tiap kanal',
+            evidence: 'Data tayangan belum tersedia, jadi performa kanal belum bisa dibandingkan.',
+            action: 'Catat tayangan dan jangkauan setiap konten sebelum membandingkan kanal.'
+          });
+        }
 
-      pptx.writeFile({ fileName: `SocioNexus_Report_${new Date().toISOString().slice(0, 10)}.pptx` })
-        .then(() => {
-          window.closeModal('modal-report');
-        })
-        .catch(err => {
-          console.error("PPTX Generation Error:", err);
-          alert("An error occurred while building the presentation file. Please check browser console.");
+        const leadingAccount = rankedAccounts[0];
+        if (leadingAccount && totals.impressions > 0) {
+          const accountShare = leadingAccount.metrics.impressions / totals.impressions * 100;
+          recommendations.push({
+            title: 'Perhatikan pembagian hasil antar-akun',
+            evidence: `${leadingAccount.account.name || 'Akun teratas'} mendapat ${fmt(leadingAccount.metrics.impressions)} tayangan (${accountShare.toFixed(1)}% dari total) dan menjangkau ${fmt(leadingAccount.metrics.reach)} akun.`,
+            action: accountShare >= 70
+              ? 'Pertahankan hasil akun ini dan coba jenis kontennya di akun lain. Pantau hasil tiap akun agar tidak bergantung pada satu akun saja.'
+              : 'Lihat jenis konten yang berhasil di akun ini. Coba di akun lain dan bandingkan hasilnya.'
+          });
+        } else {
+          recommendations.push({
+            title: 'Catat hasil setiap akun',
+            evidence: 'Belum ada data tayangan untuk akun yang dipilih.',
+            action: 'Catat tayangan dan jangkauan tiap konten sebelum membandingkan akun.'
+          });
+        }
+
+        const averagePostReach = allPosts.length ? totals.reach / allPosts.length : 0;
+        const belowBenchmarkPosts = allPosts.filter(post => {
+          const postReach = Number(post.reach) || 0;
+          if (postReach < averagePostReach || postReach <= 0) return false;
+          const postEngagement = (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+            (Number(post.shares) || 0) + (Number(post.saves) || 0);
+          return postEngagement / postReach * 100 < overallEr;
         });
+        if (belowBenchmarkPosts.length > 0) {
+          recommendations.push({
+            title: 'Tingkatkan interaksi pada konten populer',
+            evidence: `${belowBenchmarkPosts.length} konten menjangkau minimal ${fmt(Math.round(averagePostReach))} akun, tetapi interaksinya di bawah rata-rata ${overallEr.toFixed(2)}%.`,
+            action: 'Periksa isi dan ajakan pada konten tersebut. Coba perubahan pada konten serupa, lalu bandingkan hasilnya.'
+          });
+        } else if (allPosts.length > 0 && totals.reach === 0) {
+          recommendations.push({
+            title: 'Lengkapi data jangkauan sebelum menilai interaksi',
+            evidence: `${allPosts.length} konten tercatat, tetapi tidak memiliki data jangkauan; rasio interaksi belum dapat dibandingkan dengan tolok ukur portofolio.`,
+            action: 'Pastikan jangkauan setiap konten tercatat, lalu evaluasi kembali interaksi dan efisiensi konten menggunakan data yang sebanding.'
+          });
+        } else if (allPosts.length > 0 && totals.engagement === 0) {
+          recommendations.push({
+            title: 'Lengkapi data interaksi',
+            evidence: `${allPosts.length} konten memiliki data jangkauan, tetapi data suka, komentar, bagikan, dan simpan belum tercatat.`,
+            action: 'Catat data interaksi setiap konten sebelum menilai hasil atau menetapkan target.'
+          });
+        } else {
+          recommendations.push({
+            title: 'Pertahankan interaksi dan terus uji konten',
+            evidence: allPosts.length
+              ? `Rata-rata interaksi ${overallEr.toFixed(2)}%. Tidak ada konten dengan jangkauan tinggi yang interaksinya di bawah rata-rata.`
+              : 'Tidak ada konten yang tercatat pada periode ini.',
+            action: allPosts.length
+              ? 'Pertahankan hasil saat ini. Coba format baru dan bandingkan jangkauan serta interaksinya.'
+              : 'Catat konten, tayangan, dan jangkauan sebelum mengubah rencana konten.'
+          });
+        }
+
+        recommendations.forEach((recommendation, index) => {
+          const y = 1.92 + index * 1.16;
+          const accent = [colors.cyan, colors.purple, colors.teal, colors.amber][index % 4];
+          slide.addShape(rect, { x: 0.72, y, w: 11.9, h: 1.03, line: { color: colors.border, width: 0.7 }, fill: { color: colors.surface } });
+          slide.addShape(rect, { x: 0.72, y, w: 0.06, h: 1.03, line: { color: accent, transparency: 100 }, fill: { color: accent } });
+          addText(slide, String(index + 1).padStart(2, '0'), { x: 0.94, y: y + 0.17, w: 0.38, h: 0.2, fontSize: 9, bold: true, color: accent });
+          addText(slide, recommendation.title, { x: 1.43, y: y + 0.13, w: 10.85, h: 0.23, fontSize: 11, bold: true, color: colors.text });
+          addText(slide, `DASAR DATA  ${recommendation.evidence}`, { x: 1.43, y: y + 0.43, w: 10.85, h: 0.22, fontSize: 8, color: colors.muted });
+          addText(slide, `TINDAKAN  ${recommendation.action}`, { x: 1.43, y: y + 0.7, w: 10.85, h: 0.24, fontSize: 8, color: colors.text });
+        });
+        addFooter(slide);
+
+        slide = pptx.addSlide();
+        slide.background = { color: colors.background };
+        slide.addShape(rect, { x: 0, y: 0, w: 13.333, h: 0.14, line: { color: colors.cyan, transparency: 100 }, fill: { color: colors.cyan } });
+        addText(slide, 'SOCIONEXUS  /  ANALITIK', { x: 0.85, y: 0.78, w: 7.3, h: 0.28, fontSize: 11, bold: true, color: colors.cyan, charSpacing: 1.2 });
+        addText(slide, 'Terima kasih', { x: 0.85, y: 2.1, w: 11.6, h: 0.85, fontSize: 36, bold: true });
+        addText(slide, 'Sesi tanya jawab', { x: 0.88, y: 3.15, w: 11.2, h: 0.4, fontSize: 18, color: colors.amber });
+        addText(slide, `Laporan Performa Media Sosial  ·  ${report.period}`, { x: 0.88, y: 3.82, w: 11.2, h: 0.28, fontSize: 11, color: colors.muted });
+        addFooter(slide);
+
+        const safePeriod = report.period.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
+        await pptx.writeFile({ fileName: `SocioNexus_Laporan_${safePeriod || localDateString(new Date())}.pptx` });
+        window.closeModal('modal-report');
+      } catch (err) {
+        console.error("PPTX Generation Error:", err);
+        alert(`The presentation could not be generated. ${err && err.message ? err.message : 'Please check the browser console and try again.'}`);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalLabel;
+      }
     };
 
     window.closeModal = function(id) {
@@ -1284,6 +1660,7 @@
     function saveLocalData() {
       localStorage.setItem('sn_accounts', JSON.stringify(state.accounts));
       localStorage.setItem('sn_posts', JSON.stringify(state.posts));
+      localStorage.setItem('sn_last_saved_at', new Date().toISOString());
     }
 
     function renderApp() {
@@ -1292,6 +1669,8 @@
     }
 
     function renderHub() {
+      renderComparison();
+      renderDataStatus('hub-data-status');
       const grid = document.getElementById('accounts-grid');
       grid.innerHTML = '';
 
@@ -1306,7 +1685,9 @@
 
       state.accounts.forEach(acc => {
         const accPosts = state.posts.filter(p => p.account_id === acc.id);
-        const totalViews = accPosts.reduce((sum, p) => sum + (p.impressions || 0), 0);
+        const impressions = accPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+        const reach = accPosts.reduce((sum, p) => sum + (Number(p.reach) || 0), 0);
+        const accountColor = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
 
         const card = document.createElement('div');
         card.className = "glass-panel p-4 sm:p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer space-y-3 sm:space-y-4 group";
@@ -1314,33 +1695,178 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg" style="background-color: ${acc.color || '#0ea5e9'}">
-              ${acc.name.charAt(0)}
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg" style="background-color: ${accountColor}">
+              ${escapeReportHtml((acc.name || '?').charAt(0).toUpperCase())}
             </div>
             <span class="text-[11px] sm:text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Posts</span>
           </div>
           <div>
-            <h3 class="text-base sm:text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${acc.name}</h3>
-            <p class="text-xs text-slate-400">${acc.niche}</p>
+            <h3 class="text-base sm:text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${escapeReportHtml(acc.name)}</h3>
+            <p class="text-xs text-slate-400">${escapeReportHtml(acc.niche || 'No niche specified')}</p>
           </div>
-          <div class="pt-2.5 sm:pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Total Impressions</span>
-            <span class="font-bold text-white">${totalViews.toLocaleString()}</span>
+          <div class="grid grid-cols-2 gap-3 pt-2.5 sm:pt-3 border-t border-slate-800/80 text-xs">
+            <div><span class="text-slate-500 block text-[10px]">Impressions</span><span class="font-bold text-white">${impressions.toLocaleString()}</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Reach</span><span class="font-bold text-white">${reach.toLocaleString()}</span></div>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
+    window.renderComparison = function() {
+      const monthInput = document.getElementById('comparison-month');
+      const filters = document.getElementById('comparison-account-filters');
+      const tbody = document.getElementById('comparison-table-body');
+      if (!monthInput || !filters || !tbody) return;
+      if (!monthInput.value) monthInput.value = localDateString(new Date()).slice(0, 7);
+
+      const selectedIds = state.comparisonAccountIds;
+      filters.innerHTML = state.accounts.map(account => {
+        const id = String(account.id);
+        const checked = selectedIds === null || selectedIds.includes(id);
+        return `<label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300 cursor-pointer">
+          <input type="checkbox" value="${escapeReportHtml(id)}" ${checked ? 'checked' : ''} onchange="window.updateComparisonSelection()" class="rounded bg-slate-800 border-slate-700 text-cyan-500">
+          ${escapeReportHtml(account.name)}
+        </label>`;
+      }).join('');
+
+      const platform = document.getElementById('comparison-platform').value;
+      const month = monthInput.value;
+      const accounts = state.accounts.filter(account =>
+        (selectedIds === null || selectedIds.includes(String(account.id)))
+      ).map(account => {
+        const posts = state.posts.filter(post =>
+          String(post.account_id) === String(account.id) &&
+          String(post.post_date || '').startsWith(month) &&
+          (platform === 'all' || post.platform === platform)
+        );
+        const total = key => posts.reduce((sum, post) => sum + (Number(post[key]) || 0), 0);
+        return { account, posts, impressions: total('impressions'), reach: total('reach'),
+          engagement: total('likes') + total('comments') + total('shares') + total('saves') };
+      }).sort((a, b) => b.impressions - a.impressions || a.account.name.localeCompare(b.account.name));
+
+      if (!accounts.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-3 py-5 text-center text-slate-500">${state.accounts.length ? 'Select at least one account to compare.' : 'Add an account to start comparing performance.'}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = accounts.map(({ account, posts, impressions, reach, engagement }, index) => `
+        <tr>
+          <td class="px-3 py-2.5"><span class="mr-2 text-slate-500">${index + 1}.</span><span class="font-medium text-white">${escapeReportHtml(account.name)}</span></td>
+          <td class="px-3 py-2.5 text-right">${posts.length.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right font-semibold text-cyan-300">${impressions.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right">${reach.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right">${engagement.toLocaleString()}</td>
+        </tr>`).join('');
+    };
+
+    window.updateComparisonSelection = function() {
+      state.comparisonAccountIds = Array.from(document.querySelectorAll('#comparison-account-filters input:checked')).map(input => input.value);
+      window.renderComparison();
+    };
+
+    function renderDataStatus(elementId) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+      const savedAt = localStorage.getItem('sn_last_saved_at');
+      const date = savedAt ? new Date(savedAt) : null;
+      const savedLabel = date && !Number.isNaN(date.getTime())
+        ? `Snapshot saved ${date.toLocaleString()}`
+        : 'Snapshot save time unavailable';
+      container.innerHTML = `<span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>Metric source: manually logged records</span><span>${savedLabel}</span>`;
+    }
+
     function renderDashboard() {
       renderTimeframeControls();
       const filteredPosts = getFilteredPosts();
-      renderMetricsCards(filteredPosts);
+      renderDataStatus('dashboard-data-status');
+      renderMetricsCards(filteredPosts, getPreviousPeriodPosts());
       renderCharts(filteredPosts);
       renderTable(filteredPosts);
       renderMobileCards(filteredPosts);
+      renderContentCalendar();
       lucide.createIcons();
     }
+
+    function getPreviousPeriodPosts() {
+      if (state.timeframe === 'weekly' && state.selectedDateVal) {
+        const selectedStart = new Date(`${state.selectedDateVal}T12:00:00`);
+        if (Number.isNaN(selectedStart.getTime())) return null;
+        const currentStart = new Date(selectedStart);
+        const previousStart = new Date(selectedStart);
+        previousStart.setDate(previousStart.getDate() - 7);
+        return filterPeriodPosts(previousStart, new Date(currentStart.getTime() - 1));
+      }
+      if (state.timeframe === 'monthly' && /^\d{4}-\d{2}$/.test(state.selectedDateVal)) {
+        const [year, month] = state.selectedDateVal.split('-').map(Number);
+        const currentStart = new Date(year, month - 1, 1);
+        const previousStart = new Date(year, month - 2, 1);
+        return filterPeriodPosts(previousStart, new Date(currentStart.getTime() - 1));
+      }
+      return null;
+    }
+
+    function filterPeriodPosts(start, end) {
+      return state.posts.filter(post => {
+        if (String(post.account_id) !== String(state.currentAccountId)) return false;
+        if (state.currentPlatform !== 'all' && post.platform !== state.currentPlatform) return false;
+        if (state.searchQuery) {
+          const query = state.searchQuery;
+          const matchesSearch = [post.title, post.link, post.platform]
+            .some(value => String(value || '').toLowerCase().includes(query));
+          if (!matchesSearch) return false;
+        }
+        const date = new Date(`${post.post_date}T12:00:00`);
+        return !Number.isNaN(date.getTime()) && date >= start && date <= end;
+      });
+    }
+
+    window.shiftCalendarMonth = function(offset) {
+      const input = document.getElementById('content-calendar-month');
+      const value = input && input.value ? input.value : localDateString(new Date()).slice(0, 7);
+      const [year, month] = value.split('-').map(Number);
+      const date = new Date(year, month - 1 + offset, 1);
+      state.calendarMonth = localDateString(date).slice(0, 7);
+      window.renderContentCalendar();
+    };
+
+    window.renderContentCalendar = function() {
+      const input = document.getElementById('content-calendar-month');
+      const grid = document.getElementById('content-calendar-grid');
+      if (!input || !grid) return;
+      const month = input.value || state.calendarMonth || localDateString(new Date()).slice(0, 7);
+      state.calendarMonth = month;
+      input.value = month;
+      const [year, monthNumber] = month.split('-').map(Number);
+      if (!year || monthNumber < 1 || monthNumber > 12) {
+        grid.innerHTML = `<div class="col-span-7 py-8 text-center text-xs text-slate-500">Choose a valid month.</div>`;
+        return;
+      }
+      const firstDay = new Date(year, monthNumber - 1, 1).getDay();
+      const daysInMonth = new Date(year, monthNumber, 0).getDate();
+      const monthlyPosts = state.posts.filter(post =>
+        String(post.account_id) === String(state.currentAccountId) &&
+        String(post.post_date || '').startsWith(month) &&
+        (state.currentPlatform === 'all' || post.platform === state.currentPlatform)
+      );
+      const byDay = monthlyPosts.reduce((days, post) => {
+        const day = Number(String(post.post_date).slice(8, 10));
+        if (day >= 1 && day <= daysInMonth) (days[day] || (days[day] = [])).push(post);
+        return days;
+      }, {});
+      const cells = [];
+      for (let index = 0; index < firstDay; index++) cells.push('<div class="calendar-day rounded-lg bg-slate-950/40 border border-slate-900"></div>');
+      for (let day = 1; day <= daysInMonth; day++) {
+        const posts = byDay[day] || [];
+        const visible = posts.slice(0, 2).map(post =>
+          `<div class="truncate rounded bg-slate-800/80 px-1 py-0.5 text-[9px] text-slate-300" title="${escapeReportHtml(post.title)}">${escapeReportHtml(post.platform)} · ${escapeReportHtml(post.title || 'Untitled')}</div>`
+        ).join('');
+        const extra = posts.length > 2 ? `<div class="text-[9px] text-cyan-400">+${posts.length - 2} more</div>` : '';
+        cells.push(`<div class="calendar-day rounded-lg border ${posts.length ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-slate-800 bg-slate-900/50'} p-1.5 space-y-1 overflow-hidden">
+          <div class="flex items-center justify-between"><span class="text-[10px] font-semibold ${posts.length ? 'text-white' : 'text-slate-500'}">${day}</span>${posts.length ? `<span class="text-[9px] text-cyan-300">${posts.length}</span>` : ''}</div>${visible}${extra}
+        </div>`);
+      }
+      grid.innerHTML = cells.join('');
+    };
 
     function getFilteredPosts() {
       let list = state.posts.filter(p => p.account_id === state.currentAccountId);
@@ -1387,7 +1913,7 @@
       }
     }
 
-    function renderMetricsCards(posts) {
+    function renderMetricsCards(posts, previousPosts) {
       const sum = (key) => posts.reduce((a, b) => a + (parseInt(b[key]) || 0), 0);
       document.getElementById('metric-impressions').innerText = sum('impressions').toLocaleString();
       document.getElementById('metric-reach').innerText = sum('reach').toLocaleString();
@@ -1395,6 +1921,24 @@
       document.getElementById('metric-comments').innerText = sum('comments').toLocaleString();
       document.getElementById('metric-shares').innerText = sum('shares').toLocaleString();
       document.getElementById('metric-saves').innerText = sum('saves').toLocaleString();
+      ['impressions', 'reach', 'likes', 'comments', 'shares', 'saves'].forEach(key => {
+        const label = document.getElementById(`comparison-${key}`);
+        if (!previousPosts) {
+          label.className = 'text-[10px] text-slate-500';
+          label.textContent = 'Select a week or month to compare';
+          return;
+        }
+        const previous = previousPosts.reduce((total, post) => total + (Number(post[key]) || 0), 0);
+        const current = sum(key);
+        if (previous === 0) {
+          label.className = 'text-[10px] text-slate-500';
+          label.textContent = current === 0 ? 'No activity in either period' : 'No previous-period baseline';
+          return;
+        }
+        const change = ((current - previous) / previous) * 100;
+        label.className = `text-[10px] ${change > 0 ? 'text-emerald-400' : change < 0 ? 'text-rose-400' : 'text-slate-500'}`;
+        label.textContent = `${change > 0 ? '+' : ''}${change.toFixed(1)}% vs previous period`;
+      });
     }
 
     function getImpressionBadge(impressions) {
@@ -1464,8 +2008,10 @@
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">${p.platform}</span>
-              <h4 class="text-xs font-semibold text-white mt-0.5 leading-snug">${p.title}</h4>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">${escapeReportHtml(p.platform)}</span>
+              <h4 class="text-xs font-semibold text-white mt-0.5 leading-snug">${escapeReportHtml(p.title)}</h4>
+              <p class="text-[10px] text-slate-500 mt-1">${escapeReportHtml(p.post_date)} · ${escapeReportHtml(p.post_time || '00:00')}</p>
+              ${p.link ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:underline break-all mt-1 inline-block">Open content link</a>` : ''}
             </div>
             <div class="flex items-center space-x-1 shrink-0">
               <button onclick="window.openEditPostModal('${p.id}')" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
@@ -1475,7 +2021,7 @@
 
           <div class="grid grid-cols-3 gap-2 text-[11px] pt-2 border-t border-slate-800/80">
             <div>
-              <span class="text-slate-500 text-[10px] block">Views</span>
+              <span class="text-slate-500 text-[10px] block">Impressions</span>
               <span class="font-bold text-white">${(p.impressions || 0).toLocaleString()}</span>
             </div>
             <div>
@@ -1483,9 +2029,13 @@
               <span class="font-bold text-slate-300">${(p.reach || 0).toLocaleString()}</span>
             </div>
             <div>
-              <span class="text-slate-500 text-[10px] block">ER Rate</span>
+              <span class="text-slate-500 text-[10px] block">Engagement Rate</span>
               <span class="font-bold text-cyan-400">${er}%</span>
             </div>
+            <div><span class="text-slate-500 text-[10px] block">Likes</span><span class="font-semibold text-slate-300">${(p.likes || 0).toLocaleString()}</span></div>
+            <div><span class="text-slate-500 text-[10px] block">Comments</span><span class="font-semibold text-slate-300">${(p.comments || 0).toLocaleString()}</span></div>
+            <div><span class="text-slate-500 text-[10px] block">Shares</span><span class="font-semibold text-slate-300">${(p.shares || 0).toLocaleString()}</span></div>
+            <div><span class="text-slate-500 text-[10px] block">Saves</span><span class="font-semibold text-slate-300">${(p.saves || 0).toLocaleString()}</span></div>
           </div>
         `;
         container.appendChild(card);
@@ -1528,9 +2078,10 @@
           maintainAspectRatio: false,
           plugins: { legend: { labels: { color: '#9ca3af', boxWidth: 10, font: { size: 10 } } } },
           scales: {
-            x: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } },
-            y: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } }
-          }
+            x: { title: { display: true, text: 'Post date', color: '#6b7280', font: { size: 9 } }, ticks: { color: '#6b7280', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }, grid: { color: '#1f2937' } },
+            y: { beginAtZero: true, title: { display: true, text: 'Logged count', color: '#6b7280', font: { size: 9 } }, ticks: { color: '#6b7280', font: { size: 9 }, callback: value => Number(value).toLocaleString() }, grid: { color: '#1f2937' } }
+          },
+          interaction: { mode: 'index', intersect: false }
         }
       });
 
