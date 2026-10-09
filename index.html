@@ -377,6 +377,7 @@
             <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
               <tr>
                 <th class="px-4 py-3">Platform</th>
+                <th class="px-4 py-3">Content Type</th>
                 <th class="px-4 py-3">Title / Caption</th>
                 <th class="px-4 py-3">Upload Date & Time</th>
                 <th class="px-4 py-3 text-right">Impressions</th>
@@ -454,13 +455,20 @@
       </div>
       <form id="form-post" onsubmit="window.savePost(event)" class="space-y-3.5">
         <input type="hidden" id="post-id">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Platform</label>
             <select id="post-platform" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
               <option value="tiktok">TikTok</option>
               <option value="instagram">Instagram</option>
               <option value="youtube">YouTube</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Content Type</label>
+            <select id="post-content-type" required class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+              <option value="feed">Feed</option>
+              <option value="video">Video</option>
             </select>
           </div>
           <div>
@@ -515,6 +523,23 @@
           <button type="submit" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg transition-all">Submit Post</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="modal-calendar-post" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-calendar-post')">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 id="calendar-post-detail-title" class="text-base font-bold text-white">Content Details</h3>
+          <p id="calendar-post-detail-subtitle" class="text-[11px] text-slate-400 mt-1"></p>
+        </div>
+        <button onclick="window.closeModal('modal-calendar-post')" class="text-slate-400 hover:text-white" aria-label="Close content details"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="calendar-post-detail-content" class="space-y-4"></div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button id="calendar-post-edit-button" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Edit Content</button>
+        <button onclick="window.closeModal('modal-calendar-post')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Close</button>
+      </div>
     </div>
   </div>
 
@@ -730,6 +755,7 @@
       document.getElementById('form-post').reset();
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
+      document.getElementById('post-content-type').value = 'feed';
       document.getElementById('modal-post-title').innerText = "Log Content Performance";
       const now = new Date();
       document.getElementById('post-date').value = now.toISOString().split('T')[0];
@@ -745,6 +771,7 @@
       document.getElementById('post-id').value = p.id;
       document.getElementById('modal-post-title').innerText = "Edit Content Record";
       document.getElementById('post-platform').value = p.platform || 'tiktok';
+      document.getElementById('post-content-type').value = p.content_type === 'video' ? 'video' : 'feed';
       document.getElementById('post-date').value = p.post_date || new Date().toISOString().split('T')[0];
       document.getElementById('post-time').value = p.post_time || '00:00';
       document.getElementById('post-title').value = p.title || '';
@@ -769,6 +796,7 @@
         id: postId,
         account_id: state.currentAccountId,
         platform: document.getElementById('post-platform').value,
+        content_type: document.getElementById('post-content-type').value,
         title: document.getElementById('post-title').value,
         link: document.getElementById('post-link').value || '',
         post_date: document.getElementById('post-date').value,
@@ -789,23 +817,7 @@
 
       if (supabaseClient) {
         try {
-          const { error } = await supabaseClient.from('content_posts').upsert({
-            id: postObj.id,
-            account_id: postObj.account_id,
-            platform: postObj.platform,
-            title: postObj.title,
-            link: postObj.link,
-            post_date: postObj.post_date,
-            post_time: postObj.post_time,
-            impressions: postObj.impressions,
-            reach: postObj.reach,
-            likes: postObj.likes,
-            comments: postObj.comments,
-            shares: postObj.shares,
-            saves: postObj.saves
-          });
-
-          if (error) console.error("Supabase Post Save Error:", error);
+          await upsertPostsToCloud([postObj]);
         } catch (err) {
           console.warn("Supabase Exception:", err);
         }
@@ -892,6 +904,7 @@
               id: p.id,
               account_id: p.account_id,
               platform: p.platform,
+              content_type: p.content_type === 'video' ? 'video' : 'feed',
               title: p.title,
               link: p.link || '',
               post_date: p.post_date,
@@ -903,7 +916,7 @@
               shares: p.shares || 0,
               saves: p.saves || 0
             }));
-            await supabaseClient.from('content_posts').upsert(payload);
+            await upsertPostsToCloud(payload);
           }
         } catch (err) {
           console.warn("Pre-sync cloud upload warning:", err);
@@ -922,11 +935,12 @@
       }
 
       let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Platform,Title,Link,Date,Time,Impressions,Reach,Likes,Comments,Shares,Saves\n";
+      csvContent += "Platform,Content Type,Title,Link,Date,Time,Impressions,Reach,Likes,Comments,Shares,Saves\n";
 
       filteredPosts.forEach(p => {
         let row = [
           `"${p.platform}"`,
+          `"${p.content_type === 'video' ? 'Video' : 'Feed'}"`,
           `"${(p.title || '').replace(/"/g, '""')}"`,
           `"${p.link || ''}"`,
           `"${p.post_date}"`,
@@ -1602,8 +1616,10 @@
 
           const { data: pst, error: pstErr } = await supabaseClient.from('content_posts').select('*');
           if (!pstErr && pst && pst.length > 0) {
+            const localContentTypes = new Map(state.posts.map(post => [String(post.id), post.content_type]));
             state.posts = pst.map(p => ({
               ...p,
+              content_type: p.content_type === 'video' || localContentTypes.get(String(p.id)) === 'video' ? 'video' : 'feed',
               post_date: p.post_date || p.publish_date,
               post_time: p.post_time || p.publish_time || '00:00',
               link: p.link || '',
@@ -1619,6 +1635,7 @@
               id: p.id,
               account_id: p.account_id,
               platform: p.platform,
+              content_type: p.content_type === 'video' ? 'video' : 'feed',
               title: p.title,
               link: p.link || '',
               post_date: p.post_date,
@@ -1630,7 +1647,7 @@
               shares: p.shares || 0,
               saves: p.saves || 0
             }));
-            await supabaseClient.from('content_posts').upsert(payload);
+            await upsertPostsToCloud(payload);
           }
 
           saveLocalData();
@@ -1661,6 +1678,24 @@
       localStorage.setItem('sn_accounts', JSON.stringify(state.accounts));
       localStorage.setItem('sn_posts', JSON.stringify(state.posts));
       localStorage.setItem('sn_last_saved_at', new Date().toISOString());
+    }
+
+    async function upsertPostsToCloud(posts) {
+      const { error } = await supabaseClient.from('content_posts').upsert(posts);
+      const missingContentTypeColumn = error && (
+        error.code === '42703' ||
+        (String(error.message || '').toLowerCase().includes('content_type') &&
+          (String(error.message || '').toLowerCase().includes('column') ||
+            String(error.message || '').toLowerCase().includes('schema cache')))
+      );
+      if (missingContentTypeColumn) {
+        const legacyPosts = posts.map(({ content_type, ...post }) => post);
+        const retry = await supabaseClient.from('content_posts').upsert(legacyPosts);
+        if (retry.error) console.error("Supabase Post Save Error:", retry.error);
+        console.warn("Cloud table is missing the content_type column; this content type is saved only in this browser.");
+        return;
+      }
+      if (error) console.error("Supabase Post Save Error:", error);
     }
 
     function renderApp() {
@@ -1857,15 +1892,70 @@
       for (let index = 0; index < firstDay; index++) cells.push('<div class="calendar-day rounded-lg bg-slate-950/40 border border-slate-900"></div>');
       for (let day = 1; day <= daysInMonth; day++) {
         const posts = byDay[day] || [];
-        const visible = posts.slice(0, 2).map(post =>
-          `<div class="truncate rounded bg-slate-800/80 px-1 py-0.5 text-[9px] text-slate-300" title="${escapeReportHtml(post.title)}">${escapeReportHtml(post.platform)} · ${escapeReportHtml(post.title || 'Untitled')}</div>`
-        ).join('');
+        const visible = posts.slice(0, 2).map(post => {
+          const type = post.content_type === 'video' ? 'Video' : 'Feed';
+          return `<button type="button" onclick="window.openCalendarPost('${escapeReportHtml(post.id)}')" class="block w-full text-left truncate rounded px-1 py-0.5 text-[9px] hover:ring-1 hover:ring-white/30 ${type === 'Video' ? 'bg-purple-500/10 text-purple-300' : 'bg-cyan-500/10 text-cyan-300'}" title="View ${type} details">${type}</button>`;
+        }).join('');
         const extra = posts.length > 2 ? `<div class="text-[9px] text-cyan-400">+${posts.length - 2} more</div>` : '';
         cells.push(`<div class="calendar-day rounded-lg border ${posts.length ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-slate-800 bg-slate-900/50'} p-1.5 space-y-1 overflow-hidden">
           <div class="flex items-center justify-between"><span class="text-[10px] font-semibold ${posts.length ? 'text-white' : 'text-slate-500'}">${day}</span>${posts.length ? `<span class="text-[9px] text-cyan-300">${posts.length}</span>` : ''}</div>${visible}${extra}
         </div>`);
       }
       grid.innerHTML = cells.join('');
+    };
+
+    window.openCalendarPost = function(postId) {
+      const post = state.posts.find(item => String(item.id) === String(postId));
+      if (!post) {
+        alert('This content record could not be found. Refresh the calendar and try again.');
+        return;
+      }
+      const engagement = (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+        (Number(post.shares) || 0) + (Number(post.saves) || 0);
+      const engagementRate = Number(post.impressions) > 0
+        ? (engagement / Number(post.impressions) * 100).toFixed(1)
+        : '0.0';
+      const contentType = post.content_type === 'video' ? 'Video' : 'Feed';
+      const link = String(post.link || '');
+      let safeLink = '';
+      if (link) {
+        try {
+          const parsedLink = new URL(link);
+          if (parsedLink.protocol === 'http:' || parsedLink.protocol === 'https:') safeLink = parsedLink.href;
+        } catch (error) {
+          console.warn('Invalid content URL in calendar record:', error);
+        }
+      }
+      document.getElementById('calendar-post-detail-title').textContent = post.title || 'Untitled Content';
+      document.getElementById('calendar-post-detail-subtitle').textContent =
+        `${contentType} · ${post.platform || 'Platform not specified'} · ${post.post_date || 'Date not specified'} ${post.post_time || ''}`.trim();
+      const details = [
+        ['Impressions', Number(post.impressions) || 0],
+        ['Reach', Number(post.reach) || 0],
+        ['Likes', Number(post.likes) || 0],
+        ['Comments', Number(post.comments) || 0],
+        ['Shares', Number(post.shares) || 0],
+        ['Saves', Number(post.saves) || 0],
+        ['Engagement Rate', `${engagementRate}%`]
+      ];
+      document.getElementById('calendar-post-detail-content').innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] capitalize">${escapeReportHtml(post.platform || 'Unknown platform')}</span>
+        </div>
+        <p class="text-sm text-slate-200 whitespace-pre-wrap break-words">${escapeReportHtml(post.title || 'Untitled Content')}</p>
+        ${safeLink ? `<a href="${escapeReportHtml(safeLink)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-cyan-400 hover:underline break-all">Open content link <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i></a>` : ''}
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          ${details.map(([label, value]) => `<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><span class="block text-[10px] text-slate-500">${label}</span><span class="block mt-1 text-sm font-semibold text-white">${typeof value === 'number' ? value.toLocaleString() : value}</span></div>`).join('')}
+        </div>`;
+      document.getElementById('calendar-post-edit-button').onclick = () => {
+        window.closeModal('modal-calendar-post');
+        window.openEditPostModal(post.id);
+      };
+      const modal = document.getElementById('modal-calendar-post');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
     };
 
     function getFilteredPosts() {
@@ -1954,26 +2044,28 @@
       const tbody = document.getElementById('posts-table-body');
       tbody.innerHTML = '';
       if (posts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
         return;
       }
       posts.forEach(p => {
         const totalEng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
         const er = p.impressions > 0 ? ((totalEng / p.impressions) * 100).toFixed(1) : '0.0';
+        const contentType = p.content_type === 'video' ? 'Video' : 'Feed';
 
         const titleDisplay = p.link 
-          ? `<a href="${p.link}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Open Link: ${p.link}">
-              <span class="truncate">${p.title}</span>
+          ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Open Link: ${escapeReportHtml(p.link)}">
+              <span class="truncate">${escapeReportHtml(p.title)}</span>
               <i data-lucide="external-link" class="w-3 h-3 shrink-0"></i>
              </a>`
-          : `<span class="text-white font-medium max-w-xs truncate">${p.title}</span>`;
+          : `<span class="text-white font-medium max-w-xs truncate">${escapeReportHtml(p.title)}</span>`;
 
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-800/40 transition-colors";
         tr.innerHTML = `
-          <td class="px-4 py-3 capitalize font-medium text-slate-300">${p.platform}</td>
+          <td class="px-4 py-3 capitalize font-medium text-slate-300">${escapeReportHtml(p.platform)}</td>
+          <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span></td>
           <td class="px-4 py-3">${titleDisplay}</td>
-          <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${p.post_date} <span class="text-cyan-400 ml-1">${p.post_time || '00:00'}</span></td>
+          <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${escapeReportHtml(p.post_date)} <span class="text-cyan-400 ml-1">${escapeReportHtml(p.post_time || '00:00')}</span></td>
           <td class="px-4 py-3 text-right">${getImpressionBadge(p.impressions)}</td>
           <td class="px-4 py-3 text-right text-slate-300">${(p.reach || 0).toLocaleString()}</td>
           <td class="px-4 py-3 text-right text-slate-300">${(p.likes || 0).toLocaleString()}</td>
@@ -2020,6 +2112,7 @@
           </div>
 
           <div class="grid grid-cols-3 gap-2 text-[11px] pt-2 border-t border-slate-800/80">
+            <div><span class="text-slate-500 text-[10px] block">Content Type</span><span class="font-semibold text-white">${p.content_type === 'video' ? 'Video' : 'Feed'}</span></div>
             <div>
               <span class="text-slate-500 text-[10px] block">Impressions</span>
               <span class="font-bold text-white">${(p.impressions || 0).toLocaleString()}</span>
