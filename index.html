@@ -296,37 +296,30 @@
 
       <!-- Timeframe Filter Toolbar -->
       <div class="glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div class="flex items-center justify-between sm:justify-start space-x-2">
-          <span class="text-xs font-medium text-slate-400 flex items-center gap-1.5 shrink-0">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <label for="timeframe-filter" class="text-xs font-medium text-slate-400 flex items-center gap-1.5 shrink-0">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
-            Range:
-          </span>
-          <div class="flex items-center bg-slate-900/90 rounded-lg p-1 border border-slate-800 text-xs w-full sm:w-auto justify-around">
-            <button id="tf-all" onclick="window.setTimeframe('all')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-white bg-slate-800 text-center">All</button>
-            <button id="tf-weekly" onclick="window.setTimeframe('weekly')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center">Weekly</button>
-            <button id="tf-monthly" onclick="window.setTimeframe('monthly')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center">Monthly</button>
-          </div>
+            Range
+          </label>
+          <select id="timeframe-filter" onchange="window.setTimeframe(this.value)" class="w-full sm:w-40 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+            <option value="all">All time</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
         </div>
 
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
       </div>
 
-      <!-- PLATFORM TABS -->
-      <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
-        <button id="tab-all" onclick="window.selectPlatform('all')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap shrink-0">
-          <i data-lucide="layers" class="w-3.5 h-3.5"></i> All Platforms
-        </button>
-        <button id="tab-tiktok" onclick="window.selectPlatform('tiktok')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
-          <i data-lucide="video" class="w-3.5 h-3.5 text-pink-400"></i> TikTok
-        </button>
-        <button id="tab-instagram" onclick="window.selectPlatform('instagram')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
-          <svg class="w-3.5 h-3.5 text-purple-400 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          Instagram
-        </button>
-        <button id="tab-youtube" onclick="window.selectPlatform('youtube')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
-          <svg class="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-          YouTube
-        </button>
+      <!-- PLATFORM FILTER -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+        <label for="platform-filter" class="text-xs font-medium text-slate-400">Platform</label>
+        <select id="platform-filter" onchange="window.selectPlatform(this.value)" class="w-full sm:w-48 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <option value="all">All platforms</option>
+          <option value="tiktok">TikTok</option>
+          <option value="instagram">Instagram</option>
+          <option value="youtube">YouTube</option>
+        </select>
       </div>
 
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -469,9 +462,8 @@
             <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Logged content for this account and selected platform. This is a history view, not a publishing scheduler.</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="window.shiftCalendarMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-white" aria-label="Previous month"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-            <input id="content-calendar-month" type="month" class="px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderContentCalendar()">
-            <button onclick="window.shiftCalendarMonth(1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-white" aria-label="Next month"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+            <label for="content-calendar-month" class="text-xs font-medium text-slate-400">Month</label>
+            <select id="content-calendar-month" class="min-w-40 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderContentCalendar()"></select>
           </div>
         </div>
         <div class="overflow-x-auto custom-scrollbar">
@@ -1062,13 +1054,9 @@
     };
 
     window.setTimeframe = function(type) {
+      if (!['all', 'weekly', 'monthly'].includes(type)) return;
       state.timeframe = type;
       state.contentPage = 1;
-      ['all', 'weekly', 'monthly'].forEach(t => {
-        const btn = document.getElementById(`tf-${t}`);
-        if (t === type) btn.className = "flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-white bg-slate-800 text-center font-semibold";
-        else btn.className = "flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center";
-      });
 
       if (type === 'weekly') state.selectedDateVal = new Date().toISOString().split('T')[0];
       else if (type === 'monthly') state.selectedDateVal = new Date().toISOString().slice(0, 7);
@@ -1084,16 +1072,9 @@
     };
 
     window.selectPlatform = function(plat) {
+      if (!['all', 'tiktok', 'instagram', 'youtube'].includes(plat)) return;
       state.currentPlatform = plat;
       state.contentPage = 1;
-      ['all', 'tiktok', 'instagram', 'youtube'].forEach(p => {
-        const btn = document.getElementById(`tab-${p}`);
-        if (p === plat) {
-          btn.className = "px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap shrink-0";
-        } else {
-          btn.className = "px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0";
-        }
-      });
       renderDashboard();
     };
 
@@ -2085,6 +2066,8 @@
     function renderDashboard() {
       renderTimeframeControls();
       const filteredPosts = getFilteredPosts();
+      document.getElementById('timeframe-filter').value = state.timeframe;
+      document.getElementById('platform-filter').value = state.currentPlatform;
       document.getElementById('content-type-filter').value = state.contentTypeFilter;
       renderDataStatus('dashboard-data-status');
       renderMetricsCards(filteredPosts, getPreviousPeriodPosts());
@@ -2451,14 +2434,31 @@
       });
     }
 
-    window.shiftCalendarMonth = function(offset) {
+    function renderCalendarMonthOptions(selectedMonth) {
       const input = document.getElementById('content-calendar-month');
-      const value = input && input.value ? input.value : localDateString(new Date()).slice(0, 7);
-      const [year, month] = value.split('-').map(Number);
-      const date = new Date(year, month - 1 + offset, 1);
-      state.calendarMonth = localDateString(date).slice(0, 7);
-      window.renderContentCalendar();
-    };
+      if (!input) return;
+      const currentMonth = localDateString(new Date()).slice(0, 7);
+      const accountMonths = state.posts
+        .filter(post => String(post.account_id) === String(state.currentAccountId) && /^\d{4}-\d{2}/.test(String(post.post_date || '')))
+        .map(post => String(post.post_date).slice(0, 7));
+      const earliestMonth = accountMonths.length ? accountMonths.reduce((a, b) => a < b ? a : b) : currentMonth;
+      const latestMonth = accountMonths.length ? accountMonths.reduce((a, b) => a > b ? a : b) : currentMonth;
+      const [startYear, startMonth] = (earliestMonth < currentMonth ? earliestMonth : currentMonth).split('-').map(Number);
+      const [endYear, endMonth] = (latestMonth > currentMonth ? latestMonth : currentMonth).split('-').map(Number);
+      const start = new Date(startYear, startMonth - 1 - 24, 1);
+      const end = new Date(endYear, endMonth - 1 + 12, 1);
+      const months = [];
+      for (let cursor = new Date(end); cursor >= start; cursor.setMonth(cursor.getMonth() - 1)) {
+        months.push(localDateString(cursor).slice(0, 7));
+      }
+      if (!months.includes(selectedMonth)) months.push(selectedMonth);
+      months.sort((a, b) => b.localeCompare(a));
+      input.innerHTML = months.map(month => {
+        const [year, monthNumber] = month.split('-').map(Number);
+        const label = new Date(year, monthNumber - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        return `<option value="${month}">${label}</option>`;
+      }).join('');
+    }
 
     window.renderContentCalendar = function() {
       const input = document.getElementById('content-calendar-month');
@@ -2466,6 +2466,7 @@
       if (!input || !grid) return;
       const month = input.value || state.calendarMonth || localDateString(new Date()).slice(0, 7);
       state.calendarMonth = month;
+      renderCalendarMonthOptions(month);
       input.value = month;
       const [year, monthNumber] = month.split('-').map(Number);
       if (!year || monthNumber < 1 || monthNumber > 12) {
