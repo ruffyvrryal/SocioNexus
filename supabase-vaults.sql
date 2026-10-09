@@ -1,5 +1,5 @@
 -- Run this migration once in the SocioNexus Supabase SQL Editor.
--- Replace REPLACE_WITH_OWNER_EMAIL with the email of the first vault owner.
+-- Bootstrap the first vault owner using ruffyprasetya@gmail.com.
 
 begin;
 
