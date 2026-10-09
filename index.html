@@ -390,6 +390,48 @@
         </div>
       </div>
 
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-xs sm:text-sm font-bold text-white">Engagement by Niche</h3>
+            <p id="niche-performance-period" class="text-[10px] sm:text-xs text-slate-400 mt-0.5"></p>
+            <p class="text-[10px] text-slate-500 mt-0.5">Interactions include likes, comments, shares, and saves. Rate = interactions ÷ impressions.</p>
+          </div>
+          <button onclick="window.openNicheManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
+            <i data-lucide="tags" class="w-3.5 h-3.5"></i>Manage Niche List
+          </button>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full min-w-[540px] text-left text-xs text-slate-300">
+            <thead class="text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr><th class="px-3 py-2">Niche</th><th class="px-3 py-2 text-right">Posts</th><th class="px-3 py-2 text-right">Impressions</th><th class="px-3 py-2 text-right">Reach</th><th class="px-3 py-2 text-right">Interactions</th><th class="px-3 py-2 text-right">Interaction Rate</th></tr>
+            </thead>
+            <tbody id="niche-performance-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 class="text-xs sm:text-sm font-bold text-white">Viewers by Country</h3>
+            <p id="viewer-location-account" class="text-[10px] sm:text-xs text-slate-400 mt-0.5"></p>
+            <p class="text-[10px] text-slate-500 mt-0.5">Audience percentages entered manually; not calculated from content data.</p>
+          </div>
+          <button onclick="window.openViewerLocationManager()" class="min-h-[40px] px-3 py-2 text-xs font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg inline-flex items-center justify-center gap-1.5">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>Manage Countries
+          </button>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full min-w-[420px] text-left text-xs text-slate-300">
+            <thead class="text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr><th class="px-3 py-2">Country</th><th class="px-3 py-2 w-1/2">Viewer Share</th><th class="px-3 py-2 text-right">Percentage</th></tr>
+            </thead>
+            <tbody id="viewer-location-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- CHARTS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <div class="lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
@@ -468,6 +510,7 @@
               <tr>
                 <th class="px-4 py-3">Platform</th>
                 <th class="px-4 py-3">Content Type</th>
+                <th class="px-4 py-3">Niche</th>
                 <th class="px-4 py-3">Title / Caption</th>
                 <th class="px-4 py-3">Upload Date & Time</th>
                 <th class="px-4 py-3 text-right">Impressions</th>
@@ -575,6 +618,13 @@
           <input type="text" id="post-title" required placeholder="e.g. 5 VS Code Tips for Developers" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <label for="post-niche" class="block text-xs font-medium text-slate-300">Niche</label>
+            <button type="button" onclick="window.openNicheManager()" class="text-[10px] font-medium text-cyan-300 hover:text-cyan-200">Manage niche list</button>
+          </div>
+          <select id="post-niche" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none"></select>
+        </div>
+        <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Video / Post URL (Optional)</label>
           <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
@@ -629,6 +679,60 @@
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
         <button id="calendar-post-edit-button" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Edit Content</button>
         <button onclick="window.closeModal('modal-calendar-post')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-niche-manager" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-niche-manager')">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white">Manage Niche List</h3>
+          <p class="text-[11px] text-slate-400 mt-1">Add the niche labels you want to assign to content. This list is saved in this browser.</p>
+        </div>
+        <button onclick="window.closeModal('modal-niche-manager')" class="text-slate-400 hover:text-white" aria-label="Close niche list"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form onsubmit="window.addNicheType(event)" class="flex gap-2">
+        <input id="niche-type-input" type="text" maxlength="60" required placeholder="e.g. Beauty, Food, Gaming" class="min-w-0 flex-1 px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+        <button type="submit" class="min-h-[40px] px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl">Add Niche</button>
+      </form>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Available niches</p>
+        <div id="niche-type-list" class="flex flex-wrap gap-2"></div>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="window.closeModal('modal-niche-manager')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-viewer-location-manager" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-viewer-location-manager')">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white">Manage Viewer Countries</h3>
+          <p id="viewer-location-manager-account" class="text-[11px] text-slate-400 mt-1"></p>
+        </div>
+        <button onclick="window.closeModal('modal-viewer-location-manager')" class="text-slate-400 hover:text-white" aria-label="Close viewer country manager"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form onsubmit="window.saveViewerLocation(event)" class="grid grid-cols-1 sm:grid-cols-[1fr_120px_auto] gap-2 items-end">
+        <input id="viewer-location-edit-country" type="hidden">
+        <div>
+          <label for="viewer-location-country" class="block text-xs font-medium text-slate-300 mb-1">Country</label>
+          <input id="viewer-location-country" type="text" maxlength="80" required placeholder="e.g. Indonesia" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+        </div>
+        <div>
+          <label for="viewer-location-percentage" class="block text-xs font-medium text-slate-300 mb-1">Viewers (%)</label>
+          <input id="viewer-location-percentage" type="number" min="0" max="100" step="0.1" required placeholder="0–100" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+        </div>
+        <button id="viewer-location-submit" type="submit" class="min-h-[40px] px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl">Add Country</button>
+      </form>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Countries for this account</p>
+        <div id="viewer-location-list" class="space-y-2"></div>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-slate-800">
+        <button onclick="window.closeModal('modal-viewer-location-manager')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Done</button>
       </div>
     </div>
   </div>
@@ -738,6 +842,8 @@
     const state = {
       accounts: [],
       posts: [],
+      niches: [],
+      viewerLocations: [],
       currentAccountId: null,
       currentPlatform: 'all',
       timeframe: 'all',
@@ -847,6 +953,10 @@
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
       document.getElementById('post-content-type').value = 'feed';
+      renderNicheOptions();
+      const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
+      const postNiche = document.getElementById('post-niche');
+      if (account && Array.from(postNiche.options).some(option => option.value === account.niche)) postNiche.value = account.niche;
       document.getElementById('modal-post-title').innerText = "Log Content Performance";
       const now = new Date();
       document.getElementById('post-date').value = now.toISOString().split('T')[0];
@@ -863,6 +973,8 @@
       document.getElementById('modal-post-title').innerText = "Edit Content Record";
       document.getElementById('post-platform').value = p.platform || 'tiktok';
       document.getElementById('post-content-type').value = p.content_type === 'video' ? 'video' : 'feed';
+      renderNicheOptions(p.niche);
+      document.getElementById('post-niche').value = p.niche || '';
       document.getElementById('post-date').value = p.post_date || new Date().toISOString().split('T')[0];
       document.getElementById('post-time').value = p.post_time || '00:00';
       document.getElementById('post-title').value = p.title || '';
@@ -888,6 +1000,7 @@
         account_id: state.currentAccountId,
         platform: document.getElementById('post-platform').value,
         content_type: document.getElementById('post-content-type').value,
+        niche: document.getElementById('post-niche').value,
         title: document.getElementById('post-title').value,
         link: document.getElementById('post-link').value || '',
         post_date: document.getElementById('post-date').value,
@@ -996,6 +1109,7 @@
               account_id: p.account_id,
               platform: p.platform,
               content_type: p.content_type === 'video' ? 'video' : 'feed',
+              niche: p.niche || getPostNiche(p),
               title: p.title,
               link: p.link || '',
               post_date: p.post_date,
@@ -1026,12 +1140,13 @@
       }
 
       let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Platform,Content Type,Title,Link,Date,Time,Impressions,Reach,Likes,Comments,Shares,Saves\n";
+      csvContent += "Platform,Content Type,Niche,Title,Link,Date,Time,Impressions,Reach,Likes,Comments,Shares,Saves\n";
 
       filteredPosts.forEach(p => {
         let row = [
           `"${p.platform}"`,
           `"${p.content_type === 'video' ? 'Video' : 'Feed'}"`,
+          `"${getPostNiche(p).replace(/"/g, '""')}"`,
           `"${(p.title || '').replace(/"/g, '""')}"`,
           `"${p.link || ''}"`,
           `"${p.post_date}"`,
@@ -1708,9 +1823,11 @@
           const { data: pst, error: pstErr } = await supabaseClient.from('content_posts').select('*');
           if (!pstErr && pst && pst.length > 0) {
             const localContentTypes = new Map(state.posts.map(post => [String(post.id), post.content_type]));
+            const localNiches = new Map(state.posts.map(post => [String(post.id), post.niche]));
             state.posts = pst.map(p => ({
               ...p,
               content_type: p.content_type === 'video' || localContentTypes.get(String(p.id)) === 'video' ? 'video' : 'feed',
+              niche: p.niche || localNiches.get(String(p.id)) || '',
               post_date: p.post_date || p.publish_date,
               post_time: p.post_time || p.publish_time || '00:00',
               link: p.link || '',
@@ -1727,6 +1844,7 @@
               account_id: p.account_id,
               platform: p.platform,
               content_type: p.content_type === 'video' ? 'video' : 'feed',
+              niche: p.niche || getPostNiche(p),
               title: p.title,
               link: p.link || '',
               post_date: p.post_date,
@@ -1751,6 +1869,8 @@
     function loadLocalStorageData() {
       loadLocalStorageAccounts();
       loadLocalStoragePosts();
+      loadLocalStorageNiches();
+      loadLocalStorageViewerLocations();
     }
 
     function loadLocalStorageAccounts() {
@@ -1765,28 +1885,74 @@
       else state.posts = [];
     }
 
+    function loadLocalStorageNiches() {
+      const localNiches = localStorage.getItem('sn_niches');
+      const parsedNiches = localNiches ? JSON.parse(localNiches) : [];
+      const savedNiches = Array.isArray(parsedNiches)
+        ? parsedNiches.filter(niche => typeof niche === 'string' && niche.trim())
+        : [];
+      if (localStorage.getItem('sn_niches_initialized') !== 'true') {
+        state.niches = Array.from(new Set([
+          ...savedNiches,
+          ...state.accounts.map(account => String(account.niche || '').trim()),
+          ...state.posts.map(post => String(post.niche || '').trim())
+        ].filter(Boolean))).sort((a, b) => a.localeCompare(b));
+        localStorage.setItem('sn_niches', JSON.stringify(state.niches));
+        localStorage.setItem('sn_niches_initialized', 'true');
+        return;
+      }
+      state.niches = savedNiches;
+    }
+
+    function loadLocalStorageViewerLocations() {
+      const savedLocations = localStorage.getItem('sn_viewer_locations');
+      const parsedLocations = savedLocations ? JSON.parse(savedLocations) : [];
+      state.viewerLocations = Array.isArray(parsedLocations)
+        ? parsedLocations.filter(location =>
+          location && (typeof location.account_id === 'string' || typeof location.account_id === 'number') &&
+          typeof location.country === 'string' && location.country.trim() &&
+          Number.isFinite(Number(location.percentage)) &&
+          Number(location.percentage) >= 0 && Number(location.percentage) <= 100
+        ).map(location => ({
+          account_id: String(location.account_id),
+          country: location.country.trim(),
+          percentage: Number(location.percentage)
+        }))
+        : [];
+    }
+
     function saveLocalData() {
       localStorage.setItem('sn_accounts', JSON.stringify(state.accounts));
       localStorage.setItem('sn_posts', JSON.stringify(state.posts));
+      localStorage.setItem('sn_niches', JSON.stringify(state.niches));
+      localStorage.setItem('sn_niches_initialized', 'true');
+      localStorage.setItem('sn_viewer_locations', JSON.stringify(state.viewerLocations));
       localStorage.setItem('sn_last_saved_at', new Date().toISOString());
     }
 
     async function upsertPostsToCloud(posts) {
-      const { error } = await supabaseClient.from('content_posts').upsert(posts);
-      const missingContentTypeColumn = error && (
-        error.code === '42703' ||
-        (String(error.message || '').toLowerCase().includes('content_type') &&
-          (String(error.message || '').toLowerCase().includes('column') ||
-            String(error.message || '').toLowerCase().includes('schema cache')))
-      );
-      if (missingContentTypeColumn) {
-        const legacyPosts = posts.map(({ content_type, ...post }) => post);
-        const retry = await supabaseClient.from('content_posts').upsert(legacyPosts);
-        if (retry.error) console.error("Supabase Post Save Error:", retry.error);
-        console.warn("Cloud table is missing the content_type column; this content type is saved only in this browser.");
-        return;
+      let payload = posts;
+      const missingFields = new Set();
+      while (true) {
+        const { error } = await supabaseClient.from('content_posts').upsert(payload);
+        if (!error) break;
+        const message = String(error.message || '').toLowerCase();
+        const missingField = ['content_type', 'niche'].find(field =>
+          message.includes(field) && (error.code === '42703' || message.includes('column') || message.includes('schema cache'))
+        );
+        if (!missingField || missingFields.has(missingField)) {
+          console.error("Supabase Post Save Error:", error);
+          return;
+        }
+        missingFields.add(missingField);
+        payload = payload.map(post => {
+          const { [missingField]: omitted, ...legacyPost } = post;
+          return legacyPost;
+        });
       }
-      if (error) console.error("Supabase Post Save Error:", error);
+      if (missingFields.size) {
+        console.warn(`Cloud table is missing ${Array.from(missingFields).join(', ')} column${missingFields.size > 1 ? 's' : ''}; this metadata is saved only in this browser.`);
+      }
     }
 
     function renderApp() {
@@ -1908,6 +2074,8 @@
       renderDataStatus('dashboard-data-status');
       renderMetricsCards(filteredPosts, getPreviousPeriodPosts());
       renderContentTypeComparison();
+      renderNichePerformance();
+      renderViewerLocations();
       renderCharts(filteredPosts);
       renderTable(filteredPosts);
       renderMobileCards(filteredPosts);
@@ -1920,6 +2088,229 @@
       state.contentTypeFilter = type;
       renderDashboard();
     };
+
+    function renderNicheOptions(selectedNiche = '') {
+      const select = document.getElementById('post-niche');
+      if (!select) return;
+      const options = [...state.niches];
+      if (selectedNiche && !options.some(niche => niche.toLowerCase() === selectedNiche.toLowerCase())) {
+        options.push(selectedNiche);
+      }
+      select.innerHTML = `<option value="">Uncategorized</option>${options.map(niche =>
+        `<option value="${escapeReportHtml(niche)}">${escapeReportHtml(niche)}</option>`
+      ).join('')}`;
+      if (selectedNiche) select.value = selectedNiche;
+    }
+
+    window.openNicheManager = function() {
+      renderNicheList();
+      const modal = document.getElementById('modal-niche-manager');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    };
+
+    function renderNicheList() {
+      const container = document.getElementById('niche-type-list');
+      if (!container) return;
+      if (!state.niches.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500">No niches added yet. Add your first niche above.</p>';
+      } else {
+        container.innerHTML = state.niches.map((niche, index) => `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-slate-200">
+            ${escapeReportHtml(niche)}
+            <button type="button" onclick="window.removeNicheType(${index})" class="p-0.5 text-slate-400 hover:text-rose-300" aria-label="Remove ${escapeReportHtml(niche)}"><i data-lucide="x" class="w-3 h-3"></i></button>
+          </span>`).join('');
+      }
+      renderNicheOptions(document.getElementById('post-niche')?.value || '');
+      lucide.createIcons();
+    }
+
+    window.addNicheType = function(event) {
+      event.preventDefault();
+      const input = document.getElementById('niche-type-input');
+      const niche = input.value.trim();
+      if (!niche) return;
+      if (state.niches.some(existing => existing.toLowerCase() === niche.toLowerCase())) {
+        alert('This niche is already in the list.');
+        return;
+      }
+      state.niches.push(niche);
+      state.niches.sort((a, b) => a.localeCompare(b));
+      saveLocalData();
+      input.value = '';
+      renderNicheList();
+      if (state.currentAccountId) renderDashboard();
+    };
+
+    window.removeNicheType = function(index) {
+      const niche = state.niches[index];
+      if (niche === undefined) return;
+      if (!confirm(`Remove "${niche}" from the niche list? Existing content records will keep this niche.`)) return;
+      state.niches.splice(index, 1);
+      saveLocalData();
+      renderNicheList();
+      if (state.currentAccountId) renderDashboard();
+    };
+
+    window.openViewerLocationManager = function() {
+      const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
+      if (!account) return;
+      document.getElementById('viewer-location-manager-account').textContent = account.name;
+      resetViewerLocationForm();
+      renderViewerLocationList();
+      const modal = document.getElementById('modal-viewer-location-manager');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    };
+
+    function resetViewerLocationForm() {
+      document.getElementById('viewer-location-edit-country').value = '';
+      document.getElementById('viewer-location-country').value = '';
+      document.getElementById('viewer-location-percentage').value = '';
+      document.getElementById('viewer-location-submit').textContent = 'Add Country';
+    }
+
+    function renderViewerLocationList() {
+      const container = document.getElementById('viewer-location-list');
+      if (!container) return;
+      const locations = state.viewerLocations
+        .map((location, index) => ({ ...location, index }))
+        .filter(location => String(location.account_id) === String(state.currentAccountId))
+        .sort((a, b) => b.percentage - a.percentage || a.country.localeCompare(b.country));
+      if (!locations.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500">No viewer countries added for this account yet.</p>';
+        return;
+      }
+      container.innerHTML = locations.map(location => `
+        <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+          <span class="min-w-0 truncate text-xs font-medium text-white">${escapeReportHtml(location.country)} <span class="text-cyan-300">${location.percentage.toFixed(1)}%</span></span>
+          <div class="flex shrink-0 items-center gap-2">
+            <button type="button" onclick="window.editViewerLocation(${location.index})" class="text-[11px] text-slate-400 hover:text-cyan-300">Edit</button>
+            <button type="button" onclick="window.removeViewerLocation(${location.index})" class="text-[11px] text-slate-400 hover:text-rose-300">Remove</button>
+          </div>
+        </div>`).join('');
+    }
+
+    window.editViewerLocation = function(index) {
+      const location = state.viewerLocations[index];
+      if (!location || String(location.account_id) !== String(state.currentAccountId)) return;
+      document.getElementById('viewer-location-edit-country').value = location.country;
+      document.getElementById('viewer-location-country').value = location.country;
+      document.getElementById('viewer-location-percentage').value = location.percentage;
+      document.getElementById('viewer-location-submit').textContent = 'Save Changes';
+      document.getElementById('viewer-location-country').focus();
+    };
+
+    window.saveViewerLocation = function(event) {
+      event.preventDefault();
+      const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
+      const country = document.getElementById('viewer-location-country').value.trim();
+      const percentage = document.getElementById('viewer-location-percentage').valueAsNumber;
+      const originalCountry = document.getElementById('viewer-location-edit-country').value;
+      if (!account || !country || !Number.isFinite(percentage) || percentage < 0 || percentage > 100) {
+        alert('Enter a country and a viewer percentage from 0 to 100.');
+        return;
+      }
+      const duplicate = state.viewerLocations.some(location =>
+        String(location.account_id) === String(account.id) &&
+        location.country.toLowerCase() !== originalCountry.toLowerCase() &&
+        location.country.toLowerCase() === country.toLowerCase()
+      );
+      if (duplicate) {
+        alert('This country is already listed for this account.');
+        return;
+      }
+
+      if (originalCountry) {
+        const existing = state.viewerLocations.find(location =>
+          String(location.account_id) === String(account.id) && location.country === originalCountry
+        );
+        if (!existing) return;
+        existing.country = country;
+        existing.percentage = percentage;
+      } else {
+        state.viewerLocations.push({ account_id: account.id, country, percentage });
+      }
+      saveLocalData();
+      resetViewerLocationForm();
+      renderViewerLocationList();
+      renderDashboard();
+    };
+
+    window.removeViewerLocation = function(index) {
+      const location = state.viewerLocations[index];
+      if (!location || String(location.account_id) !== String(state.currentAccountId)) return;
+      if (!confirm(`Remove ${location.country} from this account's viewer locations?`)) return;
+      state.viewerLocations.splice(index, 1);
+      saveLocalData();
+      renderViewerLocationList();
+      renderDashboard();
+    };
+
+    function renderViewerLocations() {
+      const tbody = document.getElementById('viewer-location-body');
+      const accountLabel = document.getElementById('viewer-location-account');
+      if (!tbody || !accountLabel) return;
+      const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
+      accountLabel.textContent = account ? `${account.name} · Manually entered audience data` : '';
+      const locations = state.viewerLocations
+        .filter(location => String(location.account_id) === String(state.currentAccountId))
+        .sort((a, b) => b.percentage - a.percentage || a.country.localeCompare(b.country));
+      if (!locations.length) {
+        tbody.innerHTML = '<tr><td colspan="3" class="px-3 py-5 text-center text-slate-500">No viewer location data yet. Use Manage Countries to add countries and percentages.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = locations.map(location => `
+        <tr>
+          <td class="px-3 py-2.5 font-medium text-white">${escapeReportHtml(location.country)}</td>
+          <td class="px-3 py-2.5"><div class="h-2 overflow-hidden rounded-full bg-slate-800"><div class="h-full rounded-full bg-cyan-400" style="width:${location.percentage}%"></div></div></td>
+          <td class="px-3 py-2.5 text-right font-semibold text-cyan-300">${location.percentage.toFixed(1)}%</td>
+        </tr>`).join('');
+    }
+
+    function getPostNiche(post) {
+      if (post.niche && String(post.niche).trim()) return String(post.niche).trim();
+      const account = state.accounts.find(item => String(item.id) === String(post.account_id));
+      return account && account.niche ? String(account.niche).trim() : 'Uncategorized';
+    }
+
+    function renderNichePerformance() {
+      const tbody = document.getElementById('niche-performance-body');
+      const period = document.getElementById('niche-performance-period');
+      if (!tbody || !period) return;
+      period.textContent = `${getCurrentDashboardPeriodLabel()} · ${state.currentPlatform === 'all' ? 'All platforms' : state.currentPlatform.charAt(0).toUpperCase() + state.currentPlatform.slice(1)}`;
+
+      const groups = new Map();
+      getFilteredPosts({ includeSearch: false }).forEach(post => {
+        const niche = getPostNiche(post);
+        const summary = groups.get(niche) || { count: 0, impressions: 0, reach: 0, interactions: 0 };
+        summary.count += 1;
+        summary.impressions += Number(post.impressions) || 0;
+        summary.reach += Number(post.reach) || 0;
+        summary.interactions += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+          (Number(post.shares) || 0) + (Number(post.saves) || 0);
+        groups.set(niche, summary);
+      });
+      const summaries = Array.from(groups, ([niche, summary]) => ({
+        niche, ...summary,
+        interactionRate: summary.impressions > 0 ? (summary.interactions / summary.impressions) * 100 : null
+      })).sort((a, b) => b.interactions - a.interactions || b.impressions - a.impressions || a.niche.localeCompare(b.niche));
+      if (!summaries.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-3 py-5 text-center text-slate-500">No content matches the selected account and filters.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = summaries.map(summary => `
+        <tr>
+          <td class="px-3 py-2.5 font-medium text-white">${escapeReportHtml(summary.niche)}</td>
+          <td class="px-3 py-2.5 text-right">${summary.count.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right">${summary.impressions.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right">${summary.reach.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right font-semibold text-cyan-300">${summary.interactions.toLocaleString()}</td>
+          <td class="px-3 py-2.5 text-right">${summary.interactionRate === null ? '—' : `${summary.interactionRate.toFixed(1)}%`}</td>
+        </tr>`).join('');
+    }
 
     function getCurrentDashboardPeriodLabel() {
       if (state.timeframe === 'weekly' && state.selectedDateVal) {
@@ -2098,6 +2489,7 @@
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span>
           <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] capitalize">${escapeReportHtml(post.platform || 'Unknown platform')}</span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px]">${escapeReportHtml(getPostNiche(post))}</span>
         </div>
         <p class="text-sm text-slate-200 whitespace-pre-wrap break-words">${escapeReportHtml(post.title || 'Untitled Content')}</p>
         ${safeLink ? `<a href="${escapeReportHtml(safeLink)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-cyan-400 hover:underline break-all">Open content link <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i></a>` : ''}
@@ -2205,13 +2597,14 @@
       const tbody = document.getElementById('posts-table-body');
       tbody.innerHTML = '';
       if (posts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
         return;
       }
       posts.forEach(p => {
         const totalEng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
         const er = p.impressions > 0 ? ((totalEng / p.impressions) * 100).toFixed(1) : '0.0';
         const contentType = p.content_type === 'video' ? 'Video' : 'Feed';
+        const niche = getPostNiche(p);
 
         const titleDisplay = p.link 
           ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Open Link: ${escapeReportHtml(p.link)}">
@@ -2225,6 +2618,7 @@
         tr.innerHTML = `
           <td class="px-4 py-3 capitalize font-medium text-slate-300">${escapeReportHtml(p.platform)}</td>
           <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span></td>
+          <td class="px-4 py-3 text-slate-300">${escapeReportHtml(niche)}</td>
           <td class="px-4 py-3">${titleDisplay}</td>
           <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${escapeReportHtml(p.post_date)} <span class="text-cyan-400 ml-1">${escapeReportHtml(p.post_time || '00:00')}</span></td>
           <td class="px-4 py-3 text-right">${getImpressionBadge(p.impressions)}</td>
@@ -2274,6 +2668,7 @@
 
           <div class="grid grid-cols-3 gap-2 text-[11px] pt-2 border-t border-slate-800/80">
             <div><span class="text-slate-500 text-[10px] block">Content Type</span><span class="font-semibold text-white">${p.content_type === 'video' ? 'Video' : 'Feed'}</span></div>
+            <div><span class="text-slate-500 text-[10px] block">Niche</span><span class="font-semibold text-white">${escapeReportHtml(getPostNiche(p))}</span></div>
             <div>
               <span class="text-slate-500 text-[10px] block">Impressions</span>
               <span class="font-bold text-white">${(p.impressions || 0).toLocaleString()}</span>
