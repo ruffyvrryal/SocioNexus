@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SocioNexus | Account-First Social Media Analytics</title>
   
   <!-- SocioNexus SVG Favicon -->
@@ -43,6 +43,7 @@
       background-color: #0b0f17;
       color: #f3f4f6;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
     .glass-panel {
       background: rgba(17, 24, 39, 0.7);
@@ -50,8 +51,8 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #111827;
@@ -62,6 +63,13 @@
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #4b5563;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
     @media print {
       body * {
@@ -88,25 +96,25 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar text-slate-200">
+<body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-16 md:pb-0">
 
-  <!-- TOP HEADER / NAVBAR -->
-  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3.5 flex items-center justify-between no-print">
-    <div class="flex items-center space-x-3 cursor-pointer" onclick="window.navigateToHub()">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-        <i data-lucide="share-2" class="w-5 h-5 text-white"></i>
+  <!-- TOP HEADER / NAVBAR (DESKTOP & MOBILE RESPONSIVE) -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between no-print">
+    <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onclick="window.navigateToHub()">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
+        <i data-lucide="share-2" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
       </div>
       <div>
-        <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
+        <h1 class="font-bold text-base sm:text-lg tracking-wide text-white flex items-center gap-1.5 sm:gap-2">
           SocioNexus
-          <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v4.1</span>
+          <span class="text-[10px] sm:text-xs font-normal px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v4.2</span>
         </h1>
-        <p class="text-xs text-slate-400">Multi-Account Creator Workspace</p>
+        <p class="text-[10px] sm:text-xs text-slate-400 hidden xs:block">Multi-Account Creator Workspace</p>
       </div>
     </div>
 
-    <!-- Right Header Actions -->
-    <div class="flex items-center space-x-3">
+    <!-- Desktop Header Actions -->
+    <div class="hidden md:flex items-center space-x-3">
       <button onclick="window.exportToCSV()" class="px-3 py-1.5 text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg border border-emerald-500/20 transition-colors flex items-center gap-1.5">
         <i data-lucide="file-spread-sheet" class="w-3.5 h-3.5"></i>
         <span>Export CSV</span>
@@ -114,12 +122,12 @@
 
       <button onclick="window.openReportModal()" class="px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg border border-amber-500/20 transition-colors flex items-center gap-1.5">
         <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-        <span>Executive Report View</span>
+        <span>Executive Report</span>
       </button>
 
       <div id="header-account-badge" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span id="header-account-name" class="font-medium text-white">Account</span>
+        <span id="header-account-name" class="font-medium text-white max-w-[100px] truncate">Account</span>
       </div>
 
       <button onclick="window.navigateToHub()" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1.5">
@@ -132,55 +140,72 @@
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
       </button>
     </div>
+
+    <!-- Mobile Header Quick Actions -->
+    <div class="flex md:hidden items-center space-x-2">
+      <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60 relative">
+        <i data-lucide="cloud" class="w-4 h-4"></i>
+        <span id="sync-indicator-mobile" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
+      </button>
+      <button onclick="window.openReportModal()" class="p-2 text-amber-300 bg-amber-500/10 rounded-xl border border-amber-500/20">
+        <i data-lucide="file-text" class="w-4 h-4"></i>
+      </button>
+    </div>
   </header>
 
   <!-- MAIN VIEW CONTAINER -->
-  <main class="flex-grow container mx-auto px-4 lg:px-8 py-6 no-print">
+  <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 no-print">
 
     <!-- VIEW 1: ACCOUNT SELECTION HUB -->
-    <section id="view-account-hub" class="space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+    <section id="view-account-hub" class="space-y-4 sm:space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
-          <h2 class="text-2xl font-bold text-white tracking-tight">Select Account Workspace</h2>
-          <p class="text-sm text-slate-400 mt-1">Choose a persona or brand account to view multi-platform performance metrics.</p>
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Account Workspace</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Select or create a brand workspace to review metrics.</p>
         </div>
-        <button onclick="window.openAddAccountModal()" class="self-start md:self-auto px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-medium rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2">
+        <button onclick="window.openAddAccountModal()" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>Add New Account</span>
         </button>
       </div>
 
-      <div id="accounts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="accounts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6"></div>
     </section>
 
     <!-- VIEW 2: ACCOUNT DASHBOARD WORKSPACE -->
-    <section id="view-dashboard" class="hidden space-y-6">
-      <div class="glass-panel p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-800">
-        <div class="flex items-center space-x-4">
-          <button onclick="window.navigateToHub()" class="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    <section id="view-dashboard" class="hidden space-y-4 sm:space-y-6">
+      <!-- Workspace Banner -->
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-slate-800">
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <button onclick="window.navigateToHub()" class="p-2 sm:p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shrink-0">
+            <i data-lucide="arrow-left" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </button>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 id="current-account-title" class="text-2xl font-bold text-white tracking-tight">Account Dashboard</h2>
-              <span id="current-account-niche" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-medium">Niche</span>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 id="current-account-title" class="text-lg sm:text-2xl font-bold text-white tracking-tight truncate">Account Dashboard</h2>
+              <span id="current-account-niche" class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700 font-medium">Niche</span>
             </div>
-            <p id="current-account-subtitle" class="text-xs text-slate-400 mt-0.5">Overviewing all aggregated social platform analytics</p>
+            <p id="current-account-subtitle" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">Aggregated multi-platform social analytics</p>
           </div>
         </div>
 
-        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-          <button onclick="window.openEditAccountModal()" class="px-3 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+        <div class="grid grid-cols-3 gap-2 md:flex md:items-center md:gap-3 w-full md:w-auto">
+          <button onclick="window.openEditAccountModal()" class="px-2.5 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-            <span>Edit Account</span>
-          </button>
-          
-          <button onclick="window.confirmDeleteAccount()" class="px-3 py-2 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-colors flex items-center gap-1.5">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>Delete</span>
+            <span class="hidden xs:inline">Edit</span>
           </button>
 
-          <button onclick="window.openAddPostModal()" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2">
+          <button onclick="window.exportToCSV()" class="md:hidden px-2.5 py-2 text-xs font-medium text-emerald-300 bg-emerald-500/10 rounded-xl border border-emerald-500/20 flex items-center justify-center gap-1.5">
+            <i data-lucide="file-spread-sheet" class="w-3.5 h-3.5"></i>
+            <span>CSV</span>
+          </button>
+          
+          <button onclick="window.confirmDeleteAccount()" class="px-2.5 py-2 text-xs font-medium text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-colors flex items-center justify-center gap-1.5">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span class="hidden xs:inline">Delete</span>
+          </button>
+
+          <button onclick="window.openAddPostModal()" class="col-span-3 md:col-span-1 px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span>Add Content</span>
           </button>
@@ -188,115 +213,115 @@
       </div>
 
       <!-- Timeframe Filter Toolbar -->
-      <div class="glass-panel p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center space-x-2">
-          <span class="text-xs font-medium text-slate-400 flex items-center gap-1.5">
+      <div class="glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="flex items-center justify-between sm:justify-start space-x-2">
+          <span class="text-xs font-medium text-slate-400 flex items-center gap-1.5 shrink-0">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
-            Timeframe Range:
+            Range:
           </span>
-          <div class="flex items-center bg-slate-900/90 rounded-lg p-1 border border-slate-800 text-xs">
-            <button id="tf-all" onclick="window.setTimeframe('all')" class="px-3 py-1 rounded-md transition-colors text-white bg-slate-800">All Time</button>
-            <button id="tf-weekly" onclick="window.setTimeframe('weekly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Weekly</button>
-            <button id="tf-monthly" onclick="window.setTimeframe('monthly')" class="px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white">Monthly</button>
+          <div class="flex items-center bg-slate-900/90 rounded-lg p-1 border border-slate-800 text-xs w-full sm:w-auto justify-around">
+            <button id="tf-all" onclick="window.setTimeframe('all')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-white bg-slate-800 text-center">All</button>
+            <button id="tf-weekly" onclick="window.setTimeframe('weekly')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center">Weekly</button>
+            <button id="tf-monthly" onclick="window.setTimeframe('monthly')" class="flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center">Monthly</button>
           </div>
         </div>
 
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
       </div>
 
-      <!-- PLATFORM TABS -->
-      <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto custom-scrollbar">
-        <button id="tab-all" onclick="window.selectPlatform('all')" class="px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap">
+      <!-- PLATFORM TABS (TOUCH-OPTIMIZED HORIZONTAL SCROLL) -->
+      <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto no-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
+        <button id="tab-all" onclick="window.selectPlatform('all')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap shrink-0">
           <i data-lucide="layers" class="w-3.5 h-3.5"></i> All Platforms
         </button>
-        <button id="tab-tiktok" onclick="window.selectPlatform('tiktok')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+        <button id="tab-tiktok" onclick="window.selectPlatform('tiktok')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
           <i data-lucide="video" class="w-3.5 h-3.5 text-pink-400"></i> TikTok
         </button>
-        <button id="tab-instagram" onclick="window.selectPlatform('instagram')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+        <button id="tab-instagram" onclick="window.selectPlatform('instagram')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
           <svg class="w-3.5 h-3.5 text-purple-400 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           Instagram
         </button>
-        <button id="tab-youtube" onclick="window.selectPlatform('youtube')" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+        <button id="tab-youtube" onclick="window.selectPlatform('youtube')" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0">
           <svg class="w-3.5 h-3.5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
           YouTube
         </button>
       </div>
 
       <!-- OVERVIEW METRICS CARDS GRID -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Impressions (Views)</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Impressions</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Reach (Unique)</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-reach">0</div>
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Reach</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-reach">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Likes</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-likes">0</div>
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Likes</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-likes">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Comments</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-comments">0</div>
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Comments</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-comments">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Shares</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-shares">0</div>
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Shares</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-shares">0</div>
         </div>
-        <div class="glass-panel p-4 rounded-xl space-y-1">
-          <span class="text-xs text-slate-400 font-medium">Saves</span>
-          <div class="text-xl font-bold text-white tracking-tight" id="metric-saves">0</div>
+        <div class="glass-panel p-3.5 sm:p-4 rounded-xl space-y-1">
+          <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Saves</span>
+          <div class="text-base sm:text-xl font-bold text-white tracking-tight" id="metric-saves">0</div>
         </div>
       </div>
 
       <!-- CHARTS -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div class="lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
               Performance Trajectory
             </h3>
-            <span class="text-xs text-slate-400">Impressions & Reach Trend</span>
+            <span class="text-[10px] sm:text-xs text-slate-400">Trend Over Time</span>
           </div>
-          <div class="h-64 relative">
+          <div class="h-52 sm:h-64 relative">
             <canvas id="trendChart"></canvas>
           </div>
         </div>
 
-        <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+        <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
               Engagement Mix
             </h3>
-            <span class="text-xs text-slate-400">Interactions</span>
+            <span class="text-[10px] sm:text-xs text-slate-400">Interactions</span>
           </div>
-          <div class="h-64 relative flex items-center justify-center">
+          <div class="h-52 sm:h-64 relative flex items-center justify-center">
             <canvas id="engagementChart"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- TABLE WITH REALTIME SEARCH & LINK SUPPORT -->
+      <!-- ADAPTIVE CONTENT LOG (DESKTOP TABLE / MOBILE CARDS) -->
       <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-        <div class="p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="p-4 sm:p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
               Content Performance Log
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Sorted by Latest Upload Date & Time</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Sorted by Upload Date & Time</p>
           </div>
 
-          <div class="flex items-center gap-3 w-full md:w-auto">
+          <div class="flex items-center gap-2.5 w-full md:w-auto">
             <div class="relative w-full md:w-64">
               <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="text" id="search-input" oninput="window.handleSearchInput(this.value)" placeholder="Search post title, link..." class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none">
+              <input type="text" id="search-input" oninput="window.handleSearchInput(this.value)" placeholder="Search title or link..." class="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none">
             </div>
 
-            <div class="hidden sm:flex flex-wrap items-center gap-1.5 text-[10px]">
+            <div class="hidden lg:flex items-center gap-1.5 text-[10px]">
               <span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">0</span>
               <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">1-99</span>
               <span class="px-2 py-0.5 rounded bg-slate-700/50 text-white border border-slate-600">100-499</span>
@@ -306,7 +331,8 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto custom-scrollbar">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
               <tr>
@@ -326,13 +352,34 @@
             <tbody id="posts-table-body" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
+
+        <!-- Mobile Card List View -->
+        <div id="posts-mobile-cards" class="md:hidden p-3 space-y-3"></div>
       </div>
     </section>
   </main>
 
-  <!-- MODALS -->
-  <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
-    <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
+  <!-- BOTTOM MOBILE ACTION NAV -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 px-4 py-2 flex items-center justify-around no-print">
+    <button onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
+      <i data-lucide="layout-grid" class="w-5 h-5"></i>
+      <span>Workspaces</span>
+    </button>
+    <button onclick="window.openAddPostModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-cyan-400">
+      <div class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center -mt-4 shadow-lg shadow-cyan-500/30">
+        <i data-lucide="plus" class="w-5 h-5 stroke-[2.5]"></i>
+      </div>
+      <span>Add Content</span>
+    </button>
+    <button onclick="window.openReportModal()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-amber-400">
+      <i data-lucide="file-text" class="w-5 h-5"></i>
+      <span>Report</span>
+    </button>
+  </div>
+
+  <!-- MODALS (MOBILE-FRIENDLY & RESPONSIVE) -->
+  <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 id="modal-account-title" class="text-base font-bold text-white">Add New Account</h3>
         <button onclick="window.closeModal('modal-account')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -341,36 +388,36 @@
         <input type="hidden" id="account-id">
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Account / Brand Name</label>
-          <input type="text" id="account-name" required placeholder="e.g. Alex Rivera" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="text" id="account-name" required placeholder="e.g. Alex Rivera" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Niche Category</label>
-          <input type="text" id="account-niche" required placeholder="e.g. Tech & Lifestyle" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="text" id="account-niche" required placeholder="e.g. Tech & Lifestyle" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Theme Color</label>
-          <input type="color" id="account-color" value="#0ea5e9" class="w-full h-9 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer">
+          <input type="color" id="account-color" value="#0ea5e9" class="w-full h-10 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer">
         </div>
         <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-          <button type="button" onclick="window.closeModal('modal-account')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Save Account</button>
+          <button type="button" onclick="window.closeModal('modal-account')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Save Account</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
-    <div class="glass-panel w-full max-w-lg p-6 rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+  <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 id="modal-post-title" class="text-base font-bold text-white">Log Content Performance</h3>
         <button onclick="window.closeModal('modal-post')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <form id="form-post" onsubmit="window.savePost(event)" class="space-y-4">
+      <form id="form-post" onsubmit="window.savePost(event)" class="space-y-3.5">
         <input type="hidden" id="post-id">
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Platform</label>
-            <select id="post-platform" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+            <select id="post-platform" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
               <option value="tiktok">TikTok</option>
               <option value="instagram">Instagram</option>
               <option value="youtube">YouTube</option>
@@ -387,23 +434,23 @@
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Content Title / Caption</label>
-          <input type="text" id="post-title" required placeholder="e.g. 5 VS Code Tips for Developers" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="text" id="post-title" required placeholder="e.g. 5 VS Code Tips for Developers" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Video / Post URL (Optional)</label>
-          <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Impressions (Views)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Impressions</label>
             <input type="number" id="post-impressions" min="0" value="0" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Reach (Unique)</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Reach</label>
             <input type="number" id="post-reach" min="0" value="0" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Likes</label>
             <input type="number" id="post-likes" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
@@ -413,7 +460,7 @@
             <input type="number" id="post-comments" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Shares</label>
             <input type="number" id="post-shares" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
@@ -424,51 +471,51 @@
           </div>
         </div>
         <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-          <button type="button" onclick="window.closeModal('modal-post')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg transition-all">Submit Post</button>
+          <button type="button" onclick="window.closeModal('modal-post')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg transition-all">Submit Post</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
-    <div class="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-800 space-y-4">
+  <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 no-print">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="cloud" class="w-4 h-4 text-cyan-400"></i> Supabase Cloud Settings
+          <i data-lucide="cloud" class="w-4 h-4 text-cyan-400"></i> Cloud Sync Settings
         </h3>
         <button onclick="window.closeModal('modal-settings')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="space-y-3">
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Project URL</label>
-          <input type="text" id="cfg-url" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="text" id="cfg-url" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Anon Public Key</label>
-          <input type="password" id="cfg-key" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <input type="password" id="cfg-key" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
         </div>
       </div>
       <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
-        <button type="button" onclick="window.closeModal('modal-settings')" class="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
-        <button onclick="window.saveSupabaseSettings()" class="px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Connect & Sync</button>
+        <button type="button" onclick="window.closeModal('modal-settings')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="window.saveSupabaseSettings()" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Connect & Sync</button>
       </div>
     </div>
   </div>
 
   <!-- REPORT MODAL VIEW -->
-  <div id="modal-report" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto custom-scrollbar">
-    <div class="glass-panel w-full max-w-4xl p-6 rounded-2xl border border-slate-800 space-y-5 my-8">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3 no-print">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i data-lucide="file-text" class="w-5 h-5 text-amber-400"></i> Executive Presentation & Report View
+  <div id="modal-report" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto custom-scrollbar">
+    <div class="glass-panel w-full sm:max-w-4xl p-4 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 my-0 sm:my-8 max-h-[92vh] sm:max-h-none overflow-y-auto">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-3 no-print">
+        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-amber-400"></i> Executive Presentation & Report
         </h3>
         <div class="flex items-center gap-2">
-          <button onclick="window.copyReportToClipboard()" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
+          <button onclick="window.copyReportToClipboard()" class="flex-1 sm:flex-none px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
             <i data-lucide="copy" class="w-4 h-4"></i> Copy Slide HTML
           </button>
-          <button onclick="window.printReport()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-            <i data-lucide="printer" class="w-4 h-4"></i> Save PDF / Print
+          <button onclick="window.printReport()" class="flex-1 sm:flex-none px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="printer" class="w-4 h-4"></i> Save PDF
           </button>
           <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
@@ -478,7 +525,7 @@
     </div>
   </div>
 
-  <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500 no-print">
+  <footer class="glass-panel border-t border-slate-800 py-3 text-center text-xs text-slate-500 no-print hidden md:block">
     SocioNexus Dashboard &copy; 2026. Built with Tailwind CSS, Chart.js & Supabase Cloud Sync.
   </footer>
 
@@ -519,6 +566,7 @@
         document.getElementById('current-account-niche').innerText = acc.niche;
         document.getElementById('header-account-name').innerText = acc.name;
         document.getElementById('header-account-badge').classList.remove('hidden');
+        document.getElementById('header-account-badge').classList.add('flex');
       }
       renderDashboard();
     };
@@ -697,9 +745,11 @@
 
     window.setTimeframe = function(type) {
       state.timeframe = type;
-      document.getElementById('tf-all').className = type === 'all' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
-      document.getElementById('tf-weekly').className = type === 'weekly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
-      document.getElementById('tf-monthly').className = type === 'monthly' ? 'px-3 py-1 rounded-md transition-colors text-white bg-slate-800' : 'px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white';
+      ['all', 'weekly', 'monthly'].forEach(t => {
+        const btn = document.getElementById(`tf-${t}`);
+        if (t === type) btn.className = "flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-white bg-slate-800 text-center font-semibold";
+        else btn.className = "flex-1 sm:flex-none px-3 py-1 rounded-md transition-colors text-slate-400 hover:text-white text-center";
+      });
 
       if (type === 'weekly') state.selectedDateVal = new Date().toISOString().split('T')[0];
       else if (type === 'monthly') state.selectedDateVal = new Date().toISOString().slice(0, 7);
@@ -718,9 +768,9 @@
       ['all', 'tiktok', 'instagram', 'youtube'].forEach(p => {
         const btn = document.getElementById(`tab-${p}`);
         if (p === plat) {
-          btn.className = "px-4 py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap";
+          btn.className = "px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-semibold transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-2 whitespace-nowrap shrink-0";
         } else {
-          btn.className = "px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap";
+          btn.className = "px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all flex items-center gap-2 whitespace-nowrap shrink-0";
         }
       });
       renderDashboard();
@@ -774,7 +824,6 @@
       location.reload();
     };
 
-    // CSV EXPORT SUPPORT
     window.exportToCSV = function() {
       let filteredPosts = getFilteredPosts();
       if (filteredPosts.length === 0) {
@@ -811,7 +860,6 @@
       document.body.removeChild(link);
     };
 
-    // REPORT RENDERER & PRINT SYSTEM
     window.openReportModal = function() {
       const container = document.getElementById('print-report-container');
       container.innerHTML = '';
@@ -821,7 +869,7 @@
         : state.accounts;
 
       if (targetAccounts.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No account data available to construct the executive report.</p>`;
+        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">No account data available to construct the report.</p>`;
       } else {
         targetAccounts.forEach((acc, index) => {
           const accPosts = state.posts.filter(p => p.account_id === acc.id);
@@ -831,63 +879,58 @@
           const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
 
           const reportHtml = `
-            <div class="${index > 0 ? 'page-break pt-8' : ''} space-y-6">
-              <!-- COVER HEADER -->
-              <div class="border-b border-slate-800 pb-4">
-                <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">SocioNexus Analytics Executive Report</span>
-                <h1 class="text-2xl font-extrabold text-white mt-1">Performance Overview & Strategic Breakdown</h1>
-                <div class="flex items-center gap-3 mt-2 text-xs text-slate-400">
-                  <span class="font-medium text-white px-2.5 py-0.5 rounded bg-slate-800 border border-slate-700">${acc.name}</span>
+            <div class="${index > 0 ? 'page-break pt-8' : ''} space-y-4 sm:space-y-6">
+              <div class="border-b border-slate-800 pb-3 sm:pb-4">
+                <span class="text-[10px] sm:text-xs font-bold text-cyan-400 uppercase tracking-widest">SocioNexus Analytics Executive Report</span>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-white mt-1">Performance Overview & Strategic Breakdown</h1>
+                <div class="flex items-center gap-2 sm:gap-3 mt-2 text-xs text-slate-400 flex-wrap">
+                  <span class="font-medium text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${acc.name}</span>
                   <span>Category: <b>${acc.niche}</b></span>
-                  <span>Total Posts Logged: <b>${accPosts.length}</b></span>
+                  <span>Posts Logged: <b>${accPosts.length}</b></span>
                 </div>
               </div>
 
-              <!-- METRIC CARDS -->
-              <div class="grid grid-cols-4 gap-4">
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
                   <span class="text-[10px] text-slate-400 font-bold uppercase">Total Posts</span>
-                  <div class="text-2xl font-black text-cyan-400 mt-1">${accPosts.length}</div>
+                  <div class="text-lg sm:text-2xl font-black text-cyan-400 mt-0.5 sm:mt-1">${accPosts.length}</div>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Total Impression</span>
-                  <div class="text-2xl font-black text-purple-400 mt-1">${totalImp.toLocaleString('id-ID')}</div>
+                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-bold uppercase">Impressions</span>
+                  <div class="text-lg sm:text-2xl font-black text-purple-400 mt-0.5 sm:mt-1">${totalImp.toLocaleString('id-ID')}</div>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Total Reach</span>
-                  <div class="text-2xl font-black text-emerald-400 mt-1">${totalReach.toLocaleString('id-ID')}</div>
+                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-bold uppercase">Reach</span>
+                  <div class="text-lg sm:text-2xl font-black text-emerald-400 mt-0.5 sm:mt-1">${totalReach.toLocaleString('id-ID')}</div>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                  <span class="text-[10px] text-slate-400 font-bold uppercase">Avg ER Rate</span>
-                  <div class="text-2xl font-black text-amber-400 mt-1">${avgEr}%</div>
+                <div class="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800">
+                  <span class="text-[10px] text-slate-400 font-bold uppercase">Avg ER</span>
+                  <div class="text-lg sm:text-2xl font-black text-amber-400 mt-0.5 sm:mt-1">${avgEr}%</div>
                 </div>
               </div>
 
-              <!-- TOP PERFORMING CONTENT LOG -->
-              <div class="space-y-3">
-                <h4 class="text-sm font-bold text-white uppercase tracking-wider text-slate-300">Top Content Performance Log</h4>
+              <div class="space-y-2 sm:space-y-3">
+                <h4 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider text-slate-300">Top Content Log</h4>
                 <div class="overflow-x-auto rounded-xl border border-slate-800">
                   <table class="w-full text-left text-xs text-slate-300">
                     <thead class="bg-slate-900 text-slate-400 uppercase text-[10px]">
                       <tr>
-                        <th class="p-3">Platform</th>
-                        <th class="p-3">Title / Caption</th>
-                        <th class="p-3 text-right">Impressions</th>
-                        <th class="p-3 text-right">Reach</th>
-                        <th class="p-3 text-right">Date</th>
+                        <th class="p-2.5 sm:p-3">Platform</th>
+                        <th class="p-2.5 sm:p-3">Title</th>
+                        <th class="p-2.5 sm:p-3 text-right">Impressions</th>
+                        <th class="p-2.5 sm:p-3 text-right">Reach</th>
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
                       ${
                         accPosts.length === 0 
-                          ? `<tr><td colspan="5" class="p-4 text-center text-slate-500">No content records logged.</td></tr>`
+                          ? `<tr><td colspan="4" class="p-4 text-center text-slate-500">No content records logged.</td></tr>`
                           : [...accPosts].sort((a,b) => (b.impressions||0) - (a.impressions||0)).slice(0, 5).map(p => `
                               <tr>
-                                <td class="p-3 font-semibold uppercase text-cyan-400">${p.platform}</td>
-                                <td class="p-3 font-medium text-white">${p.title}</td>
-                                <td class="p-3 text-right font-bold text-slate-200">${(p.impressions||0).toLocaleString('id-ID')}</td>
-                                <td class="p-3 text-right text-slate-300">${(p.reach||0).toLocaleString('id-ID')}</td>
-                                <td class="p-3 text-right text-slate-400 font-mono">${p.post_date}</td>
+                                <td class="p-2.5 sm:p-3 font-semibold uppercase text-cyan-400">${p.platform}</td>
+                                <td class="p-2.5 sm:p-3 font-medium text-white truncate max-w-[120px] sm:max-w-none">${p.title}</td>
+                                <td class="p-2.5 sm:p-3 text-right font-bold text-slate-200">${(p.impressions||0).toLocaleString('id-ID')}</td>
+                                <td class="p-2.5 sm:p-3 text-right text-slate-300">${(p.reach||0).toLocaleString('id-ID')}</td>
                               </tr>
                             `).join('')
                       }
@@ -896,13 +939,11 @@
                 </div>
               </div>
 
-              <!-- STRATEGIC RECOMMENDATIONS -->
-              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Executive Recommendations</h4>
-                <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
-                  <li>Focus primary video production efforts towards high-reach platforms with highest baseline ER.</li>
-                  <li>Maintain structured publishing cadence across peak audience engagement windows.</li>
-                  <li>Repurpose top performing content angles for upcoming campaign cycles.</li>
+              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">Executive Insights</h4>
+                <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                  <li>Focus primary video resources towards highest reach engagement platforms.</li>
+                  <li>Maintain publishing rhythm across peak audience interaction windows.</li>
                 </ul>
               </div>
             </div>
@@ -922,10 +963,10 @@
       const data = [new ClipboardItem({ 'text/html': blob })];
 
       navigator.clipboard.write(data).then(() => {
-        alert("Report HTML copied to clipboard! Open PowerPoint or Google Slides and paste directly onto your slide canvas.");
+        alert("Report copied to clipboard! Open PowerPoint or Google Slides and paste.");
       }).catch(err => {
         console.error("Clipboard copy failed: ", err);
-        alert("Could not copy automatically. Use Print / Save PDF instead.");
+        alert("Copy failed. Use Save PDF instead.");
       });
     };
 
@@ -951,7 +992,10 @@
       if (url && key && window.supabase) {
         try {
           supabaseClient = window.supabase.createClient(url, key);
-          document.getElementById('sync-indicator').className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400";
+          const ind = document.getElementById('sync-indicator');
+          const indMob = document.getElementById('sync-indicator-mobile');
+          if (ind) ind.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400";
+          if (indMob) indMob.className = "absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400";
         } catch (e) {
           console.error("Supabase Init Error:", e);
         }
@@ -1042,9 +1086,9 @@
       grid.innerHTML = '';
 
       if (state.accounts.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12 glass-panel rounded-2xl border border-slate-800 space-y-3">
+        grid.innerHTML = `<div class="col-span-full text-center py-10 glass-panel rounded-2xl border border-slate-800 space-y-3">
           <i data-lucide="folder-plus" class="w-8 h-8 text-slate-500 mx-auto"></i>
-          <p class="text-slate-400 text-xs">No workspaces created yet. Click <b>Add New Account</b> to get started!</p>
+          <p class="text-slate-400 text-xs">No workspaces created yet. Click <b>Add New Account</b> to start.</p>
         </div>`;
         lucide.createIcons();
         return;
@@ -1055,21 +1099,21 @@
         const totalViews = accPosts.reduce((sum, p) => sum + (p.impressions || 0), 0);
 
         const card = document.createElement('div');
-        card.className = "glass-panel p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer space-y-4 group";
+        card.className = "glass-panel p-4 sm:p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer space-y-3 sm:space-y-4 group";
         card.onclick = () => window.openAccountWorkspace(acc.id);
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg" style="background-color: ${acc.color || '#0ea5e9'}">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg" style="background-color: ${acc.color || '#0ea5e9'}">
               ${acc.name.charAt(0)}
             </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Posts</span>
+            <span class="text-[11px] sm:text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Posts</span>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${acc.name}</h3>
+            <h3 class="text-base sm:text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">${acc.name}</h3>
             <p class="text-xs text-slate-400">${acc.niche}</p>
           </div>
-          <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+          <div class="pt-2.5 sm:pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
             <span class="text-slate-400">Total Impressions</span>
             <span class="font-bold text-white">${totalViews.toLocaleString()}</span>
           </div>
@@ -1084,6 +1128,7 @@
       renderMetricsCards(filteredPosts);
       renderCharts(filteredPosts);
       renderTable(filteredPosts);
+      renderMobileCards(filteredPosts);
       lucide.createIcons();
     }
 
@@ -1126,9 +1171,9 @@
       const container = document.getElementById('date-picker-controls');
       container.innerHTML = '';
       if (state.timeframe === 'weekly') {
-        container.innerHTML = `<input type="date" value="${state.selectedDateVal}" onchange="window.updateDateVal(this.value)" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none">`;
+        container.innerHTML = `<input type="date" value="${state.selectedDateVal}" onchange="window.updateDateVal(this.value)" class="w-full sm:w-auto px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none">`;
       } else if (state.timeframe === 'monthly') {
-        container.innerHTML = `<input type="month" value="${state.selectedDateVal}" onchange="window.updateDateVal(this.value)" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none">`;
+        container.innerHTML = `<input type="month" value="${state.selectedDateVal}" onchange="window.updateDateVal(this.value)" class="w-full sm:w-auto px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none">`;
       }
     }
 
@@ -1191,11 +1236,57 @@
       });
     }
 
+    function renderMobileCards(posts) {
+      const container = document.getElementById('posts-mobile-cards');
+      container.innerHTML = '';
+
+      if (posts.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">No content logged.</div>`;
+        return;
+      }
+
+      posts.forEach(p => {
+        const totalEng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
+        const er = p.impressions > 0 ? ((totalEng / p.impressions) * 100).toFixed(1) : '0.0';
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">${p.platform}</span>
+              <h4 class="text-xs font-semibold text-white mt-0.5 leading-snug">${p.title}</h4>
+            </div>
+            <div class="flex items-center space-x-1 shrink-0">
+              <button onclick="window.openEditPostModal('${p.id}')" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="window.deletePost('${p.id}')" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-[11px] pt-2 border-t border-slate-800/80">
+            <div>
+              <span class="text-slate-500 text-[10px] block">Views</span>
+              <span class="font-bold text-white">${(p.impressions || 0).toLocaleString()}</span>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[10px] block">Reach</span>
+              <span class="font-bold text-slate-300">${(p.reach || 0).toLocaleString()}</span>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[10px] block">ER Rate</span>
+              <span class="font-bold text-cyan-400">${er}%</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
     function renderCharts(posts) {
       const ctxTrend = document.getElementById('trendChart').getContext('2d');
       if (trendChartInstance) trendChartInstance.destroy();
 
-      const dates = posts.map(p => `${p.post_date} ${p.post_time || ''}`).reverse();
+      const dates = posts.map(p => `${p.post_date}`).reverse();
       const impressionsData = posts.map(p => p.impressions || 0).reverse();
       const reachData = posts.map(p => p.reach || 0).reverse();
 
@@ -1225,10 +1316,10 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#9ca3af' } } },
+          plugins: { legend: { labels: { color: '#9ca3af', boxWidth: 10, font: { size: 10 } } } },
           scales: {
-            x: { ticks: { color: '#6b7280' }, grid: { color: '#1f2937' } },
-            y: { ticks: { color: '#6b7280' }, grid: { color: '#1f2937' } }
+            x: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } },
+            y: { ticks: { color: '#6b7280', font: { size: 9 } }, grid: { color: '#1f2937' } }
           }
         }
       });
@@ -1254,7 +1345,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 12 } } }
+          plugins: { legend: { position: 'bottom', labels: { color: '#9ca3af', boxWidth: 10, font: { size: 10 } } } }
         }
       });
     }
