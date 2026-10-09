@@ -37,7 +37,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 
   <style>
     body {
@@ -85,7 +85,7 @@
       <div>
         <h1 class="font-bold text-base sm:text-lg tracking-wide text-white flex items-center gap-1.5 sm:gap-2">
           SocioNexus
-          <span class="text-[10px] sm:text-xs font-normal px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v5.0</span>
+          <span class="text-[10px] sm:text-xs font-normal px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v5.1</span>
         </h1>
         <p class="text-[10px] sm:text-xs text-slate-400 hidden xs:block">Multi-Account Creator Workspace</p>
       </div>
@@ -920,10 +920,10 @@
       document.querySelectorAll('.report-acc-checkbox').forEach(cb => cb.checked = isChecked);
     };
 
-    // OPENXML STRICT PPTX GENERATOR (PREVENTS POWERPOINT REPAIR ERRORS)
+    // STRICT OPENXML PPTX GENERATOR (PREVENTS REPAIR ERRORS)
     window.buildPPTXReport = function() {
       if (typeof PptxGenJS === 'undefined') {
-        alert("PPTX Generator bundle is still loading. Please wait a moment and try again.");
+        alert("PPTX Generator library is still loading. Please try again in a moment.");
         return;
       }
 
@@ -937,6 +937,9 @@
 
       let pptx = new PptxGenJS();
       pptx.layout = 'LAYOUT_16x9';
+      pptx.author = 'SocioNexus Analytics';
+      pptx.company = 'SocioNexus';
+      pptx.title = 'Executive Social Media Report';
 
       const fmt = (num) => String(Number(num || 0).toLocaleString('en-US'));
 
@@ -946,7 +949,6 @@
 
         let accPosts = state.posts.filter(p => p.account_id === accId);
 
-        // Apply Custom Timeframe Filters
         if (state.reportFilterMode === 'month') {
           const mVal = document.getElementById('rpt-month-val').value;
           if (mVal) accPosts = accPosts.filter(p => p.post_date && p.post_date.startsWith(mVal));
@@ -959,96 +961,152 @@
         }
 
         const totalPosts = accPosts.length;
-        const totalImp = accPosts.reduce((a,b) => a + (Number(b.impressions) || 0), 0);
-        const totalReach = accPosts.reduce((a,b) => a + (Number(b.reach) || 0), 0);
-        const totalEng = accPosts.reduce((a,b) => a + (Number(b.likes)||0) + (Number(b.comments)||0) + (Number(b.shares)||0) + (Number(b.saves)||0), 0);
+        const totalImp = accPosts.reduce((a, b) => a + (Number(b.impressions) || 0), 0);
+        const totalReach = accPosts.reduce((a, b) => a + (Number(b.reach) || 0), 0);
+        const totalEng = accPosts.reduce((a, b) => a + (Number(b.likes) || 0) + (Number(b.comments) || 0) + (Number(b.shares) || 0) + (Number(b.saves) || 0), 0);
         const avgEr = totalReach > 0 ? ((totalEng / totalReach) * 100).toFixed(2) : '0.00';
 
         // SLIDE 1: COVER
         let slide1 = pptx.addSlide();
         slide1.background = { color: '0B0F17' };
-        slide1.addText('SocioNexus Analytics', { x: 0.8, y: 0.8, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 16, color: '0EA5E9', bold: true });
-        slide1.addText(`Social Media Executive Performance Report`, { x: 0.8, y: 1.3, w: 8.4, h: 0.8, fontFace: 'Arial', fontSize: 24, color: 'FFFFFF', bold: true });
-        slide1.addText(`Workspace: ${String(acc.name)} | Category: ${String(acc.niche)} | Posts Logged: ${totalPosts}`, { x: 0.8, y: 2.2, w: 8.4, h: 0.4, fontFace: 'Arial', fontSize: 11, color: '9CA3AF' });
 
-        slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 2.8, w: 8.4, h: 2.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-        slide1.addText('EXECUTIVE SUMMARY INSIGHTS', { x: 1.0, y: 3.0, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true });
+        slide1.addText('SocioNexus Analytics', {
+          x: 0.8, y: 0.8, w: 8.4, h: 0.4,
+          fontFace: 'Arial', fontSize: 14, color: '0EA5E9', bold: true
+        });
+
+        slide1.addText('Social Media Executive Performance Report', {
+          x: 0.8, y: 1.3, w: 8.4, h: 0.8,
+          fontFace: 'Arial', fontSize: 24, color: 'FFFFFF', bold: true
+        });
+
+        slide1.addText(`Workspace: ${acc.name}  |  Category: ${acc.niche}  |  Posts: ${totalPosts}`, {
+          x: 0.8, y: 2.1, w: 8.4, h: 0.4,
+          fontFace: 'Arial', fontSize: 11, color: '9CA3AF'
+        });
+
+        slide1.addShape(pptx.shapes.RECTANGLE, {
+          x: 0.8, y: 2.8, w: 8.4, h: 2.2,
+          fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
+        });
+
+        slide1.addText('EXECUTIVE SUMMARY INSIGHTS', {
+          x: 1.0, y: 3.0, w: 8.0, h: 0.3,
+          fontFace: 'Arial', fontSize: 11, color: 'F59E0B', bold: true
+        });
 
         const execBullets = [
-          `- Total Audience Reach (${fmt(totalReach)}) and Impressions (${fmt(totalImp)}) across ${totalPosts} publications.`,
-          `- Content engagement rate averaged ${avgEr}% relative to unique reach.`,
-          `- Highest engagement concentration observed on video short-form formats.`
+          `Total Audience Reach of ${fmt(totalReach)} with ${fmt(totalImp)} impressions across ${totalPosts} published posts.`,
+          `Overall content engagement rate averaged ${avgEr}% relative to audience reach.`,
+          `Performance metrics reflect active channels and top content logged in the selected window.`
         ];
-        execBullets.forEach((b, i) => {
-          slide1.addText(b, { x: 1.0, y: 3.4 + (i * 0.4), w: 8.0, h: 0.35, fontFace: 'Arial', fontSize: 10, color: 'E2E8F0' });
+
+        execBullets.forEach((bulletText, i) => {
+          slide1.addText(bulletText, {
+            x: 1.0, y: 3.4 + (i * 0.4), w: 8.0, h: 0.35,
+            fontFace: 'Arial', fontSize: 10, color: 'E2E8F0', bullet: true
+          });
         });
 
         // SLIDE 2: METRIC CARDS
         let slide2 = pptx.addSlide();
         slide2.background = { color: '0B0F17' };
-        slide2.addText('Overall Workspace Metrics', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
+
+        slide2.addText('Workspace Performance Overview', {
+          x: 0.8, y: 0.6, w: 8.4, h: 0.5,
+          fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true
+        });
 
         const cards = [
-          { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'Published Posts', color: '0EA5E9' },
-          { title: 'TOTAL IMPRESSIONS', val: fmt(totalImp), unit: 'Total Views', color: 'A855F7' },
+          { title: 'TOTAL POSTS', val: fmt(totalPosts), unit: 'Published', color: '0EA5E9' },
+          { title: 'IMPRESSIONS', val: fmt(totalImp), unit: 'Total Views', color: 'A855F7' },
           { title: 'TOTAL REACH', val: fmt(totalReach), unit: 'Unique Accounts', color: '10B981' },
-          { title: 'AVG ER RATE', val: `${avgEr}%`, unit: 'Interactions / Reach', color: 'F59E0B' }
+          { title: 'AVG ER RATE', val: `${avgEr}%`, unit: 'Engagement Rate', color: 'F59E0B' }
         ];
 
         cards.forEach((card, idx) => {
           const posX = 0.8 + (idx * 2.15);
-          slide2.addShape(pptx.shapes.RECTANGLE, { x: posX, y: 1.6, w: 2.0, h: 3.2, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slide2.addText(card.title, { x: posX + 0.1, y: 1.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 9, color: '9CA3AF', bold: true });
-          slide2.addText(card.val, { x: posX + 0.1, y: 2.3, w: 1.8, h: 0.8, fontFace: 'Arial', fontSize: 18, color: card.color, bold: true });
-          slide2.addText(card.unit, { x: posX + 0.1, y: 3.8, w: 1.8, h: 0.3, fontFace: 'Arial', fontSize: 8, color: '6B7280' });
+
+          slide2.addShape(pptx.shapes.RECTANGLE, {
+            x: posX, y: 1.5, w: 2.0, h: 3.2,
+            fill: { color: '111827' }, line: { color: '1F2937', width: 1 }
+          });
+
+          slide2.addText(card.title, {
+            x: posX + 0.1, y: 1.7, w: 1.8, h: 0.3,
+            fontFace: 'Arial', fontSize: 9, color: '9CA3AF', bold: true, align: 'center'
+          });
+
+          slide2.addText(card.val, {
+            x: posX + 0.1, y: 2.3, w: 1.8, h: 0.8,
+            fontFace: 'Arial', fontSize: 18, color: card.color, bold: true, align: 'center'
+          });
+
+          slide2.addText(card.unit, {
+            x: posX + 0.1, y: 3.8, w: 1.8, h: 0.3,
+            fontFace: 'Arial', fontSize: 8, color: '6B7280', align: 'center'
+          });
         });
 
-        // SLIDE 3: TOP PERFORMING LOG
+        // SLIDE 3: CONTENT TABLE
         let slide3 = pptx.addSlide();
         slide3.background = { color: '0B0F17' };
-        slide3.addText('Top Content Performance Log', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
 
-        const topPosts = [...accPosts].sort((a,b) => (Number(b.impressions)||0) - (Number(a.impressions)||0)).slice(0, 5);
-        const hallTableData = [
-          ['Platform', 'Title / Caption', 'Impressions', 'Reach', 'Date']
+        slide3.addText('Top Performing Content Log', {
+          x: 0.8, y: 0.6, w: 8.4, h: 0.5,
+          fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true
+        });
+
+        const topPosts = [...accPosts].sort((a, b) => (Number(b.impressions) || 0) - (Number(a.impressions) || 0)).slice(0, 5);
+
+        const tableRows = [
+          [
+            { text: 'Platform', options: { bold: true, color: '0EA5E9', fill: '1F2937' } },
+            { text: 'Title / Caption', options: { bold: true, color: 'FFFFFF', fill: '1F2937' } },
+            { text: 'Impressions', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'right' } },
+            { text: 'Reach', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'right' } },
+            { text: 'Date', options: { bold: true, color: 'FFFFFF', fill: '1F2937', align: 'center' } }
+          ]
         ];
 
-        topPosts.forEach(p => {
-          hallTableData.push([
-            String(p.platform).toUpperCase(),
-            p.title.length > 35 ? p.title.slice(0, 35) + '...' : String(p.title),
-            fmt(p.impressions),
-            fmt(p.reach),
-            String(p.post_date)
+        if (topPosts.length === 0) {
+          tableRows.push([
+            { text: 'N/A', options: { color: '9CA3AF' } },
+            { text: 'No content recorded in this range.', options: { color: '9CA3AF' } },
+            { text: '0', options: { color: '9CA3AF', align: 'right' } },
+            { text: '0', options: { color: '9CA3AF', align: 'right' } },
+            { text: '-', options: { color: '9CA3AF', align: 'center' } }
           ]);
-        });
+        } else {
+          topPosts.forEach(p => {
+            tableRows.push([
+              { text: String(p.platform || 'General').toUpperCase(), options: { color: '0EA5E9', bold: true } },
+              { text: p.title ? (p.title.length > 35 ? p.title.slice(0, 35) + '...' : p.title) : 'Untitled', options: { color: 'FFFFFF' } },
+              { text: fmt(p.impressions), options: { color: 'E2E8F0', align: 'right' } },
+              { text: fmt(p.reach), options: { color: 'E2E8F0', align: 'right' } },
+              { text: String(p.post_date || ''), options: { color: '9CA3AF', align: 'center' } }
+            ]);
+          });
+        }
 
-        slide3.addTable(hallTableData, {
-          x: 0.8, y: 1.4, w: 8.4, colW: [1.4, 3.4, 1.3, 1.3, 1.0],
-          fontSize: 9, fontFace: 'Arial', color: 'FFFFFF', fill: '111827',
-          border: { pt: 0.5, color: '1F2937' }, align: 'left'
-        });
-
-        // SLIDE 4: RECOMMENDATIONS
-        let slide4 = pptx.addSlide();
-        slide4.background = { color: '0B0F17' };
-        slide4.addText('Strategic Action Items', { x: 0.8, y: 0.6, w: 8.4, h: 0.5, fontFace: 'Arial', fontSize: 20, color: 'FFFFFF', bold: true });
-
-        const recs = [
-          { t: 'Scale Core Platform Focus', d: 'Prioritize resource allocation toward top-performing channel channels demonstrating the highest organic reach baseline.' },
-          { t: 'Optimize Upload Cadence', d: 'Align posting schedules with active audience windows to ensure maximum exposure within the first 24 hours.' }
-        ];
-
-        recs.forEach((r, idx) => {
-          const posY = 1.4 + (idx * 1.8);
-          slide4.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: posY, w: 8.4, h: 1.5, fill: { color: '111827' }, line: { color: '1F2937', width: 1 } });
-          slide4.addText(r.t, { x: 1.0, y: posY + 0.2, w: 8.0, h: 0.3, fontFace: 'Arial', fontSize: 12, color: 'F59E0B', bold: true });
-          slide4.addText(r.d, { x: 1.0, y: posY + 0.55, w: 8.0, h: 0.8, fontFace: 'Arial', fontSize: 9, color: 'E2E8F0' });
+        slide3.addTable(tableRows, {
+          x: 0.8, y: 1.4, w: 8.4,
+          colW: [1.4, 3.4, 1.3, 1.3, 1.0],
+          fontSize: 9, fontFace: 'Arial',
+          fill: '111827',
+          border: { pt: 0.5, color: '1F2937' },
+          autoPage: false
         });
       });
 
-      pptx.writeFile({ fileName: `SocioNexus_Report_${new Date().toISOString().slice(0,10)}.pptx` });
-      window.closeModal('modal-report');
+      pptx.writeFile({ fileName: `SocioNexus_Report_${new Date().toISOString().slice(0, 10)}.pptx` })
+        .then(() => {
+          window.closeModal('modal-report');
+        })
+        .catch(err => {
+          console.error("PPTX Generation Error:", err);
+          alert("An error occurred while building the presentation file. Please check browser console.");
+        });
     };
 
     window.closeModal = function(id) {
