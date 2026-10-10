@@ -222,7 +222,7 @@ begin
         select 1 from auth.users u
         where u.id = auth.uid() and u.email_confirmed_at is not null
       )
-    on conflict (vault_id, user_id) do update
+    on conflict on constraint vault_members_pkey do update
     set role = case when existing_member.role = 'owner'
       then 'owner' else excluded.role end;
 
@@ -235,9 +235,9 @@ begin
   end if;
 
   return query
-  select v.id, v.name, m.role, v.legacy_import_allowed
-  from public.vault_members m
-  join public.vaults v on v.id = m.vault_id
+  select v.id as vault_id, v.name as vault_name, m.role, v.legacy_import_allowed
+  from public.vault_members as m
+  join public.vaults as v on v.id = m.vault_id
   where m.user_id = auth.uid()
   order by v.created_at, v.name;
 end
