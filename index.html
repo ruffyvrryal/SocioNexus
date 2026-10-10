@@ -114,17 +114,46 @@
       overflow: hidden;
       border-color: rgba(71, 85, 105, 0.42);
       transition: transform 180ms ease-out, border-color 180ms ease-out, box-shadow 180ms ease-out;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.72));
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.08);
     }
     .metric-card-primary {
-      background: linear-gradient(135deg, rgba(8, 47, 73, 0.72), rgba(15, 23, 42, 0.86) 72%);
+      background: linear-gradient(135deg, rgba(8, 47, 73, 0.82), rgba(15, 23, 42, 0.9) 72%);
       border-color: rgba(34, 211, 238, 0.24);
     }
     .metric-card-secondary {
-      background: linear-gradient(135deg, rgba(46, 16, 101, 0.28), rgba(15, 23, 42, 0.86) 72%);
+      background: linear-gradient(135deg, rgba(46, 16, 101, 0.35), rgba(15, 23, 42, 0.9) 72%);
     }
     .metric-card-value {
       min-height: 1.75rem;
       font-variant-numeric: tabular-nums;
+    }
+    #view-dashboard {
+      position: relative;
+    }
+    #view-dashboard > .glass-panel,
+    #view-dashboard > .grid > .glass-panel,
+    #view-dashboard .glass-panel {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.7));
+      border-color: rgba(148, 163, 184, 0.18);
+      box-shadow: 0 15px 30px rgba(2, 6, 23, 0.22), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .dashboard-shell {
+      border-radius: 1.5rem;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.74), rgba(15, 23, 42, 0.66));
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.26);
+    }
+    .workspace-banner {
+      background: linear-gradient(135deg, rgba(8, 47, 73, 0.72), rgba(15, 23, 42, 0.86) 52%, rgba(30, 41, 59, 0.72));
+      border-color: rgba(34, 211, 238, 0.18);
+    }
+    .dashboard-toolbar {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.68));
+      border-color: rgba(148, 163, 184, 0.18);
+    }
+    .section-header {
+      letter-spacing: 0.01em;
     }
     .metric-card-icon {
       display: grid;
@@ -633,7 +662,7 @@
     <!-- VIEW 2: ACCOUNT DASHBOARD WORKSPACE -->
     <section id="view-dashboard" class="hidden space-y-4 sm:space-y-6">
       <!-- Workspace Banner -->
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-slate-800">
+      <div class="workspace-banner glass-panel p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-slate-800">
         <div class="flex items-center space-x-3 sm:space-x-4">
           <button onclick="window.navigateToHub()" class="p-2 sm:p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shrink-0">
             <i data-lucide="arrow-left" class="w-4 h-4 sm:w-5 sm:h-5"></i>
@@ -667,7 +696,7 @@
       <div id="dashboard-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
 
       <!-- Timeframe Filter Toolbar -->
-      <div class="glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div class="dashboard-toolbar glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-slate-800">
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
           <label for="timeframe-filter" class="text-xs font-medium text-slate-400 flex items-center gap-1.5 shrink-0">
             <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
@@ -704,7 +733,7 @@
       </div>
 
       <!-- OVERVIEW METRICS CARDS GRID -->
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-1">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-1 section-header">
         <div>
           <h3 class="text-sm sm:text-base font-bold text-white">Performance overview</h3>
           <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">A snapshot of the selected range and filters.</p>
@@ -779,7 +808,7 @@
         </div>
       </div>
 
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white">Engagement by Niche</h3>
@@ -800,7 +829,7 @@
         </div>
       </div>
 
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white">Viewers by Country</h3>
@@ -823,7 +852,7 @@
 
       <!-- CHARTS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div class="lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
+        <div class="dashboard-shell lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
@@ -843,7 +872,7 @@
           </div>
         </div>
 
-        <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
+        <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
@@ -865,7 +894,7 @@
       </div>
 
       <!-- CONTENT CALENDAR -->
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-cyan-400"></i>Content Calendar</h3>
@@ -887,7 +916,7 @@
       </div>
 
       <!-- CONTENT LOG -->
-      <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+      <div class="dashboard-shell glass-panel rounded-2xl border border-slate-800 overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
