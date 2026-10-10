@@ -124,9 +124,53 @@
     .metric-card-secondary {
       background: linear-gradient(135deg, rgba(46, 16, 101, 0.35), rgba(15, 23, 42, 0.9) 72%);
     }
+    .metric-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.5), transparent 52%, rgba(168, 85, 247, 0.3));
+      opacity: 0.8;
+    }
     .metric-card-value {
       min-height: 1.75rem;
       font-variant-numeric: tabular-nums;
+    }
+    .modern-filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .modern-filter-box {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      min-height: 3rem;
+      padding: 0.2rem 0.85rem 0.2rem 0.85rem;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(17, 24, 39, 0.64));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .modern-filter-box label {
+      color: #a5b4c9;
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+    }
+    .modern-filter-box select {
+      min-width: 10.5rem;
+      border: none !important;
+      background: transparent !important;
+      color: #f8fafc !important;
+      font-size: 0.8rem !important;
+      font-weight: 600;
+      padding-right: 1.5rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23a5b4c9' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right center !important;
     }
     #view-dashboard {
       position: relative;
@@ -157,12 +201,13 @@
     }
     .metric-card-icon {
       display: grid;
-      width: 2rem;
-      height: 2rem;
+      width: 2.2rem;
+      height: 2.2rem;
       place-items: center;
       border: 1px solid currentColor;
-      border-radius: 0.65rem;
-      background: rgba(15, 23, 42, 0.64);
+      border-radius: 0.8rem;
+      background: rgba(15, 23, 42, 0.7);
+      box-shadow: 0 8px 18px rgba(2, 6, 23, 0.16);
     }
     @media (hover: hover) and (prefers-reduced-motion: no-preference) {
       .metric-card:hover {
@@ -697,39 +742,38 @@
 
       <!-- Timeframe Filter Toolbar -->
       <div class="dashboard-toolbar glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-slate-800">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-          <label for="timeframe-filter" class="text-xs font-medium text-slate-400 flex items-center gap-1.5 shrink-0">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
-            Range
-          </label>
-          <select id="timeframe-filter" onchange="window.setTimeframe(this.value)" class="w-full sm:w-40 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
-            <option value="all">All time</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
+        <div class="modern-filter-group">
+          <div class="modern-filter-box">
+            <label for="timeframe-filter" class="flex items-center gap-1.5 shrink-0">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-cyan-400"></i>
+              Range
+            </label>
+            <select id="timeframe-filter" onchange="window.setTimeframe(this.value)" class="w-full sm:w-40 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+              <option value="all">All time</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="modern-filter-box">
+            <label for="platform-filter">Platform</label>
+            <select id="platform-filter" onchange="window.selectPlatform(this.value)" class="w-full sm:w-44 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+              <option value="all">All platforms</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="youtube">YouTube</option>
+            </select>
+          </div>
+          <div class="modern-filter-box">
+            <label for="content-type-filter">Content type</label>
+            <select id="content-type-filter" onchange="window.setContentTypeFilter(this.value)" class="w-full sm:w-48 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+              <option value="all">All content types</option>
+              <option value="feed">Feed</option>
+              <option value="video">Video</option>
+            </select>
+          </div>
         </div>
 
         <div id="date-picker-controls" class="flex items-center gap-2"></div>
-      </div>
-
-      <!-- PLATFORM FILTER -->
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-        <label for="platform-filter" class="text-xs font-medium text-slate-400">Platform</label>
-        <select id="platform-filter" onchange="window.selectPlatform(this.value)" class="w-full sm:w-48 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
-          <option value="all">All platforms</option>
-          <option value="tiktok">TikTok</option>
-          <option value="instagram">Instagram</option>
-          <option value="youtube">YouTube</option>
-        </select>
-      </div>
-
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <label for="content-type-filter" class="text-xs font-medium text-slate-400">Content type</label>
-        <select id="content-type-filter" onchange="window.setContentTypeFilter(this.value)" class="w-full sm:w-48 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
-          <option value="all">All content types</option>
-          <option value="feed">Feed</option>
-          <option value="video">Video</option>
-        </select>
       </div>
 
       <!-- OVERVIEW METRICS CARDS GRID -->
@@ -740,53 +784,53 @@
         </div>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
-        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Impressions</span>
             <span class="metric-card-icon text-cyan-300"><i data-lucide="eye" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-impressions">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-impressions">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Reach</span>
             <span class="metric-card-icon text-sky-300"><i data-lucide="users-round" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-reach">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-reach">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-reach">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Likes</span>
             <span class="metric-card-icon text-rose-300"><i data-lucide="heart" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-likes">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-likes">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-likes">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Comments</span>
             <span class="metric-card-icon text-purple-300"><i data-lucide="message-circle" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-comments">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-comments">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-comments">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Shares</span>
             <span class="metric-card-icon text-emerald-300"><i data-lucide="share-2" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-shares">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-shares">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-shares">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card metric-card-secondary p-3.5 sm:p-4 rounded-xl space-y-2">
+        <div class="glass-panel metric-card metric-card-secondary p-3.5 sm:p-4 rounded-2xl space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Saves</span>
             <span class="metric-card-icon text-amber-300"><i data-lucide="bookmark" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-saves">0</div>
-          <div class="text-[10px] text-slate-500" id="comparison-saves">Select a period to compare</div>
+          <div class="text-[10px] text-slate-400" id="comparison-saves">Select a period to compare</div>
         </div>
       </div>
 
