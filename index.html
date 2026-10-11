@@ -339,6 +339,122 @@
         min-height: 4.5rem;
       }
     }
+    :root {
+      color-scheme: dark;
+      --surface-line: rgba(148, 163, 184, 0.16);
+      --surface-highlight: rgba(255, 255, 255, 0.045);
+      --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    body {
+      background-attachment: fixed;
+      background-image:
+        radial-gradient(ellipse at 50% -20%, rgba(14, 165, 233, 0.1), transparent 48%),
+        radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 20%),
+        radial-gradient(circle at top right, rgba(168, 85, 247, 0.1), transparent 24%),
+        linear-gradient(180deg, #090e17 0%, #0b1020 56%, #090e17 100%);
+    }
+    header.glass-panel {
+      background: rgba(9, 14, 23, 0.78);
+      border-color: var(--surface-line);
+      box-shadow: 0 8px 30px rgba(2, 6, 23, 0.2);
+    }
+    .glass-panel {
+      border-color: var(--surface-line);
+      box-shadow: 0 14px 36px rgba(2, 6, 23, 0.16), inset 0 1px 0 var(--surface-highlight);
+    }
+    .dashboard-shell,
+    .workspace-banner,
+    .dashboard-toolbar {
+      box-shadow: 0 16px 40px rgba(2, 6, 23, 0.2), inset 0 1px 0 var(--surface-highlight);
+    }
+    #view-auth:not(.hidden),
+    #view-account-hub:not(.hidden),
+    #view-dashboard:not(.hidden) {
+      animation: screen-enter 480ms var(--ease-premium) both;
+    }
+    #view-dashboard:not(.hidden) > * {
+      animation: section-enter 520ms var(--ease-premium) both;
+    }
+    #view-dashboard:not(.hidden) > *:nth-child(2) { animation-delay: 35ms; }
+    #view-dashboard:not(.hidden) > *:nth-child(3) { animation-delay: 70ms; }
+    #view-dashboard:not(.hidden) > *:nth-child(4) { animation-delay: 105ms; }
+    #view-dashboard:not(.hidden) > *:nth-child(5) { animation-delay: 140ms; }
+    #view-dashboard:not(.hidden) > *:nth-child(n+6) { animation-delay: 175ms; }
+    .metric-card,
+    .feature-card,
+    .pricing-card,
+    #accounts-grid > * {
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    .metric-card {
+      border-color: var(--surface-line);
+    }
+    .feature-card,
+    .pricing-card {
+      border-color: var(--surface-line);
+      box-shadow: inset 0 1px 0 var(--surface-highlight);
+    }
+    button,
+    a,
+    input,
+    select {
+      transition-timing-function: var(--ease-premium);
+    }
+    input:not([type="checkbox"]):not([type="color"]):focus,
+    select:focus {
+      border-color: rgba(34, 211, 238, 0.65) !important;
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1), 0 8px 20px rgba(2, 6, 23, 0.16);
+    }
+    table tbody tr {
+      transition: background-color 160ms ease, color 160ms ease;
+    }
+    [id^="modal-"]:not(.hidden) {
+      animation: backdrop-enter 180ms ease-out both;
+    }
+    [id^="modal-"]:not(.hidden) > .glass-panel {
+      animation: modal-enter 360ms var(--ease-premium) both;
+      transform-origin: center bottom;
+    }
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      button:not(:disabled):hover {
+        filter: brightness(1.08);
+      }
+      button:not(:disabled):active {
+        transform: scale(0.98);
+      }
+      #accounts-grid > * {
+        transition: transform 220ms var(--ease-premium), border-color 220ms ease, box-shadow 220ms ease;
+      }
+      #accounts-grid > *:hover {
+        transform: translateY(-3px);
+        border-color: rgba(34, 211, 238, 0.34);
+        box-shadow: 0 18px 36px rgba(2, 6, 23, 0.28), inset 0 1px 0 var(--surface-highlight);
+      }
+      .metric-card-icon {
+        transition: transform 220ms var(--ease-premium), box-shadow 220ms ease;
+      }
+      .metric-card:hover .metric-card-icon {
+        transform: scale(1.06) rotate(-3deg);
+        box-shadow: 0 10px 22px rgba(34, 211, 238, 0.12);
+      }
+    }
+    @keyframes screen-enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes section-enter {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes backdrop-enter {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes modal-enter {
+      from { opacity: 0; transform: translateY(14px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
   </style>
 </head>
 <body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
@@ -1110,6 +1226,7 @@
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Video / Post URL (Optional)</label>
           <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <p class="mt-1 text-[10px] leading-relaxed text-slate-500">Public TikTok, Instagram, and YouTube links can be previewed from the calendar.</p>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -3524,6 +3641,68 @@
       grid.innerHTML = cells.join('');
     };
 
+    function getCalendarPostPreview(post, safeLink) {
+      const contentType = post.content_type === 'video' ? 'Video' : 'Feed';
+      const previewFrame = (src, title, aspectClass, allow = '', sandbox = '') => `
+        <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black ${aspectClass}">
+          <iframe ${sandbox ? `sandbox="${sandbox}" ` : ''}src="${escapeReportHtml(src)}" title="${escapeReportHtml(title)}" class="h-full w-full border-0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="${allow}" allowfullscreen></iframe>
+        </div>`;
+      const previewMessage = (icon, title, description) => `
+        <div class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/70 px-5 py-7 text-center">
+          <i data-lucide="${icon}" class="h-7 w-7 text-slate-500" aria-hidden="true"></i>
+          <p class="text-xs font-semibold text-slate-200">${title}</p>
+          <p class="max-w-sm text-[11px] leading-relaxed text-slate-500">${description}</p>
+        </div>`;
+      if (!safeLink) {
+        return previewMessage('play-square', 'No preview link added', 'Add a public post URL to this content record to preview it here.');
+      }
+
+      const url = new URL(safeLink);
+      const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
+      if (hostname === 'youtu.be' || hostname === 'youtube.com' || hostname.endsWith('.youtube.com')) {
+        const videoId = hostname === 'youtu.be'
+          ? url.pathname.split('/').filter(Boolean)[0]
+          : url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1];
+        if (videoId && /^[\w-]{11}$/.test(videoId)) {
+          return previewFrame(`https://www.youtube-nocookie.com/embed/${videoId}`, `${contentType} preview from YouTube`, 'aspect-video', 'accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share');
+        }
+      }
+      if (hostname === 'tiktok.com' || hostname.endsWith('.tiktok.com')) {
+        const videoId = url.pathname.match(/\/video\/(\d+)/)?.[1];
+        if (videoId) {
+          return previewFrame(`https://www.tiktok.com/player/v1/${videoId}?autoplay=0`, `${contentType} preview from TikTok`, 'mx-auto aspect-[9/16] max-h-[70vh] max-w-sm', 'encrypted-media; picture-in-picture; web-share');
+        }
+      }
+      if (hostname === 'instagram.com' || hostname.endsWith('.instagram.com')) {
+        const postPath = url.pathname.match(/^\/(p|reel|tv)\/([\w-]+)/);
+        if (postPath) {
+          return previewFrame(`https://www.instagram.com/${postPath[1]}/${postPath[2]}/embed/`, `${contentType} preview from Instagram`, 'mx-auto aspect-[4/5] max-h-[70vh] max-w-md');
+        }
+      }
+
+      const mediaType = url.pathname.match(/\.(mp4|webm|ogg|mov|jpg|jpeg|png|webp|avif|gif)$/i)?.[1]?.toLowerCase();
+      if (mediaType && ['mp4', 'webm', 'ogg', 'mov'].includes(mediaType)) {
+        return `
+          <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black">
+            <video class="max-h-[70vh] w-full" controls playsinline preload="metadata">
+              <source src="${escapeReportHtml(safeLink)}">
+              Your browser does not support embedded video.
+            </video>
+          </div>`;
+      }
+      if (mediaType) {
+        return `
+          <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black">
+            <img src="${escapeReportHtml(safeLink)}" alt="${escapeReportHtml(post.title || `${contentType} preview`)}" class="max-h-[70vh] w-full object-contain" loading="lazy" referrerpolicy="no-referrer">
+          </div>`;
+      }
+      return `
+        <div class="space-y-2">
+          ${previewFrame(safeLink, `${contentType} link preview`, 'aspect-video', 'encrypted-media; picture-in-picture; web-share', 'allow-scripts allow-forms allow-presentation')}
+          <p class="text-center text-[10px] leading-relaxed text-slate-500">If the site blocks embedded previews or requires sign-in, open the original link below.</p>
+        </div>`;
+    }
+
     window.openCalendarPost = function(postId) {
       const post = state.posts.find(item => String(item.id) === String(postId));
       if (!post) {
@@ -3559,6 +3738,7 @@
         ['Engagement Rate', `${engagementRate}%`]
       ];
       document.getElementById('calendar-post-detail-content').innerHTML = `
+        ${getCalendarPostPreview(post, safeLink)}
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span>
           <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] capitalize">${escapeReportHtml(post.platform || 'Unknown platform')}</span>
