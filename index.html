@@ -358,6 +358,125 @@
       border-color: var(--surface-line);
       box-shadow: 0 8px 30px rgba(2, 6, 23, 0.2);
     }
+    body.auth-locked > header,
+    body.auth-locked > #bottom-navigation,
+    body.auth-locked > footer {
+      display: none !important;
+    }
+    body.auth-locked > main {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 1.5rem;
+    }
+    body.auth-locked {
+      padding-bottom: 0;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 43%, rgba(14, 116, 144, 0.16), transparent 42%),
+        radial-gradient(ellipse at 12% 88%, rgba(37, 99, 235, 0.12), transparent 35%),
+        #070b12;
+    }
+    body.auth-locked::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(ellipse at center, black, transparent 78%);
+      content: "";
+    }
+    body.auth-locked #view-auth {
+      width: min(100%, 24rem);
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+    .auth-brand {
+      margin: 0 0 2rem;
+      color: #f8fafc;
+      font-size: clamp(2rem, 8vw, 2.7rem);
+      font-weight: 700;
+      letter-spacing: -0.065em;
+      line-height: 1;
+      text-align: center;
+      text-shadow: 0 0 38px rgba(34, 211, 238, 0.12);
+    }
+    .auth-brand span {
+      color: #67e8f9;
+    }
+    .auth-form {
+      padding: 0.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 1.15rem;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.76), rgba(15, 23, 42, 0.7));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), inset 0 1px rgba(255, 255, 255, 0.045);
+      backdrop-filter: blur(18px);
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+    .auth-form:focus-within {
+      border-color: rgba(34, 211, 238, 0.48);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42), 0 0 0 3px rgba(34, 211, 238, 0.08);
+    }
+    .auth-password-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .auth-password-icon {
+      flex: none;
+      margin-left: 0.65rem;
+      color: #64748b;
+    }
+    .auth-password-input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 0.9rem 0.25rem;
+      color: #f8fafc;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .auth-password-input::placeholder {
+      color: #64748b;
+    }
+    .auth-password-input:focus-visible {
+      outline: none;
+    }
+    .auth-submit {
+      display: grid;
+      width: 2.75rem;
+      height: 2.75rem;
+      flex: none;
+      place-items: center;
+      border: 1px solid rgba(103, 232, 249, 0.25);
+      border-radius: 0.8rem;
+      background: linear-gradient(145deg, #22d3ee, #0891b2);
+      color: #082f49;
+      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.2);
+      cursor: pointer;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+    }
+    .auth-submit:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: 0 7px 24px rgba(6, 182, 212, 0.3);
+    }
+    .auth-submit:active {
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .auth-form, .auth-submit {
+        transition: none;
+      }
+    }
     .glass-panel {
       border-color: var(--surface-line);
       box-shadow: 0 14px 36px rgba(2, 6, 23, 0.16), inset 0 1px 0 var(--surface-highlight);
@@ -457,7 +576,7 @@
     }
   </style>
 </head>
-<body class="min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
+<body class="auth-locked min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
 
   <!-- TOP HEADER / NAVBAR -->
   <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between">
@@ -513,259 +632,32 @@
   <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
 
-    <section id="view-auth" class="mx-auto max-w-6xl py-8 sm:py-12">
-      <div class="landing-hero rounded-[28px] p-4 sm:p-6 lg:p-8 space-y-6">
-        <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-          <div class="relative z-10 space-y-5">
-            <div class="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-300 backdrop-blur-sm">
-              <span class="inline-block h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              Creator performance OS
-            </div>
-
-            <div class="space-y-4">
-              <h2 class="max-w-2xl text-4xl font-black tracking-[-0.06em] text-white sm:text-5xl lg:text-7xl">
-                Turn every social account into a growth engine.
-              </h2>
-              <p class="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                A premium analytics workspace for creators, teams, and agencies who need sharper content decisions, faster reporting, and more consistent growth.
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-3">
-              <button onclick="window.openAuthFocus()" class="rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition-all hover:-translate-y-0.5 hover:bg-cyan-400">Unlock workspace</button>
-              <button onclick="window.scrollToDashboardPreview()" class="rounded-xl border border-slate-700 bg-slate-900/70 px-4 py-2.5 text-xs font-semibold text-slate-200 transition-all hover:border-cyan-500/40 hover:text-white">See capabilities</button>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
-              <span class="hero-badge inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1.5">TikTok</span>
-              <span class="hero-badge inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1.5">Instagram</span>
-              <span class="hero-badge inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/70 px-2.5 py-1.5">YouTube</span>
-            </div>
+    <section id="view-auth" class="mx-auto max-w-md py-8 sm:py-16">
+      <div>
+        <h1 class="auth-brand">Socio<span>Nexus</span></h1>
+        <form id="auth-form" class="auth-form" onsubmit="window.signIn(event)">
+          <div class="auth-password-row">
+            <svg class="auth-password-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="4" y="10" width="16" height="11" rx="2.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input id="auth-password" class="auth-password-input" type="password" autocomplete="current-password" aria-label="Password" placeholder="Enter password" required>
+            <button class="auth-submit" type="submit" aria-label="Unlock SocioNexus" title="Unlock">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
-
-          <div class="relative z-10 space-y-4">
-            <div class="metric-glow rounded-[24px] border border-cyan-500/20 bg-slate-950/70 p-4 backdrop-blur-sm">
-              <div class="mb-4 flex items-center justify-between text-[11px] text-slate-400">
-                <span>Live account health</span>
-                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-300">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                  Optimized
-                </span>
-              </div>
-              <div class="space-y-4">
-                <div>
-                  <p class="text-[11px] text-slate-400">Engagement rate</p>
-                  <div class="mt-1 flex items-end gap-2">
-                    <span class="text-4xl font-black text-white">8.4%</span>
-                    <span class="pb-2 text-[11px] text-emerald-300">+2.1%</span>
-                  </div>
-                </div>
-                <div class="h-2.5 overflow-hidden rounded-full bg-slate-800">
-                  <div class="h-full w-[78%] rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-500"></div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 pt-2 text-center text-[10px] text-slate-400">
-                  <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-2">
-                    <div class="text-lg font-bold text-white">1.4M</div>
-                    <div>Reach</div>
-                  </div>
-                  <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-2">
-                    <div class="text-lg font-bold text-white">96K</div>
-                    <div>Likes</div>
-                  </div>
-                  <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-2">
-                    <div class="text-lg font-bold text-white">14</div>
-                    <div>Teams</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <p id="auth-message" class="hidden text-xs leading-relaxed" role="status"></p>
+          <div id="vault-setup-required" class="hidden space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-100">
+            <p id="vault-setup-message" class="leading-relaxed"></p>
+            <ol class="list-decimal space-y-1 pl-4 text-amber-100/80">
+              <li>In the configured Supabase project, create or confirm the Auth user <strong>ruffyprasetya@gmail.com</strong> and set its password to the shared access password.</li>
+              <li>Run <strong>supabase-vaults.sql</strong> in that project's SQL Editor. The bootstrap owner email is already set in the file.</li>
+              <li>Refresh this page and enter the shared password.</li>
+            </ol>
           </div>
-        </div>
-
-        <div id="capabilities-preview" class="relative z-10 grid gap-3 md:grid-cols-3">
-          <div class="feature-card rounded-2xl p-4 reveal-up" data-reveal>
-            <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300">
-              <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-sm font-bold text-white">Instant performance snapshots</h3>
-            <p class="mt-2 text-xs leading-5 text-slate-400">See impressions, reach, saves, and growth momentum without digging through scattered reports.</p>
-          </div>
-
-          <div class="feature-card rounded-2xl p-4 reveal-up" data-reveal>
-            <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-300">
-              <i data-lucide="layers-3" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-sm font-bold text-white">Content type comparison</h3>
-            <p class="mt-2 text-xs leading-5 text-slate-400">Compare Reels, feed posts, and videos to reveal the highest-converting format in your niche.</p>
-          </div>
-
-          <div class="feature-card rounded-2xl p-4 reveal-up" data-reveal>
-            <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-300">
-              <i data-lucide="sparkles" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-sm font-bold text-white">Actionable recommendations</h3>
-            <p class="mt-2 text-xs leading-5 text-slate-400">Turn insights into next-step content ideas, better posting windows, and smarter creative planning.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6 reveal-up grid gap-4 lg:grid-cols-[1.1fr_0.9fr]" data-reveal>
-        <div class="glass-panel rounded-2xl border border-slate-800 p-5 sm:p-6">
-          <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-300">Built for high-output teams</p>
-          <h3 class="mt-3 text-xl font-bold text-white sm:text-2xl">From content chaos to clear creative direction.</h3>
-          <div class="mt-5 grid gap-3 sm:grid-cols-3">
-            <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-              <div class="flex items-center gap-2 text-cyan-300"><i data-lucide="clock-3" class="w-4 h-4"></i><span class="text-xs font-medium">Faster reporting</span></div>
-              <p class="mt-2 text-[11px] leading-5 text-slate-400">Cut weekly reporting time from hours to minutes.</p>
-            </div>
-            <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-              <div class="flex items-center gap-2 text-violet-300"><i data-lucide="badge-check" class="w-4 h-4"></i><span class="text-xs font-medium">Clear priorities</span></div>
-              <p class="mt-2 text-[11px] leading-5 text-slate-400">Identify which formats consistently outperform.</p>
-            </div>
-            <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
-              <div class="flex items-center gap-2 text-emerald-300"><i data-lucide="brain-circuit" class="w-4 h-4"></i><span class="text-xs font-medium">Smarter content</span></div>
-              <p class="mt-2 text-[11px] leading-5 text-slate-400">Turn data into your next best-performing idea.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl border border-slate-800 p-5 sm:p-6">
-          <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">Trusted by growing brands</p>
-          <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-slate-300">
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5">NOVA</span>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5">Loop Studio</span>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5">Kite Labs</span>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5">Northstar</span>
-            <span class="rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5">Aster</span>
-          </div>
-          <div class="mt-5 space-y-2">
-            <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
-              <span class="text-[11px] text-slate-400">Campaign velocity</span>
-              <span class="text-sm font-bold text-white">3.4x</span>
-            </div>
-            <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
-              <span class="text-[11px] text-slate-400">Avg. engagement lift</span>
-              <span class="text-sm font-bold text-white">+48%</span>
-            </div>
-            <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2">
-              <span class="text-[11px] text-slate-400">Client retention</span>
-              <span class="text-sm font-bold text-white">92%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6 reveal-up grid gap-4 lg:grid-cols-3" data-reveal>
-        <div class="glass-panel rounded-2xl border border-slate-800 p-5">
-          <div class="mb-3 flex items-center gap-2 text-cyan-300"><i data-lucide="quote" class="w-5 h-5"></i><span class="text-xs uppercase tracking-[0.18em]">Client story</span></div>
-          <p class="text-sm leading-6 text-slate-300">“We finally know which content actually performs. The recommendations helped us shift our strategy and increase saves across our best accounts.”</p>
-          <div class="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-400">
-            <div class="font-semibold text-white">Alicia Gomez</div>
-            <div>Growth Lead, Northstar</div>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl border border-slate-800 p-5">
-          <div class="mb-3 flex items-center gap-2 text-violet-300"><i data-lucide="quote" class="w-5 h-5"></i><span class="text-xs uppercase tracking-[0.18em]">Client story</span></div>
-          <p class="text-sm leading-6 text-slate-300">“The comparison views are a game changer. We can benchmark niches side by side and stop guessing which content deserves more attention.”</p>
-          <div class="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-400">
-            <div class="font-semibold text-white">Rafi Karim</div>
-            <div>Brand Strategist, KITE</div>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl border border-slate-800 p-5">
-          <div class="mb-3 flex items-center gap-2 text-emerald-300"><i data-lucide="quote" class="w-5 h-5"></i><span class="text-xs uppercase tracking-[0.18em]">Client story</span></div>
-          <p class="text-sm leading-6 text-slate-300">“SocioNexus gave us a cleaner system than spreadsheets. It brings our numbers, content plan, and performance decisions into one place.”</p>
-          <div class="mt-4 border-t border-slate-800 pt-3 text-xs text-slate-400">
-            <div class="font-semibold text-white">Maya Chen</div>
-            <div>Creative Director, Loop Studio</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6 reveal-up grid gap-4 lg:grid-cols-3" data-reveal>
-        <div class="pricing-card rounded-2xl p-5">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Starter</p>
-          <div class="mt-4 flex items-end gap-1">
-            <span class="text-3xl font-black text-white">$29</span>
-            <span class="pb-1 text-xs text-slate-500">/month</span>
-          </div>
-          <p class="mt-3 text-sm text-slate-400">For solo creators and early-stage brands.</p>
-          <ul class="mt-4 space-y-2 text-xs text-slate-300">
-            <li>• 3 brand accounts</li>
-            <li>• Performance dashboard</li>
-            <li>• Monthly insights report</li>
-          </ul>
-        </div>
-
-        <div class="pricing-card featured rounded-2xl p-5">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-xs uppercase tracking-[0.2em] text-cyan-300">Growth</p>
-            <span class="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-300">Most popular</span>
-          </div>
-          <div class="mt-4 flex items-end gap-1">
-            <span class="text-3xl font-black text-white">$79</span>
-            <span class="pb-1 text-xs text-slate-500">/month</span>
-          </div>
-          <p class="mt-3 text-sm text-slate-400">For growing teams that need consistent optimization.</p>
-          <ul class="mt-4 space-y-2 text-xs text-slate-300">
-            <li>• Unlimited accounts</li>
-            <li>• AI recommendations</li>
-            <li>• Team vault sharing</li>
-          </ul>
-        </div>
-
-        <div class="pricing-card rounded-2xl p-5">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Agency</p>
-          <div class="mt-4 flex items-end gap-1">
-            <span class="text-3xl font-black text-white">$149</span>
-            <span class="pb-1 text-xs text-slate-500">/month</span>
-          </div>
-          <p class="mt-3 text-sm text-slate-400">For agencies managing multiple client portfolios.</p>
-          <ul class="mt-4 space-y-2 text-xs text-slate-300">
-            <li>• Multi-client workspaces</li>
-            <li>• Advanced reporting</li>
-            <li>• Dedicated onboarding</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="mt-6 reveal-up rounded-2xl border border-cyan-500/25 bg-gradient-to-r from-cyan-500/10 via-slate-900/80 to-violet-500/10 p-5 sm:p-7" data-reveal>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-cyan-300">Ready to scale your content engine?</p>
-            <h3 class="mt-2 text-2xl font-bold text-white">Turn data into better decisions and stronger growth.</h3>
-          </div>
-          <button onclick="window.openAuthFocus()" class="rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 shadow-lg shadow-cyan-500/25 transition-all hover:-translate-y-0.5 hover:bg-cyan-400">Launch your workspace</button>
-        </div>
-      </div>
-
-      <div class="mt-6 auth-panel glass-panel rounded-[26px] border border-slate-800 p-5 sm:p-7 shadow-[0_20px_50px_rgba(14,165,233,0.08)]">
-        <div class="space-y-4">
-          <div>
-            <h2 class="text-xl font-bold text-white">Enter the shared password</h2>
-            <p class="mt-1 text-xs leading-relaxed text-slate-400">Use the shared access password to open the SocioNexus vault. Everyone shares one account and its permissions. This device stays unlocked until you lock it or the session expires.</p>
-          </div>
-          <form id="auth-form" onsubmit="window.signIn(event)" class="space-y-3">
-            <div>
-              <label for="auth-password" class="mb-1 block text-xs font-medium text-slate-300">Shared access password</label>
-              <input id="auth-password" type="password" autocomplete="current-password" required class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-xs text-white focus:border-cyan-500 focus:outline-none">
-            </div>
-            <p id="auth-message" class="hidden text-xs leading-relaxed" role="status"></p>
-            <div id="vault-setup-required" class="hidden space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-100">
-              <p id="vault-setup-message" class="leading-relaxed"></p>
-              <ol class="list-decimal space-y-1 pl-4 text-amber-100/80">
-                <li>In the configured Supabase project, create or confirm the Auth user <strong>ruffyprasetya@gmail.com</strong> and set its password to the shared access password.</li>
-                <li>Run <strong>supabase-vaults.sql</strong> in that project's SQL Editor. The bootstrap owner email is already set in the file.</li>
-                <li>Refresh this page and enter the shared password.</li>
-              </ol>
-            </div>
-            <div class="pt-1">
-              <button type="submit" class="w-full rounded-xl bg-cyan-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400">Unlock dashboard</button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </section>
 
@@ -1133,7 +1025,7 @@
   </main>
 
   <!-- BOTTOM MOBILE ACTION NAV -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around">
+  <div id="bottom-navigation" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-4 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex items-center justify-around">
     <button id="bottom-hub-button" onclick="window.navigateToHub()" class="flex flex-col items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white">
       <i data-lucide="layout-grid" class="w-5 h-5"></i>
       <span>Workspaces</span>
@@ -2488,6 +2380,7 @@
     }
 
     function showAuthenticationGate(message = '', requiresSetup = false) {
+      document.body.classList.add('auth-locked');
       document.getElementById('view-auth').classList.remove('hidden');
       document.getElementById('view-account-hub').classList.add('hidden');
       document.getElementById('view-dashboard').classList.add('hidden');
@@ -2608,6 +2501,7 @@
         document.getElementById('view-dashboard').classList.add('hidden');
         updateVaultControls();
         renderApp();
+        document.body.classList.remove('auth-locked');
       } catch (error) {
         console.error('Could not load signed-in vaults:', error);
         const migrationMissing = /get_my_vaults|vault_members|schema cache|does not exist/i.test(error.message || '');
