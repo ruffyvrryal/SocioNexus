@@ -1107,6 +1107,9 @@
         <div class="space-y-2">
           <label for="account-profile-picture-file" class="block text-xs font-medium text-slate-300">Social Media Profile Picture</label>
           <input id="account-profile-picture-file" type="file" accept="image/jpeg,image/png,image/webp" onchange="window.previewAccountProfilePicture(this)" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-slate-600">
+          <div class="flex items-center gap-2 text-[10px] text-slate-500"><span class="h-px flex-1 bg-slate-800"></span><span>OR USE A LINK</span><span class="h-px flex-1 bg-slate-800"></span></div>
+          <input id="account-profile-picture-url" type="url" inputmode="url" placeholder="https://example.com/profile-picture.jpg" oninput="window.previewAccountProfilePictureUrl(this)" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+          <p class="text-[10px] leading-relaxed text-slate-500">Use a direct image URL. Uploading a file and entering a link are alternatives.</p>
           <input id="account-profile-picture-remove" type="checkbox" class="hidden" aria-hidden="true" tabindex="-1">
           <div class="flex items-center gap-3">
             <img id="account-profile-picture-preview" class="hidden h-14 w-14 rounded-full border border-slate-700 object-cover" alt="Profile picture preview">
@@ -1560,6 +1563,7 @@
     function resetAccountProfilePicturePicker() {
       clearAccountProfilePictureObjectUrl();
       document.getElementById('account-profile-picture-file').value = '';
+      document.getElementById('account-profile-picture-url').value = '';
       document.getElementById('account-profile-picture-remove').checked = false;
       document.getElementById('account-profile-picture-preview').removeAttribute('src');
       document.getElementById('account-profile-picture-preview').classList.add('hidden');
@@ -1590,13 +1594,39 @@
       }
       clearAccountProfilePictureObjectUrl();
       accountProfilePictureObjectUrl = URL.createObjectURL(file);
+      document.getElementById('account-profile-picture-url').value = '';
       document.getElementById('account-profile-picture-remove').checked = false;
       setAccountProfilePicturePreview(accountProfilePictureObjectUrl);
+    };
+
+    window.previewAccountProfilePictureUrl = function(input) {
+      const message = document.getElementById('account-profile-picture-message');
+      const url = input.value.trim();
+      message.classList.add('hidden');
+      if (!url) return;
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch (error) {
+        message.textContent = 'Enter a valid direct image URL.';
+        message.classList.remove('hidden');
+        return;
+      }
+      if (!['http:', 'https:'].includes(parsedUrl.protocol) || parsedUrl.username || parsedUrl.password) {
+        message.textContent = 'Use a valid HTTP or HTTPS image URL.';
+        message.classList.remove('hidden');
+        return;
+      }
+      clearAccountProfilePictureObjectUrl();
+      document.getElementById('account-profile-picture-file').value = '';
+      document.getElementById('account-profile-picture-remove').checked = false;
+      setAccountProfilePicturePreview(parsedUrl.href);
     };
 
     window.clearAccountProfilePicture = function() {
       clearAccountProfilePictureObjectUrl();
       document.getElementById('account-profile-picture-file').value = '';
+      document.getElementById('account-profile-picture-url').value = '';
       document.getElementById('account-profile-picture-remove').checked = true;
       document.getElementById('account-profile-picture-preview').removeAttribute('src');
       document.getElementById('account-profile-picture-preview').classList.add('hidden');
@@ -1607,26 +1637,36 @@
     };
 
     async function loadAccountProfilePicture(image, fallback, account) {
-      if (!account.profile_picture_path) return;
-      image.dataset.path = account.profile_picture_path;
+      const imageSourceKey = account.profile_picture_url || account.profile_picture_path || '';
+      if (!imageSourceKey) return;
+      image.dataset.path = imageSourceKey;
       let pictureUrl;
       try {
-        pictureUrl = await getPostThumbnailUrl(account.profile_picture_path);
+        pictureUrl = account.profile_picture_url
+          ? validateAccountProfilePictureUrl(account.profile_picture_url)
+          : await getPostThumbnailUrl(account.profile_picture_path);
       } catch (error) {
         console.error('Could not load the account profile picture:', error);
         return;
       }
-      if (!image.isConnected || image.dataset.path !== account.profile_picture_path) return;
+      if (!image.isConnected || image.dataset.path !== imageSourceKey) return;
       image.addEventListener('load', () => {
         image.classList.remove('hidden');
         fallback.classList.add('hidden');
       }, { once: true });
       image.addEventListener('error', () => {
-        calendarThumbnailCache.delete(account.profile_picture_path);
+        if (account.profile_picture_path) calendarThumbnailCache.delete(account.profile_picture_path);
         console.warn('The account profile picture could not be displayed.');
       }, { once: true });
-      image.dataset.path = account.profile_picture_path;
       image.src = pictureUrl;
+    }
+
+    function validateAccountProfilePictureUrl(value) {
+      const parsedUrl = new URL(String(value || '').trim());
+      if (!['http:', 'https:'].includes(parsedUrl.protocol) || parsedUrl.username || parsedUrl.password) {
+        throw new Error('Use a valid HTTP or HTTPS image URL without embedded credentials.');
+      }
+      return parsedUrl.href;
     }
 
     window.openAddAccountModal = function() {
@@ -1651,22 +1691,29 @@
       document.getElementById('account-niche').value = acc.niche;
       document.getElementById('account-color').value = acc.color || "#0ea5e9";
       resetAccountProfilePicturePicker();
+      document.getElementById('account-profile-picture-url').value = acc.profile_picture_url || '';
       document.getElementById('modal-account').classList.remove('hidden');
       document.getElementById('modal-account').classList.add('flex');
-      if (acc.profile_picture_path) {
+      if (acc.profile_picture_url) {
+        window.previewAccountProfilePictureUrl(document.getElementById('account-profile-picture-url'));
+      } else if (acc.profile_picture_path) {
         getPostThumbnailUrl(acc.profile_picture_path).then(url => {
           const pictureInput = document.getElementById('account-profile-picture-file');
+          const pictureUrlInput = document.getElementById('account-profile-picture-url');
           const pictureRemoval = document.getElementById('account-profile-picture-remove');
           if (!document.getElementById('modal-account').classList.contains('hidden') &&
             document.getElementById('account-id').value === String(acc.id) &&
-            !pictureInput.files?.length && !pictureRemoval.checked) setAccountProfilePicturePreview(url);
+            !pictureInput.files?.length && !pictureUrlInput.value.trim() && !pictureRemoval.checked) {
+            setAccountProfilePicturePreview(url);
+          }
         }).catch(error => {
           console.error('Could not load the account profile picture:', error);
           const pictureInput = document.getElementById('account-profile-picture-file');
+          const pictureUrlInput = document.getElementById('account-profile-picture-url');
           const pictureRemoval = document.getElementById('account-profile-picture-remove');
           if (!document.getElementById('modal-account').classList.contains('hidden') &&
             document.getElementById('account-id').value === String(acc.id) &&
-            !pictureInput.files?.length && !pictureRemoval.checked) {
+            !pictureInput.files?.length && !pictureUrlInput.value.trim() && !pictureRemoval.checked) {
             document.getElementById('account-profile-picture-clear').classList.remove('hidden');
             const message = document.getElementById('account-profile-picture-message');
             message.textContent = 'Could not load the saved picture. You can choose a replacement.';
@@ -1685,6 +1732,19 @@
       const color = document.getElementById('account-color').value;
       const existingAccount = state.accounts.find(account => String(account.id) === String(id));
       const pictureFile = document.getElementById('account-profile-picture-file').files?.[0] || null;
+      const pictureUrlInput = document.getElementById('account-profile-picture-url');
+      const pictureUrlValue = pictureUrlInput.value.trim();
+      let profilePictureUrl = '';
+      if (pictureUrlValue) {
+        try {
+          profilePictureUrl = validateAccountProfilePictureUrl(pictureUrlValue);
+        } catch (error) {
+          const message = document.getElementById('account-profile-picture-message');
+          message.textContent = error.message;
+          message.classList.remove('hidden');
+          return;
+        }
+      }
       if (pictureFile && (!['image/jpeg', 'image/png', 'image/webp'].includes(pictureFile.type) ||
         pictureFile.size > MAX_POST_THUMBNAIL_BYTES)) {
         const message = document.getElementById('account-profile-picture-message');
@@ -1695,7 +1755,8 @@
         return;
       }
       const oldPicturePath = existingAccount?.profile_picture_path || '';
-      const removePicture = document.getElementById('account-profile-picture-remove').checked;
+      const removePicture = document.getElementById('account-profile-picture-remove').checked ||
+        (!!existingAccount?.profile_picture_url && !profilePictureUrl);
 
       const accObj = {
         id,
@@ -1703,7 +1764,8 @@
         niche,
         color,
         vault_id: state.activeVaultId,
-        profile_picture_path: removePicture ? '' : oldPicturePath
+        profile_picture_path: removePicture || profilePictureUrl ? '' : oldPicturePath,
+        profile_picture_url: removePicture || pictureFile ? '' : profilePictureUrl || existingAccount?.profile_picture_url || ''
       };
       if (!supabaseClient) {
         alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
@@ -3236,7 +3298,8 @@
           ...account,
           id: String(account.id),
           vault_id: String(account.vault_id),
-          profile_picture_path: account.profile_picture_path || ''
+          profile_picture_path: account.profile_picture_path || '',
+          profile_picture_url: account.profile_picture_url || ''
         }));
         state.posts = (postsResult.data || []).map(post => ({
           ...post,

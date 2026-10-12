@@ -57,6 +57,8 @@ alter table public.accounts
   add column if not exists vault_id uuid references public.vaults(id) on delete cascade;
 alter table public.accounts
   add column if not exists profile_picture_path text not null default '';
+alter table public.accounts
+  add column if not exists profile_picture_url text not null default '';
 alter table public.content_posts
   add column if not exists vault_id uuid references public.vaults(id) on delete cascade;
 alter table public.viewer_locations
