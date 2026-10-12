@@ -765,6 +765,10 @@
           <button onclick="window.navigateToHub()" class="p-2 sm:p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shrink-0">
             <i data-lucide="arrow-left" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           </button>
+          <div class="relative grid h-11 w-11 sm:h-14 sm:w-14 shrink-0 place-items-center overflow-hidden rounded-full border border-slate-700 bg-slate-800 text-sm font-bold text-white">
+            <span id="current-account-avatar-fallback" class="absolute">?</span>
+            <img id="current-account-avatar" class="hidden absolute inset-0 h-full w-full object-cover" alt="Account profile picture">
+          </div>
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2 flex-wrap">
               <h2 id="current-account-title" class="text-lg sm:text-2xl font-bold text-white tracking-tight truncate">Account Dashboard</h2>
@@ -1099,6 +1103,17 @@
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Account / Brand Name</label>
           <input type="text" id="account-name" required placeholder="e.g. Alex Rivera" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+        </div>
+        <div class="space-y-2">
+          <label for="account-profile-picture-file" class="block text-xs font-medium text-slate-300">Social Media Profile Picture</label>
+          <input id="account-profile-picture-file" type="file" accept="image/jpeg,image/png,image/webp" onchange="window.previewAccountProfilePicture(this)" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-slate-600">
+          <input id="account-profile-picture-remove" type="checkbox" class="hidden" aria-hidden="true" tabindex="-1">
+          <div class="flex items-center gap-3">
+            <img id="account-profile-picture-preview" class="hidden h-14 w-14 rounded-full border border-slate-700 object-cover" alt="Profile picture preview">
+            <p id="account-profile-picture-placeholder" class="text-[10px] leading-relaxed text-slate-500">Upload a JPG, PNG, or WebP image (up to 5 MB) to show on this account card.</p>
+            <button id="account-profile-picture-clear" type="button" onclick="window.clearAccountProfilePicture()" class="hidden shrink-0 text-[10px] font-medium text-rose-300 hover:text-rose-200">Remove picture</button>
+          </div>
+          <p id="account-profile-picture-message" class="hidden text-[10px] leading-relaxed text-rose-300" role="status"></p>
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Niche Category</label>
@@ -1443,6 +1458,7 @@
     const calendarThumbnailCache = new Map();
     let calendarThumbnailObserver = null;
     let postThumbnailObjectUrl = null;
+    let accountProfilePictureObjectUrl = null;
     const POST_THUMBNAIL_BUCKET = 'socio-post-thumbnails';
     const MAX_POST_THUMBNAIL_BYTES = 5 * 1024 * 1024;
 
@@ -1508,6 +1524,13 @@
       if (acc && String(acc.vault_id) === String(state.activeVaultId)) {
         document.getElementById('current-account-title').innerText = acc.name;
         document.getElementById('current-account-niche').innerText = acc.niche;
+        document.getElementById('current-account-avatar-fallback').textContent = (acc.name || '?').charAt(0).toUpperCase();
+        const avatarImage = document.getElementById('current-account-avatar');
+        const avatarFallback = document.getElementById('current-account-avatar-fallback');
+        avatarImage.classList.add('hidden');
+        avatarImage.dataset.path = acc.profile_picture_path || '';
+        avatarFallback.classList.remove('hidden');
+        loadAccountProfilePicture(avatarImage, avatarFallback, acc);
         document.getElementById('header-account-name').innerText = acc.name;
         document.getElementById('header-account-badge').classList.remove('hidden');
         document.getElementById('header-account-badge').classList.add('flex');
@@ -1519,12 +1542,101 @@
       renderDashboard();
     };
 
+    function clearAccountProfilePictureObjectUrl() {
+      if (accountProfilePictureObjectUrl) {
+        URL.revokeObjectURL(accountProfilePictureObjectUrl);
+        accountProfilePictureObjectUrl = null;
+      }
+    }
+
+    function setAccountProfilePicturePreview(src) {
+      const image = document.getElementById('account-profile-picture-preview');
+      image.src = src;
+      image.classList.remove('hidden');
+      document.getElementById('account-profile-picture-placeholder').classList.add('hidden');
+      document.getElementById('account-profile-picture-clear').classList.remove('hidden');
+    }
+
+    function resetAccountProfilePicturePicker() {
+      clearAccountProfilePictureObjectUrl();
+      document.getElementById('account-profile-picture-file').value = '';
+      document.getElementById('account-profile-picture-remove').checked = false;
+      document.getElementById('account-profile-picture-preview').removeAttribute('src');
+      document.getElementById('account-profile-picture-preview').classList.add('hidden');
+      document.getElementById('account-profile-picture-placeholder').classList.remove('hidden');
+      document.getElementById('account-profile-picture-placeholder').textContent =
+        'Upload a JPG, PNG, or WebP image (up to 5 MB) to show on this account card.';
+      document.getElementById('account-profile-picture-clear').classList.add('hidden');
+      document.getElementById('account-profile-picture-message').classList.add('hidden');
+      document.getElementById('account-profile-picture-message').textContent = '';
+    }
+
+    window.previewAccountProfilePicture = function(input) {
+      const message = document.getElementById('account-profile-picture-message');
+      const file = input.files?.[0];
+      message.classList.add('hidden');
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        input.value = '';
+        message.textContent = 'Choose a JPG, PNG, or WebP image.';
+        message.classList.remove('hidden');
+        return;
+      }
+      if (file.size > MAX_POST_THUMBNAIL_BYTES) {
+        input.value = '';
+        message.textContent = 'The profile picture must be 5 MB or smaller.';
+        message.classList.remove('hidden');
+        return;
+      }
+      clearAccountProfilePictureObjectUrl();
+      accountProfilePictureObjectUrl = URL.createObjectURL(file);
+      document.getElementById('account-profile-picture-remove').checked = false;
+      setAccountProfilePicturePreview(accountProfilePictureObjectUrl);
+    };
+
+    window.clearAccountProfilePicture = function() {
+      clearAccountProfilePictureObjectUrl();
+      document.getElementById('account-profile-picture-file').value = '';
+      document.getElementById('account-profile-picture-remove').checked = true;
+      document.getElementById('account-profile-picture-preview').removeAttribute('src');
+      document.getElementById('account-profile-picture-preview').classList.add('hidden');
+      document.getElementById('account-profile-picture-clear').classList.add('hidden');
+      document.getElementById('account-profile-picture-placeholder').classList.remove('hidden');
+      document.getElementById('account-profile-picture-placeholder').textContent =
+        'Profile picture removed. Choose a new image to replace it.';
+    };
+
+    async function loadAccountProfilePicture(image, fallback, account) {
+      if (!account.profile_picture_path) return;
+      image.dataset.path = account.profile_picture_path;
+      let pictureUrl;
+      try {
+        pictureUrl = await getPostThumbnailUrl(account.profile_picture_path);
+      } catch (error) {
+        console.error('Could not load the account profile picture:', error);
+        return;
+      }
+      if (!image.isConnected || image.dataset.path !== account.profile_picture_path) return;
+      image.addEventListener('load', () => {
+        image.classList.remove('hidden');
+        fallback.classList.add('hidden');
+      }, { once: true });
+      image.addEventListener('error', () => {
+        calendarThumbnailCache.delete(account.profile_picture_path);
+        console.warn('The account profile picture could not be displayed.');
+      }, { once: true });
+      image.dataset.path = account.profile_picture_path;
+      image.src = pictureUrl;
+    }
+
     window.openAddAccountModal = function() {
       if (!canEditActiveVault()) return;
       document.getElementById('modal-account-title').innerText = "Add New Account";
       document.getElementById('account-id').value = "";
       document.getElementById('account-name').value = "";
       document.getElementById('account-niche').value = "";
+      document.getElementById('account-color').value = "#0ea5e9";
+      resetAccountProfilePicturePicker();
       document.getElementById('modal-account').classList.remove('hidden');
       document.getElementById('modal-account').classList.add('flex');
     };
@@ -1538,8 +1650,30 @@
       document.getElementById('account-name').value = acc.name;
       document.getElementById('account-niche').value = acc.niche;
       document.getElementById('account-color').value = acc.color || "#0ea5e9";
+      resetAccountProfilePicturePicker();
       document.getElementById('modal-account').classList.remove('hidden');
       document.getElementById('modal-account').classList.add('flex');
+      if (acc.profile_picture_path) {
+        getPostThumbnailUrl(acc.profile_picture_path).then(url => {
+          const pictureInput = document.getElementById('account-profile-picture-file');
+          const pictureRemoval = document.getElementById('account-profile-picture-remove');
+          if (!document.getElementById('modal-account').classList.contains('hidden') &&
+            document.getElementById('account-id').value === String(acc.id) &&
+            !pictureInput.files?.length && !pictureRemoval.checked) setAccountProfilePicturePreview(url);
+        }).catch(error => {
+          console.error('Could not load the account profile picture:', error);
+          const pictureInput = document.getElementById('account-profile-picture-file');
+          const pictureRemoval = document.getElementById('account-profile-picture-remove');
+          if (!document.getElementById('modal-account').classList.contains('hidden') &&
+            document.getElementById('account-id').value === String(acc.id) &&
+            !pictureInput.files?.length && !pictureRemoval.checked) {
+            document.getElementById('account-profile-picture-clear').classList.remove('hidden');
+            const message = document.getElementById('account-profile-picture-message');
+            message.textContent = 'Could not load the saved picture. You can choose a replacement.';
+            message.classList.remove('hidden');
+          }
+        });
+      }
     };
 
     window.saveAccount = async function(e) {
@@ -1549,19 +1683,63 @@
       const name = document.getElementById('account-name').value;
       const niche = document.getElementById('account-niche').value;
       const color = document.getElementById('account-color').value;
+      const existingAccount = state.accounts.find(account => String(account.id) === String(id));
+      const pictureFile = document.getElementById('account-profile-picture-file').files?.[0] || null;
+      if (pictureFile && (!['image/jpeg', 'image/png', 'image/webp'].includes(pictureFile.type) ||
+        pictureFile.size > MAX_POST_THUMBNAIL_BYTES)) {
+        const message = document.getElementById('account-profile-picture-message');
+        message.textContent = pictureFile.size > MAX_POST_THUMBNAIL_BYTES
+          ? 'The profile picture must be 5 MB or smaller.'
+          : 'Choose a JPG, PNG, or WebP image.';
+        message.classList.remove('hidden');
+        return;
+      }
+      const oldPicturePath = existingAccount?.profile_picture_path || '';
+      const removePicture = document.getElementById('account-profile-picture-remove').checked;
 
-      const accObj = { id, name, niche, color, vault_id: state.activeVaultId };
+      const accObj = {
+        id,
+        name,
+        niche,
+        color,
+        vault_id: state.activeVaultId,
+        profile_picture_path: removePicture ? '' : oldPicturePath
+      };
       if (!supabaseClient) {
         alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
         return;
       }
+      let newPicturePath = '';
       try {
+        if (pictureFile) {
+          const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[pictureFile.type];
+          const uniqueId = crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          newPicturePath = `${state.activeVaultId}/${id}/profile/${uniqueId}.${extension}`;
+          const { error: uploadError } = await supabaseClient.storage
+            .from(POST_THUMBNAIL_BUCKET)
+            .upload(newPicturePath, pictureFile, {
+              contentType: pictureFile.type,
+              cacheControl: '3600',
+              upsert: false
+            });
+          if (uploadError) throw uploadError;
+          accObj.profile_picture_path = newPicturePath;
+        }
         const { data, error } = await supabaseClient.from('accounts').upsert(accObj).select('id').single();
         if (error) throw error;
         if (!data) throw new Error('Supabase did not confirm the account save.');
       } catch (err) {
+        if (newPicturePath) {
+          try {
+            await removePostThumbnailFiles([newPicturePath]);
+          } catch (cleanupError) {
+            console.error('Could not clean up the failed profile picture upload:', cleanupError);
+          }
+        }
         console.error('Supabase account save failed:', err);
-        alert(`Could not save this account to the vault. ${err.message}`);
+        alert(`Could not save this account to the vault. ${err.message || 'Check your connection and try again.'} Ensure supabase-vaults.sql has been run for the profile picture field.`);
         return;
       }
       const idx = state.accounts.findIndex(a => a.id === id);
@@ -1569,6 +1747,15 @@
       else state.accounts.push(accObj);
 
       saveLocalData();
+      resetAccountProfilePicturePicker();
+      if (oldPicturePath && oldPicturePath !== accObj.profile_picture_path) {
+        try {
+          await removePostThumbnailFiles([oldPicturePath]);
+        } catch (error) {
+          console.error('Could not remove the replaced account profile picture:', error);
+          alert('The account was saved, but its previous profile picture could not be removed from storage.');
+        }
+      }
 
       window.closeModal('modal-account');
       if (state.currentAccountId === id) window.openAccountWorkspace(id);
@@ -1583,6 +1770,8 @@
         .filter(post => String(post.account_id) === String(accId))
         .map(post => post.thumbnail_path)
         .filter(Boolean);
+      const account = state.accounts.find(item => String(item.id) === String(accId));
+      if (account?.profile_picture_path) thumbnailPaths.push(account.profile_picture_path);
       if (!supabaseClient) {
         alert('Cloud sync is not configured. Connect Supabase before deleting this account.');
         return;
@@ -1609,8 +1798,8 @@
       try {
         await removePostThumbnailFiles(thumbnailPaths);
       } catch (error) {
-        console.error('Could not remove deleted account thumbnails:', error);
-        alert('The account was deleted, but one or more thumbnails could not be removed from storage.');
+        console.error('Could not remove deleted account images:', error);
+        alert('The account was deleted, but one or more stored images could not be removed.');
       }
 
       saveLocalData();
@@ -2580,6 +2769,7 @@
     window.closeModal = function(id) {
       document.getElementById(id).classList.add('hidden');
       document.getElementById(id).classList.remove('flex');
+      if (id === 'modal-account') resetAccountProfilePicturePicker();
     };
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -3045,7 +3235,8 @@
         state.accounts = (accountsResult.data || []).map(account => ({
           ...account,
           id: String(account.id),
-          vault_id: String(account.vault_id)
+          vault_id: String(account.vault_id),
+          profile_picture_path: account.profile_picture_path || ''
         }));
         state.posts = (postsResult.data || []).map(post => ({
           ...post,
@@ -3163,8 +3354,9 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-base sm:text-lg" style="background-color: ${accountColor}">
-              ${escapeReportHtml((acc.name || '?').charAt(0).toUpperCase())}
+            <div class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-base sm:text-lg" style="background-color: ${accountColor}">
+              <span data-account-avatar-fallback class="absolute">${escapeReportHtml((acc.name || '?').charAt(0).toUpperCase())}</span>
+              <img data-account-avatar class="hidden absolute inset-0 h-full w-full object-cover" alt="${escapeReportHtml(acc.name || 'Account')} profile picture">
             </div>
             <span class="text-[11px] sm:text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 group-hover:border-cyan-500/50 transition-colors">${accPosts.length} Posts</span>
           </div>
@@ -3178,6 +3370,9 @@
           </div>
         `;
         grid.appendChild(card);
+        const avatar = card.querySelector('[data-account-avatar]');
+        const fallback = card.querySelector('[data-account-avatar-fallback]');
+        if (avatar && fallback) loadAccountProfilePicture(avatar, fallback, acc);
       });
     }
 
