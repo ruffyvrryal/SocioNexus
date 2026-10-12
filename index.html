@@ -1459,7 +1459,6 @@
 
     const SHARED_ACCESS_EMAIL = 'ruffyprasetya@gmail.com';
     const calendarThumbnailCache = new Map();
-    let calendarThumbnailObserver = null;
     let postThumbnailObjectUrl = null;
     let accountProfilePictureObjectUrl = null;
     const POST_THUMBNAIL_BUCKET = 'socio-post-thumbnails';
@@ -4028,24 +4027,7 @@
         </div>`);
       }
       grid.innerHTML = cells.join('');
-      calendarThumbnailObserver?.disconnect();
-      if ('IntersectionObserver' in window) {
-        calendarThumbnailObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            calendarThumbnailObserver.unobserve(entry.target);
-            const post = state.posts.find(item => String(item.id) === entry.target.dataset.calendarThumbnail);
-            if (post) loadCalendarPostThumbnail(entry.target, post);
-          });
-        }, { rootMargin: '120px' });
-      } else {
-        calendarThumbnailObserver = null;
-      }
       grid.querySelectorAll('[data-calendar-thumbnail]').forEach(image => {
-        if (calendarThumbnailObserver) {
-          calendarThumbnailObserver.observe(image);
-          return;
-        }
         const post = state.posts.find(item => String(item.id) === image.dataset.calendarThumbnail);
         if (post) loadCalendarPostThumbnail(image, post);
       });
