@@ -51,6 +51,8 @@ alter table public.content_posts
   add column if not exists content_type text not null default 'feed';
 alter table public.content_posts
   add column if not exists niche text not null default '';
+alter table public.content_posts
+  add column if not exists thumbnail_path text not null default '';
 alter table public.accounts
   add column if not exists vault_id uuid references public.vaults(id) on delete cascade;
 alter table public.content_posts
@@ -493,5 +495,41 @@ revoke all on function public.invite_to_vault(uuid, text, text) from public, ano
 revoke all on function public.set_vault_member_role(uuid, uuid, text) from public, anon;
 revoke all on function public.remove_vault_member(uuid, uuid) from public, anon;
 revoke all on function public.cancel_vault_invite(uuid, uuid) from public, anon;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('socio-post-thumbnails', 'socio-post-thumbnails', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do update
+set public = false,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists socio_post_thumbnails_vault_select on storage.objects;
+create policy socio_post_thumbnails_vault_select on storage.objects
+for select to authenticated using (
+  bucket_id = 'socio-post-thumbnails'
+  and public.has_vault_role(((storage.foldername(name))[1])::uuid, array['owner', 'editor', 'viewer'])
+);
+drop policy if exists socio_post_thumbnails_vault_insert on storage.objects;
+create policy socio_post_thumbnails_vault_insert on storage.objects
+for insert to authenticated with check (
+  bucket_id = 'socio-post-thumbnails'
+  and public.has_vault_role(((storage.foldername(name))[1])::uuid, array['owner', 'editor'])
+);
+drop policy if exists socio_post_thumbnails_vault_update on storage.objects;
+create policy socio_post_thumbnails_vault_update on storage.objects
+for update to authenticated using (
+  bucket_id = 'socio-post-thumbnails'
+  and public.has_vault_role(((storage.foldername(name))[1])::uuid, array['owner', 'editor'])
+)
+with check (
+  bucket_id = 'socio-post-thumbnails'
+  and public.has_vault_role(((storage.foldername(name))[1])::uuid, array['owner', 'editor'])
+);
+drop policy if exists socio_post_thumbnails_vault_delete on storage.objects;
+create policy socio_post_thumbnails_vault_delete on storage.objects
+for delete to authenticated using (
+  bucket_id = 'socio-post-thumbnails'
+  and public.has_vault_role(((storage.foldername(name))[1])::uuid, array['owner', 'editor'])
+);
 
 commit;

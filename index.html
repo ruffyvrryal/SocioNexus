@@ -248,6 +248,48 @@
     .calendar-day {
       min-height: 5.5rem;
     }
+    .calendar-post-preview {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 3.25rem;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 0.45rem;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      text-align: left;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .calendar-post-preview:hover {
+      transform: translateY(-1px);
+      border-color: rgba(103, 232, 249, 0.55);
+    }
+    .calendar-post-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .calendar-post-preview-fallback {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      color: #94a3b8;
+    }
+    .calendar-post-preview-play {
+      position: absolute;
+      right: 0.25rem;
+      bottom: 0.25rem;
+      display: grid;
+      width: 1.25rem;
+      height: 1.25rem;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+      background: rgba(2, 6, 23, 0.78);
+      color: white;
+      backdrop-filter: blur(6px);
+    }
     .landing-hero {
       position: relative;
       overflow: hidden;
@@ -337,6 +379,9 @@
     @media (max-width: 640px) {
       .calendar-day {
         min-height: 4.5rem;
+      }
+      .calendar-post-preview {
+        height: 2.75rem;
       }
     }
     :root {
@@ -1118,7 +1163,18 @@
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Video / Post URL (Optional)</label>
           <input type="url" id="post-link" placeholder="https://tiktok.com/@user/video/123..." class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
-          <p class="mt-1 text-[10px] leading-relaxed text-slate-500">Public TikTok, Instagram, and YouTube links can be previewed from the calendar.</p>
+          <p class="mt-1 text-[10px] leading-relaxed text-slate-500">Optional link to the original post. Calendar previews use the thumbnail image you upload below.</p>
+        </div>
+        <div class="space-y-2">
+          <label for="post-thumbnail-file" class="block text-xs font-medium text-slate-300">Post Thumbnail</label>
+          <input id="post-thumbnail-file" type="file" accept="image/jpeg,image/png,image/webp" onchange="window.previewPostThumbnail(this)" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-white hover:file:bg-slate-600">
+          <input id="post-thumbnail-remove" type="checkbox" class="hidden" aria-hidden="true" tabindex="-1">
+          <div class="flex items-start gap-3">
+            <img id="post-thumbnail-preview" class="hidden h-20 w-20 rounded-lg border border-slate-700 object-cover" alt="Post thumbnail preview">
+            <p id="post-thumbnail-placeholder" class="text-[10px] leading-relaxed text-slate-500">Upload a JPG, PNG, or WebP image (up to 5 MB) to use as the calendar preview.</p>
+            <button id="post-thumbnail-clear" type="button" onclick="window.clearPostThumbnail()" class="hidden shrink-0 text-[10px] font-medium text-rose-300 hover:text-rose-200">Remove thumbnail</button>
+          </div>
+          <p id="post-thumbnail-message" class="hidden text-[10px] leading-relaxed text-rose-300" role="status"></p>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -1384,6 +1440,11 @@
     const HARDCODED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0cWNvcGxvcGNiZXZ0c2NiYWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyNTQxODksImV4cCI6MjEwNjgzMDE4OX0.SweVwn7e97Y7vejU0balZdxJQ5prLpGUxoCtJrUJBB4";
 
     const SHARED_ACCESS_EMAIL = 'ruffyprasetya@gmail.com';
+    const calendarThumbnailCache = new Map();
+    let calendarThumbnailObserver = null;
+    let postThumbnailObjectUrl = null;
+    const POST_THUMBNAIL_BUCKET = 'socio-post-thumbnails';
+    const MAX_POST_THUMBNAIL_BYTES = 5 * 1024 * 1024;
 
     const state = {
       authUser: null,
@@ -1518,6 +1579,10 @@
       if (!canEditActiveVault()) return;
       if (!confirm("Are you sure you want to delete this account and all associated posts?")) return;
       const accId = state.currentAccountId;
+      const thumbnailPaths = state.posts
+        .filter(post => String(post.account_id) === String(accId))
+        .map(post => post.thumbnail_path)
+        .filter(Boolean);
       if (!supabaseClient) {
         alert('Cloud sync is not configured. Connect Supabase before deleting this account.');
         return;
@@ -1541,11 +1606,103 @@
       state.accounts = state.accounts.filter(a => a.id !== accId);
       state.posts = state.posts.filter(p => p.account_id !== accId);
       state.viewerLocations = state.viewerLocations.filter(location => String(location.account_id) !== String(accId));
+      try {
+        await removePostThumbnailFiles(thumbnailPaths);
+      } catch (error) {
+        console.error('Could not remove deleted account thumbnails:', error);
+        alert('The account was deleted, but one or more thumbnails could not be removed from storage.');
+      }
 
       saveLocalData();
 
       window.navigateToHub();
     };
+
+    function clearPostThumbnailObjectUrl() {
+      if (postThumbnailObjectUrl) {
+        URL.revokeObjectURL(postThumbnailObjectUrl);
+        postThumbnailObjectUrl = null;
+      }
+    }
+
+    function setPostThumbnailPreview(src) {
+      const image = document.getElementById('post-thumbnail-preview');
+      image.src = src;
+      image.classList.remove('hidden');
+      document.getElementById('post-thumbnail-placeholder').classList.add('hidden');
+      document.getElementById('post-thumbnail-clear').classList.remove('hidden');
+    }
+
+    function resetPostThumbnailPicker() {
+      clearPostThumbnailObjectUrl();
+      document.getElementById('post-thumbnail-file').value = '';
+      document.getElementById('post-thumbnail-remove').checked = false;
+      document.getElementById('post-thumbnail-preview').removeAttribute('src');
+      document.getElementById('post-thumbnail-preview').classList.add('hidden');
+      document.getElementById('post-thumbnail-placeholder').classList.remove('hidden');
+      document.getElementById('post-thumbnail-placeholder').textContent = 'Upload a JPG, PNG, or WebP image (up to 5 MB) to use as the calendar preview.';
+      document.getElementById('post-thumbnail-clear').classList.add('hidden');
+      document.getElementById('post-thumbnail-message').classList.add('hidden');
+      document.getElementById('post-thumbnail-message').textContent = '';
+    }
+
+    window.previewPostThumbnail = function(input) {
+      const message = document.getElementById('post-thumbnail-message');
+      const file = input.files?.[0];
+      message.classList.add('hidden');
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        input.value = '';
+        message.textContent = 'Choose a JPG, PNG, or WebP image.';
+        message.classList.remove('hidden');
+        return;
+      }
+      if (file.size > MAX_POST_THUMBNAIL_BYTES) {
+        input.value = '';
+        message.textContent = 'The thumbnail must be 5 MB or smaller.';
+        message.classList.remove('hidden');
+        return;
+      }
+      clearPostThumbnailObjectUrl();
+      postThumbnailObjectUrl = URL.createObjectURL(file);
+      document.getElementById('post-thumbnail-remove').checked = false;
+      setPostThumbnailPreview(postThumbnailObjectUrl);
+    };
+
+    window.clearPostThumbnail = function() {
+      clearPostThumbnailObjectUrl();
+      document.getElementById('post-thumbnail-file').value = '';
+      document.getElementById('post-thumbnail-remove').checked = true;
+      document.getElementById('post-thumbnail-preview').removeAttribute('src');
+      document.getElementById('post-thumbnail-preview').classList.add('hidden');
+      document.getElementById('post-thumbnail-placeholder').classList.remove('hidden');
+      document.getElementById('post-thumbnail-clear').classList.add('hidden');
+      document.getElementById('post-thumbnail-placeholder').textContent = 'Thumbnail removed. Choose a new image to replace it.';
+    };
+
+    async function getPostThumbnailUrl(thumbnailPath) {
+      if (!thumbnailPath) return '';
+      const cached = calendarThumbnailCache.get(thumbnailPath);
+      if (cached && cached.expiresAt > Date.now()) return cached.url;
+      const { data, error } = await supabaseClient.storage
+        .from(POST_THUMBNAIL_BUCKET)
+        .createSignedUrl(thumbnailPath, 3600);
+      if (error) throw error;
+      if (!data?.signedUrl) throw new Error('Supabase did not return a signed thumbnail URL.');
+      calendarThumbnailCache.set(thumbnailPath, {
+        url: data.signedUrl,
+        expiresAt: Date.now() + 55 * 60 * 1000
+      });
+      return data.signedUrl;
+    }
+
+    async function removePostThumbnailFiles(paths) {
+      const uniquePaths = [...new Set(paths.filter(Boolean))];
+      if (!uniquePaths.length) return;
+      const { error } = await supabaseClient.storage.from(POST_THUMBNAIL_BUCKET).remove(uniquePaths);
+      if (error) throw error;
+      uniquePaths.forEach(path => calendarThumbnailCache.delete(path));
+    }
 
     window.openAddPostModal = function() {
       if (!canEditActiveVault()) return;
@@ -1553,6 +1710,7 @@
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
       document.getElementById('post-content-type').value = 'feed';
+      resetPostThumbnailPicker();
       renderNicheOptions();
       const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
       const postNiche = document.getElementById('post-niche');
@@ -1570,6 +1728,7 @@
       const p = state.posts.find(item => item.id === postId);
       if (!p) return;
 
+      resetPostThumbnailPicker();
       document.getElementById('post-id').value = p.id;
       document.getElementById('modal-post-title').innerText = "Edit Content Record";
       document.getElementById('post-platform').value = p.platform || 'tiktok';
@@ -1589,6 +1748,25 @@
 
       document.getElementById('modal-post').classList.remove('hidden');
       document.getElementById('modal-post').classList.add('flex');
+      if (p.thumbnail_path) {
+        getPostThumbnailUrl(p.thumbnail_path).then(url => {
+          const thumbnailInput = document.getElementById('post-thumbnail-file');
+          const thumbnailRemoval = document.getElementById('post-thumbnail-remove');
+          if (document.getElementById('post-id').value === String(p.id) &&
+            !thumbnailInput.files?.length && !thumbnailRemoval.checked) setPostThumbnailPreview(url);
+        }).catch(error => {
+          console.error('Could not load the post thumbnail:', error);
+          const thumbnailInput = document.getElementById('post-thumbnail-file');
+          const thumbnailRemoval = document.getElementById('post-thumbnail-remove');
+          if (document.getElementById('post-id').value === String(p.id) &&
+            !thumbnailInput.files?.length && !thumbnailRemoval.checked) {
+            document.getElementById('post-thumbnail-clear').classList.remove('hidden');
+            const message = document.getElementById('post-thumbnail-message');
+            message.textContent = 'Could not load the saved thumbnail. You can choose a replacement.';
+            message.classList.remove('hidden');
+          }
+        });
+      }
     };
 
     window.savePost = async function(e) {
@@ -1596,6 +1774,19 @@
       if (!canEditActiveVault()) return;
       const existingId = document.getElementById('post-id').value;
       const postId = existingId || ('p-' + Date.now());
+      const existingPost = state.posts.find(post => String(post.id) === String(postId));
+      const thumbnailFile = document.getElementById('post-thumbnail-file').files?.[0] || null;
+      if (thumbnailFile && (!['image/jpeg', 'image/png', 'image/webp'].includes(thumbnailFile.type) ||
+        thumbnailFile.size > MAX_POST_THUMBNAIL_BYTES)) {
+        const message = document.getElementById('post-thumbnail-message');
+        message.textContent = thumbnailFile.size > MAX_POST_THUMBNAIL_BYTES
+          ? 'The thumbnail must be 5 MB or smaller.'
+          : 'Choose a JPG, PNG, or WebP image.';
+        message.classList.remove('hidden');
+        return;
+      }
+      const oldThumbnailPath = existingPost?.thumbnail_path || '';
+      const removeThumbnail = document.getElementById('post-thumbnail-remove').checked;
 
       const postObj = {
         id: postId,
@@ -1606,6 +1797,7 @@
         niche: document.getElementById('post-niche').value,
         title: document.getElementById('post-title').value,
         link: document.getElementById('post-link').value || '',
+        thumbnail_path: removeThumbnail ? '' : oldThumbnailPath,
         post_date: document.getElementById('post-date').value,
         post_time: document.getElementById('post-time').value || '00:00',
         impressions: parseInt(document.getElementById('post-impressions').value) || 0,
@@ -1620,17 +1812,50 @@
         alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
         return;
       }
+      let newThumbnailPath = '';
       try {
+        if (thumbnailFile) {
+          const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[thumbnailFile.type];
+          const uniqueId = crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          newThumbnailPath = `${state.activeVaultId}/${postId}/${uniqueId}.${extension}`;
+          const { error: uploadError } = await supabaseClient.storage
+            .from(POST_THUMBNAIL_BUCKET)
+            .upload(newThumbnailPath, thumbnailFile, {
+              contentType: thumbnailFile.type,
+              cacheControl: '3600',
+              upsert: false
+            });
+          if (uploadError) throw uploadError;
+          postObj.thumbnail_path = newThumbnailPath;
+        }
         await upsertPostsToCloud([postObj]);
       } catch (err) {
+        if (newThumbnailPath) {
+          try {
+            await removePostThumbnailFiles([newThumbnailPath]);
+          } catch (cleanupError) {
+            console.error('Could not clean up the failed thumbnail upload:', cleanupError);
+          }
+        }
         console.error('Supabase content save failed:', err);
-        alert(`Could not save this content to the vault. ${err.message || 'Check your connection and try again.'}`);
+        alert(`Could not save this content to the vault. ${err.message || 'Check your connection and try again.'} Ensure supabase-vaults.sql has been run for the thumbnail storage setup.`);
         return;
       }
       const idx = state.posts.findIndex(p => p.id === postId);
       if (idx >= 0) state.posts[idx] = postObj;
       else state.posts.push(postObj);
       saveLocalData();
+      resetPostThumbnailPicker();
+      if (oldThumbnailPath && oldThumbnailPath !== postObj.thumbnail_path) {
+        try {
+          await removePostThumbnailFiles([oldThumbnailPath]);
+        } catch (error) {
+          console.error('Could not remove the replaced post thumbnail:', error);
+          alert('The post was saved, but its previous thumbnail could not be removed from storage.');
+        }
+      }
 
       window.closeModal('modal-post');
       renderDashboard();
@@ -1639,6 +1864,7 @@
     window.deletePost = async function(postId) {
       if (!canEditActiveVault()) return;
       if (!confirm("Delete this content record?")) return;
+      const thumbnailPath = state.posts.find(post => String(post.id) === String(postId))?.thumbnail_path;
       if (!supabaseClient) {
         alert('Cloud sync is not configured. Connect Supabase before editing this vault.');
         return;
@@ -1654,6 +1880,12 @@
         return;
       }
       state.posts = state.posts.filter(p => p.id !== postId);
+      try {
+        await removePostThumbnailFiles([thumbnailPath]);
+      } catch (error) {
+        console.error('Could not remove the deleted post thumbnail:', error);
+        alert('The post was deleted, but its thumbnail could not be removed from storage.');
+      }
 
       saveLocalData();
 
@@ -2825,6 +3057,7 @@
           post_date: post.post_date || post.publish_date,
           post_time: post.post_time || post.publish_time || '00:00',
           link: post.link || '',
+          thumbnail_path: post.thumbnail_path || '',
           impressions: Number(post.impressions || post.impression || 0),
           reach: Number(post.reach || 0),
           likes: Number(post.likes || 0),
@@ -3525,7 +3758,11 @@
         const posts = byDay[day] || [];
         const visible = posts.slice(0, 2).map(post => {
           const type = post.content_type === 'video' ? 'Video' : 'Feed';
-          return `<button type="button" onclick="window.openCalendarPost('${escapeReportHtml(post.id)}')" class="block w-full text-left truncate rounded px-1 py-0.5 text-[9px] hover:ring-1 hover:ring-white/30 ${type === 'Video' ? 'bg-purple-500/10 text-purple-300' : 'bg-cyan-500/10 text-cyan-300'}" title="View ${type} details">${type}</button>`;
+          return `<button type="button" onclick="window.openCalendarPost('${escapeReportHtml(post.id)}')" class="calendar-post-preview" aria-label="Preview ${type}: ${escapeReportHtml(post.title || 'Untitled content')}" title="${escapeReportHtml(post.title || `${type} post`)}">
+            <span class="calendar-post-preview-fallback" aria-hidden="true"><i data-lucide="${type === 'Video' ? 'play' : 'image'}" class="h-4 w-4"></i></span>
+            <img data-calendar-thumbnail="${escapeReportHtml(post.id)}" class="hidden" alt="${escapeReportHtml(post.title || `${type} preview`)}">
+            ${type === 'Video' ? '<span class="calendar-post-preview-play" aria-hidden="true"><i data-lucide="play" class="h-3 w-3 fill-current"></i></span>' : ''}
+          </button>`;
         }).join('');
         const extra = posts.length > 2 ? `<div class="text-[9px] text-cyan-400">+${posts.length - 2} more</div>` : '';
         cells.push(`<div class="calendar-day rounded-lg border ${posts.length ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-slate-800 bg-slate-900/50'} p-1.5 space-y-1 overflow-hidden">
@@ -3533,67 +3770,76 @@
         </div>`);
       }
       grid.innerHTML = cells.join('');
+      calendarThumbnailObserver?.disconnect();
+      if ('IntersectionObserver' in window) {
+        calendarThumbnailObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            calendarThumbnailObserver.unobserve(entry.target);
+            const post = state.posts.find(item => String(item.id) === entry.target.dataset.calendarThumbnail);
+            if (post) loadCalendarPostThumbnail(entry.target, post);
+          });
+        }, { rootMargin: '120px' });
+      } else {
+        calendarThumbnailObserver = null;
+      }
+      grid.querySelectorAll('[data-calendar-thumbnail]').forEach(image => {
+        if (calendarThumbnailObserver) {
+          calendarThumbnailObserver.observe(image);
+          return;
+        }
+        const post = state.posts.find(item => String(item.id) === image.dataset.calendarThumbnail);
+        if (post) loadCalendarPostThumbnail(image, post);
+      });
+      lucide.createIcons();
     };
 
-    function getCalendarPostPreview(post, safeLink) {
+    function getSafeCalendarPostLink(post) {
+      if (!post.link) return '';
+      try {
+        const parsedLink = new URL(String(post.link));
+        return parsedLink.protocol === 'http:' || parsedLink.protocol === 'https:' ? parsedLink.href : '';
+      } catch (error) {
+        console.warn('Invalid content URL in calendar record:', error);
+        return '';
+      }
+    }
+
+    async function loadCalendarPostThumbnail(image, post) {
+      if (!post.thumbnail_path || !image.isConnected) return;
+      let thumbnail;
+      try {
+        thumbnail = await getPostThumbnailUrl(post.thumbnail_path);
+      } catch (error) {
+        console.error('Could not load the saved calendar thumbnail:', error);
+        return;
+      }
+      if (!image.isConnected) return;
+      image.addEventListener('load', () => {
+        image.classList.remove('hidden');
+        image.parentElement.querySelector('.calendar-post-preview-fallback, .calendar-preview-fallback')?.classList.add('hidden');
+      }, { once: true });
+      image.addEventListener('error', () => {
+        calendarThumbnailCache.delete(post.thumbnail_path);
+        console.warn('The saved calendar thumbnail could not be displayed.');
+      }, { once: true });
+      image.src = thumbnail;
+    }
+
+    function getCalendarPostPreview(post) {
       const contentType = post.content_type === 'video' ? 'Video' : 'Feed';
-      const previewFrame = (src, title, aspectClass, allow = '', sandbox = '') => `
-        <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black ${aspectClass}">
-          <iframe ${sandbox ? `sandbox="${sandbox}" ` : ''}src="${escapeReportHtml(src)}" title="${escapeReportHtml(title)}" class="h-full w-full border-0" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="${allow}" allowfullscreen></iframe>
-        </div>`;
-      const previewMessage = (icon, title, description) => `
+      if (!post.thumbnail_path) {
+        return `
         <div class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/70 px-5 py-7 text-center">
-          <i data-lucide="${icon}" class="h-7 w-7 text-slate-500" aria-hidden="true"></i>
-          <p class="text-xs font-semibold text-slate-200">${title}</p>
-          <p class="max-w-sm text-[11px] leading-relaxed text-slate-500">${description}</p>
+          <i data-lucide="${contentType === 'Video' ? 'video-off' : 'image-off'}" class="h-7 w-7 text-slate-500" aria-hidden="true"></i>
+          <p class="text-xs font-semibold text-slate-200">No thumbnail uploaded</p>
         </div>`;
-      if (!safeLink) {
-        return previewMessage('play-square', 'No preview link added', 'Add a public post URL to this content record to preview it here.');
-      }
-
-      const url = new URL(safeLink);
-      const hostname = url.hostname.toLowerCase().replace(/^www\./, '');
-      if (hostname === 'youtu.be' || hostname === 'youtube.com' || hostname.endsWith('.youtube.com')) {
-        const videoId = hostname === 'youtu.be'
-          ? url.pathname.split('/').filter(Boolean)[0]
-          : url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1];
-        if (videoId && /^[\w-]{11}$/.test(videoId)) {
-          return previewFrame(`https://www.youtube-nocookie.com/embed/${videoId}`, `${contentType} preview from YouTube`, 'aspect-video', 'accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share');
-        }
-      }
-      if (hostname === 'tiktok.com' || hostname.endsWith('.tiktok.com')) {
-        const videoId = url.pathname.match(/\/video\/(\d+)/)?.[1];
-        if (videoId) {
-          return previewFrame(`https://www.tiktok.com/player/v1/${videoId}?autoplay=0`, `${contentType} preview from TikTok`, 'mx-auto aspect-[9/16] max-h-[70vh] max-w-sm', 'encrypted-media; picture-in-picture; web-share');
-        }
-      }
-      if (hostname === 'instagram.com' || hostname.endsWith('.instagram.com')) {
-        const postPath = url.pathname.match(/^\/(p|reel|tv)\/([\w-]+)/);
-        if (postPath) {
-          return previewFrame(`https://www.instagram.com/${postPath[1]}/${postPath[2]}/embed/`, `${contentType} preview from Instagram`, 'mx-auto aspect-[4/5] max-h-[70vh] max-w-md');
-        }
-      }
-
-      const mediaType = url.pathname.match(/\.(mp4|webm|ogg|mov|jpg|jpeg|png|webp|avif|gif)$/i)?.[1]?.toLowerCase();
-      if (mediaType && ['mp4', 'webm', 'ogg', 'mov'].includes(mediaType)) {
-        return `
-          <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black">
-            <video class="max-h-[70vh] w-full" controls playsinline preload="metadata">
-              <source src="${escapeReportHtml(safeLink)}">
-              Your browser does not support embedded video.
-            </video>
-          </div>`;
-      }
-      if (mediaType) {
-        return `
-          <div class="overflow-hidden rounded-2xl border border-slate-800 bg-black">
-            <img src="${escapeReportHtml(safeLink)}" alt="${escapeReportHtml(post.title || `${contentType} preview`)}" class="max-h-[70vh] w-full object-contain" loading="lazy" referrerpolicy="no-referrer">
-          </div>`;
       }
       return `
-        <div class="space-y-2">
-          ${previewFrame(safeLink, `${contentType} link preview`, 'aspect-video', 'encrypted-media; picture-in-picture; web-share', 'allow-scripts allow-forms allow-presentation')}
-          <p class="text-center text-[10px] leading-relaxed text-slate-500">If the site blocks embedded previews or requires sign-in, open the original link below.</p>
+        <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+          <img data-calendar-post-preview="${escapeReportHtml(post.id)}" class="hidden max-h-[70vh] w-full object-contain" alt="${escapeReportHtml(post.title || `${contentType} preview`)}">
+          <div class="calendar-preview-fallback flex min-h-40 items-center justify-center text-slate-500"><i data-lucide="${contentType === 'Video' ? 'video' : 'image'}" class="h-7 w-7" aria-hidden="true"></i></div>
+          ${contentType === 'Video' ? '<span class="absolute bottom-3 right-3 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-slate-950/75 text-white shadow-lg backdrop-blur"><i data-lucide="play" class="h-4 w-4 fill-current" aria-hidden="true"></i></span>' : ''}
         </div>`;
     }
 
@@ -3609,16 +3855,7 @@
         ? (engagement / Number(post.impressions) * 100).toFixed(1)
         : '0.0';
       const contentType = post.content_type === 'video' ? 'Video' : 'Feed';
-      const link = String(post.link || '');
-      let safeLink = '';
-      if (link) {
-        try {
-          const parsedLink = new URL(link);
-          if (parsedLink.protocol === 'http:' || parsedLink.protocol === 'https:') safeLink = parsedLink.href;
-        } catch (error) {
-          console.warn('Invalid content URL in calendar record:', error);
-        }
-      }
+      const safeLink = getSafeCalendarPostLink(post);
       document.getElementById('calendar-post-detail-title').textContent = post.title || 'Untitled Content';
       document.getElementById('calendar-post-detail-subtitle').textContent =
         `${contentType} · ${post.platform || 'Platform not specified'} · ${post.post_date || 'Date not specified'} ${post.post_time || ''}`.trim();
@@ -3632,7 +3869,7 @@
         ['Engagement Rate', `${engagementRate}%`]
       ];
       document.getElementById('calendar-post-detail-content').innerHTML = `
-        ${getCalendarPostPreview(post, safeLink)}
+        ${getCalendarPostPreview(post)}
         <div class="flex items-center gap-2">
           <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span>
           <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] capitalize">${escapeReportHtml(post.platform || 'Unknown platform')}</span>
@@ -3643,6 +3880,8 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
           ${details.map(([label, value]) => `<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><span class="block text-[10px] text-slate-500">${label}</span><span class="block mt-1 text-sm font-semibold text-white">${typeof value === 'number' ? value.toLocaleString() : value}</span></div>`).join('')}
         </div>`;
+      const previewImage = document.querySelector('[data-calendar-post-preview]');
+      if (previewImage) loadCalendarPostThumbnail(previewImage, post);
       document.getElementById('calendar-post-edit-button').onclick = () => {
         window.closeModal('modal-calendar-post');
         window.openEditPostModal(post.id);
