@@ -1042,6 +1042,7 @@
               <tr>
                 <th class="px-4 py-3">Platform</th>
                 <th class="px-4 py-3">Content Type</th>
+                <th class="px-4 py-3">Status</th>
                 <th class="px-4 py-3">Niche</th>
                 <th class="px-4 py-3">Title / Caption</th>
                 <th class="px-4 py-3">Upload Date & Time</th>
@@ -1142,7 +1143,7 @@
       </div>
       <form id="form-post" onsubmit="window.savePost(event)" class="space-y-3.5">
         <input type="hidden" id="post-id">
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-300 mb-1">Platform</label>
             <select id="post-platform" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
@@ -1156,6 +1157,15 @@
             <select id="post-content-type" required class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
               <option value="feed">Feed</option>
               <option value="video">Video</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Status</label>
+            <select id="post-status" required class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+              <option value="uploaded">Uploaded</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="private">Private</option>
+              <option value="removed">Removed</option>
             </select>
           </div>
           <div>
@@ -1960,12 +1970,13 @@
       document.getElementById('post-id').value = "";
       document.getElementById('post-link').value = "";
       document.getElementById('post-content-type').value = 'feed';
+      document.getElementById('post-status').value = 'uploaded';
       resetPostThumbnailPicker();
       renderNicheOptions();
       const account = state.accounts.find(item => String(item.id) === String(state.currentAccountId));
       const postNiche = document.getElementById('post-niche');
       if (account && Array.from(postNiche.options).some(option => option.value === account.niche)) postNiche.value = account.niche;
-      document.getElementById('modal-post-title').innerText = "Log Content Performance";
+      document.getElementById('modal-post-title').innerText = "Add Content";
       const now = new Date();
       document.getElementById('post-date').value = now.toISOString().split('T')[0];
       document.getElementById('post-time').value = now.toTimeString().slice(0, 5);
@@ -1983,6 +1994,7 @@
       document.getElementById('modal-post-title').innerText = "Edit Content Record";
       document.getElementById('post-platform').value = p.platform || 'tiktok';
       document.getElementById('post-content-type').value = p.content_type === 'video' ? 'video' : 'feed';
+      document.getElementById('post-status').value = normalizeContentStatus(p.status);
       renderNicheOptions(p.niche);
       document.getElementById('post-niche').value = p.niche || '';
       document.getElementById('post-date').value = p.post_date || new Date().toISOString().split('T')[0];
@@ -2044,6 +2056,7 @@
         account_id: state.currentAccountId,
         platform: document.getElementById('post-platform').value,
         content_type: document.getElementById('post-content-type').value,
+        status: normalizeContentStatus(document.getElementById('post-status').value),
         niche: document.getElementById('post-niche').value,
         title: document.getElementById('post-title').value,
         link: document.getElementById('post-link').value || '',
@@ -2090,7 +2103,7 @@
           }
         }
         console.error('Supabase content save failed:', err);
-        alert(`Could not save this content to the vault. ${err.message || 'Check your connection and try again.'} Ensure supabase-vaults.sql has been run for the thumbnail storage setup.`);
+        alert(`Could not save this content to the vault. ${err.message || 'Check your connection and try again.'} Ensure the latest supabase-vaults.sql migration has been run for the content status and thumbnail storage schema.`);
         return;
       }
       const idx = state.posts.findIndex(p => p.id === postId);
@@ -2231,6 +2244,7 @@
       const accounts = state.accounts.filter(acc => selectedIds.includes(String(acc.id))).map(account => {
         const posts = state.posts.filter(post => {
           if (String(post.account_id) !== String(account.id)) return false;
+          if (!isUploadedContent(post)) return false;
           if (!post.post_date) return state.reportFilterMode === 'all';
           return (!start || post.post_date >= start) && (!end || post.post_date <= end);
         });
@@ -3174,7 +3188,10 @@
 
     function loadLocalStoragePosts() {
       const localPosts = localStorage.getItem(appStorageKey('sn_posts'));
-      if (localPosts) state.posts = JSON.parse(localPosts);
+      if (localPosts) state.posts = JSON.parse(localPosts).map(post => ({
+        ...post,
+        status: normalizeContentStatus(post.status)
+      }));
       else state.posts = [];
     }
 
@@ -3246,7 +3263,10 @@
         if (error) throw error;
       }
       const posts = (Array.isArray(legacy.posts) ? legacy.posts : []).map(post => ({
-        ...post, vault_id: vault.vault_id, account_id: String(post.account_id)
+        ...post,
+        vault_id: vault.vault_id,
+        account_id: String(post.account_id),
+        status: normalizeContentStatus(post.status)
       }));
       if (posts.length) await upsertPostsToCloud(posts);
       const viewerLocations = (Array.isArray(legacy.viewerLocations) ? legacy.viewerLocations : []).map(location => ({
@@ -3306,6 +3326,7 @@
           account_id: String(post.account_id),
           vault_id: String(post.vault_id),
           content_type: post.content_type === 'video' ? 'video' : 'feed',
+          status: normalizeContentStatus(post.status),
           niche: post.niche || '',
           post_date: post.post_date || post.publish_date,
           post_time: post.post_time || post.publish_time || '00:00',
@@ -3405,7 +3426,7 @@
       }
 
       state.accounts.forEach(acc => {
-        const accPosts = state.posts.filter(p => p.account_id === acc.id);
+        const accPosts = state.posts.filter(p => p.account_id === acc.id && isUploadedContent(p));
         const impressions = accPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
         const reach = accPosts.reduce((sum, p) => sum + (Number(p.reach) || 0), 0);
         const accountColor = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
@@ -3462,6 +3483,7 @@
       ).map(account => {
         const posts = state.posts.filter(post =>
           String(post.account_id) === String(account.id) &&
+          isUploadedContent(post) &&
           String(post.post_date || '').startsWith(month) &&
           (platform === 'all' || post.platform === platform)
         );
@@ -3503,6 +3525,7 @@
     function renderDashboard() {
       renderTimeframeControls();
       const filteredPosts = getFilteredPosts();
+      const tablePosts = getFilteredPosts({ includeNonUploaded: true });
       document.getElementById('timeframe-filter').value = state.timeframe;
       document.getElementById('platform-filter').value = state.currentPlatform;
       document.getElementById('content-type-filter').value = state.contentTypeFilter;
@@ -3513,19 +3536,19 @@
       renderViewerLocations();
       renderCharts(filteredPosts);
       updateVaultControls();
-      const totalPages = Math.max(1, Math.ceil(filteredPosts.length / state.contentPageSize));
+      const totalPages = Math.max(1, Math.ceil(tablePosts.length / state.contentPageSize));
       state.contentPage = Math.min(Math.max(state.contentPage, 1), totalPages);
       const pageStart = (state.contentPage - 1) * state.contentPageSize;
-      const pagePosts = filteredPosts.slice(pageStart, pageStart + state.contentPageSize);
+      const pagePosts = tablePosts.slice(pageStart, pageStart + state.contentPageSize);
       renderTable(pagePosts);
       renderMobileCards(pagePosts);
-      renderContentLogPagination(filteredPosts.length, pageStart, pagePosts.length, totalPages);
+      renderContentLogPagination(tablePosts.length, pageStart, pagePosts.length, totalPages);
       renderContentCalendar();
       lucide.createIcons();
     }
 
     window.changeContentPage = function(direction) {
-      const filteredCount = getFilteredPosts().length;
+      const filteredCount = getFilteredPosts({ includeNonUploaded: true }).length;
       const totalPages = Math.max(1, Math.ceil(filteredCount / state.contentPageSize));
       const nextPage = state.contentPage + direction;
       if (nextPage < 1 || nextPage > totalPages) return;
@@ -3943,6 +3966,7 @@
     function filterPeriodPosts(start, end) {
       return state.posts.filter(post => {
         if (String(post.account_id) !== String(state.currentAccountId)) return false;
+        if (!isUploadedContent(post)) return false;
         if (state.currentPlatform !== 'all' && post.platform !== state.currentPlatform) return false;
         if (state.contentTypeFilter !== 'all' &&
           (post.content_type === 'video' ? 'video' : 'feed') !== state.contentTypeFilter) return false;
@@ -3962,7 +3986,7 @@
       if (!input) return;
       const currentMonth = localDateString(new Date()).slice(0, 7);
       const accountMonths = state.posts
-        .filter(post => String(post.account_id) === String(state.currentAccountId) && /^\d{4}-\d{2}/.test(String(post.post_date || '')))
+        .filter(post => String(post.account_id) === String(state.currentAccountId) && isUploadedContent(post) && /^\d{4}-\d{2}/.test(String(post.post_date || '')))
         .map(post => String(post.post_date).slice(0, 7));
       const earliestMonth = accountMonths.length ? accountMonths.reduce((a, b) => a < b ? a : b) : currentMonth;
       const latestMonth = accountMonths.length ? accountMonths.reduce((a, b) => a > b ? a : b) : currentMonth;
@@ -4000,6 +4024,7 @@
       const daysInMonth = new Date(year, monthNumber, 0).getDate();
       const monthlyPosts = state.posts.filter(post =>
         String(post.account_id) === String(state.currentAccountId) &&
+        isUploadedContent(post) &&
         String(post.post_date || '').startsWith(month) &&
         (state.currentPlatform === 'all' || post.platform === state.currentPlatform) &&
         (state.contentTypeFilter === 'all' || (post.content_type === 'video' ? 'video' : 'feed') === state.contentTypeFilter)
@@ -4134,8 +4159,9 @@
     };
 
     function getFilteredPosts(options = {}) {
-      const { includeSearch = true, includeContentType = true } = options;
+      const { includeSearch = true, includeContentType = true, includeNonUploaded = false } = options;
       let list = state.posts.filter(p => p.account_id === state.currentAccountId);
+      if (!includeNonUploaded) list = list.filter(isUploadedContent);
 
       if (state.currentPlatform !== 'all') {
         list = list.filter(p => p.platform === state.currentPlatform);
@@ -4171,6 +4197,26 @@
         const dtB = new Date(`${b.post_date}T${b.post_time || '00:00'}`);
         return dtB - dtA;
       });
+    }
+
+    function normalizeContentStatus(status) {
+      return ['uploaded', 'scheduled', 'private', 'removed'].includes(status) ? status : 'uploaded';
+    }
+
+    function isUploadedContent(post) {
+      return normalizeContentStatus(post.status) === 'uploaded';
+    }
+
+    function getContentStatusBadge(status) {
+      const normalizedStatus = normalizeContentStatus(status);
+      const styles = {
+        uploaded: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
+        scheduled: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
+        private: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
+        removed: 'bg-slate-700/50 text-slate-300 border-slate-600'
+      };
+      const label = normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+      return `<span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium border ${styles[normalizedStatus]}">${label}</span>`;
     }
 
     function renderTimeframeControls() {
@@ -4255,7 +4301,8 @@
       }
 
       const platformPosts = state.posts
-        .filter(candidate => candidate.account_id === post.account_id && candidate.platform === post.platform)
+      .filter(candidate => candidate.account_id === post.account_id &&
+        candidate.platform === post.platform && isUploadedContent(candidate))
         .sort((a, b) => {
           const dateA = new Date(`${a.post_date}T${a.post_time || '00:00'}`);
           const dateB = new Date(`${b.post_date}T${b.post_time || '00:00'}`);
@@ -4266,7 +4313,7 @@
       const previousImpressions = Number(previousPost?.impressions) || 0;
       const impressionDrop = previousImpressions - impressions;
 
-      if (previousPost && impressionDrop > 100) {
+      if (isUploadedContent(post) && previousPost && impressionDrop > 100) {
         anomalies.push(`Impressions dropped by ${impressionDrop.toLocaleString()} vs the previous post on this platform.`);
       }
 
@@ -4284,7 +4331,7 @@
       const tbody = document.getElementById('posts-table-body');
       tbody.innerHTML = '';
       if (posts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="text-center py-8 text-slate-500 text-xs">No content logged for this selection.</td></tr>`;
         return;
       }
       posts.forEach(p => {
@@ -4293,6 +4340,7 @@
         const contentType = p.content_type === 'video' ? 'Video' : 'Feed';
         const niche = getPostNiche(p);
         const anomalyWarning = getPostAnomalyWarning(p);
+        const statusBadge = getContentStatusBadge(p.status);
 
         const titleDisplay = p.link 
           ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline flex items-center gap-1 font-medium max-w-xs truncate" title="Open Link: ${escapeReportHtml(p.link)}">
@@ -4306,6 +4354,7 @@
         tr.innerHTML = `
           <td class="px-4 py-3 capitalize font-medium text-slate-300">${escapeReportHtml(p.platform)}</td>
           <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${contentType === 'Video' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'}">${contentType}</span></td>
+          <td class="px-4 py-3">${statusBadge}</td>
           <td class="px-4 py-3 text-slate-300">${escapeReportHtml(niche)}</td>
           <td class="px-4 py-3"><div class="flex items-center gap-2 min-w-0">${titleDisplay}${anomalyWarning}</div></td>
           <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${escapeReportHtml(p.post_date)} <span class="text-cyan-400 ml-1">${escapeReportHtml(p.post_time || '00:00')}</span></td>
@@ -4338,6 +4387,7 @@
         const totalEng = (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.saves || 0);
         const er = p.impressions > 0 ? ((totalEng / p.impressions) * 100).toFixed(1) : '0.0';
         const anomalyWarning = getPostAnomalyWarning(p);
+        const statusBadge = getContentStatusBadge(p.status);
 
         const card = document.createElement('div');
         card.className = "p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5";
@@ -4349,6 +4399,7 @@
                 <h4 class="text-xs font-semibold text-white leading-snug">${escapeReportHtml(p.title)}</h4>
                 ${anomalyWarning}
               </div>
+              <div class="mt-1">${statusBadge}</div>
               <p class="text-[10px] text-slate-500 mt-1">${escapeReportHtml(p.post_date)} · ${escapeReportHtml(p.post_time || '00:00')}</p>
               ${p.link ? `<a href="${escapeReportHtml(p.link)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:underline break-all mt-1 inline-block">Open content link</a>` : ''}
             </div>

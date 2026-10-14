@@ -53,6 +53,28 @@ alter table public.content_posts
   add column if not exists niche text not null default '';
 alter table public.content_posts
   add column if not exists thumbnail_path text not null default '';
+alter table public.content_posts
+  add column if not exists status text not null default 'uploaded';
+update public.content_posts
+  set status = 'uploaded'
+  where status is null or status not in ('uploaded', 'scheduled', 'private', 'removed');
+alter table public.content_posts
+  alter column status set default 'uploaded',
+  alter column status set not null;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'content_posts_status_check'
+      and conrelid = 'public.content_posts'::regclass
+  ) then
+    alter table public.content_posts
+      add constraint content_posts_status_check
+      check (status in ('uploaded', 'scheduled', 'private', 'removed'));
+  end if;
+end;
+$$;
 alter table public.accounts
   add column if not exists vault_id uuid references public.vaults(id) on delete cascade;
 alter table public.accounts
