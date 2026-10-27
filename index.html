@@ -3712,6 +3712,7 @@
             margin: 0.06,
             valign: 'mid',
             autoFit: false,
+            autoPage: false,
             breakLine: false
           });
         };
@@ -4017,6 +4018,48 @@
             throw new Error(`Generated chart contains an unsupported series-axis reference: ${chartPath}`);
           }
           archive.file(chartPath, chartXml);
+        }
+        // This report does not use speaker notes; omit PptxGenJS' malformed notes master.
+        const notePartPaths = Object.keys(archive.files).filter(path =>
+          !archive.files[path].dir && /^ppt\/notes(?:Slides|Masters)\//.test(path)
+        );
+        notePartPaths.forEach(path => archive.remove(path));
+        const relationshipPaths = Object.keys(archive.files).filter(path =>
+          !archive.files[path].dir && /\.rels$/.test(path)
+        );
+        for (const relationshipPath of relationshipPaths) {
+          const relationshipFile = archive.file(relationshipPath);
+          if (!relationshipFile) continue;
+          const relationshipXml = await relationshipFile.async('string');
+          const cleanedRelationships = relationshipXml.replace(
+            /<Relationship\b(?=[^>]*\bType=["'][^"']*\/notes(?:Slide|Master)["'])[^>]*\/>/g,
+            ''
+          );
+          archive.file(relationshipPath, cleanedRelationships);
+        }
+        const presentationFile = archive.file('ppt/presentation.xml');
+        const contentTypesFile = archive.file('[Content_Types].xml');
+        if (!presentationFile || !contentTypesFile) {
+          throw new Error('The generated PowerPoint package is missing required presentation metadata.');
+        }
+        const presentationXml = await presentationFile.async('string');
+        archive.file(
+          'ppt/presentation.xml',
+          presentationXml.replace(/<p:notesMasterIdLst\b[^>]*>[\s\S]*?<\/p:notesMasterIdLst>/g, '')
+        );
+        const contentTypesXml = await contentTypesFile.async('string');
+        archive.file(
+          '[Content_Types].xml',
+          contentTypesXml.replace(
+            /<Override\b(?=[^>]*\bPartName=["']\/ppt\/notes(?:Slides|Masters)\/)[^>]*\/>/g,
+            ''
+          )
+        );
+        const remainingNoteParts = Object.keys(archive.files).filter(path =>
+          !archive.files[path].dir && /^ppt\/notes(?:Slides|Masters)\//.test(path)
+        );
+        if (remainingNoteParts.length) {
+          throw new Error(`Unused speaker-notes parts remain in the PowerPoint package: ${remainingNoteParts.join(', ')}`);
         }
         const downloadBlob = await archive.generateAsync({
           type: 'blob',
