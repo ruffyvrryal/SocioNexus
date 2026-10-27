@@ -1392,10 +1392,10 @@
 
   <!-- PPTX & PRESENTATION REPORT MODAL -->
   <div id="modal-report" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="glass-panel w-full sm:max-w-2xl p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="glass-panel w-full sm:max-w-5xl p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[95vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i data-lucide="presentation" class="w-5 h-5 text-amber-400"></i> Executive Presentation Report
+          <i data-lucide="presentation" class="w-5 h-5 text-cyan-400"></i> Social Media Performance Report
         </h3>
         <button onclick="window.closeModal('modal-report')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
@@ -1440,8 +1440,8 @@
 
       <!-- Slide Preview Canvas (Copy Source) -->
       <div class="pt-2 border-t border-slate-800">
-        <h4 class="text-xs font-semibold text-slate-300 mb-2">Live Slide Preview:</h4>
-        <div id="print-report-container" class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-4 max-h-48 overflow-y-auto custom-scrollbar"></div>
+        <h4 class="text-xs font-semibold text-slate-300 mb-2">Report pages preview:</h4>
+        <div id="print-report-container" class="p-3 sm:p-5 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-4 max-h-[55vh] overflow-y-auto custom-scrollbar"></div>
       </div>
 
       <!-- Export Actions -->
@@ -1449,7 +1449,7 @@
         <button type="button" onclick="window.closeModal('modal-report')" class="w-full sm:w-auto px-4 py-2 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
         <button onclick="window.copyReportToClipboard()" class="w-full sm:w-auto px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 rounded-xl transition-all flex items-center justify-center gap-1.5">
           <i data-lucide="copy" class="w-4 h-4"></i>
-          <span>Copy Slide HTML</span>
+          <span>Copy Report Pages</span>
         </button>
         <button id="report-download-button" onclick="window.buildPPTXReport()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5">
           <i data-lucide="download" class="w-4 h-4"></i>
@@ -2260,7 +2260,7 @@
       });
 
       if (accounts.length === 0) return { error: 'The selected accounts are no longer available. Reopen the report and try again.' };
-      return { accounts, period };
+      return { accounts, period, start, end, mode: state.reportFilterMode };
     };
 
     window.openReportModal = function() {
@@ -2383,7 +2383,7 @@
       const data = [new ClipboardItem({ 'text/html': blob })];
 
       navigator.clipboard.write(data).then(() => {
-        alert("Slide HTML copied to clipboard! Open PowerPoint or Google Slides and press Ctrl+V / Cmd+V.");
+        alert("Report pages copied to clipboard! Paste them into PowerPoint or Google Slides.");
       }).catch(err => {
         console.error("Clipboard Copy Error:", err);
         alert("Copy failed automatically. Try downloading the PPTX file instead.");
@@ -2813,6 +2813,560 @@
         window.closeModal('modal-report');
       } catch (err) {
         console.error("PPTX Generation Error:", err);
+        alert(`The presentation could not be generated. ${err && err.message ? err.message : 'Please check the browser console and try again.'}`);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalLabel;
+      }
+    };
+
+    const buildReportAnalysis = report => {
+      const allPosts = report.accounts.flatMap(({ account, posts }) =>
+        posts.map(post => ({
+          ...post,
+          reportAccountId: String(account.id),
+          reportAccountName: account.name || 'Akun tanpa nama',
+          reportAccountNiche: account.niche || ''
+        }))
+      );
+      const getMetrics = posts => posts.reduce((sum, post) => {
+        sum.posts++;
+        sum.impressions += Number(post.impressions) || 0;
+        sum.reach += Number(post.reach) || 0;
+        sum.engagement += (Number(post.likes) || 0) + (Number(post.comments) || 0) +
+          (Number(post.shares) || 0) + (Number(post.saves) || 0);
+        return sum;
+      }, { posts: 0, impressions: 0, reach: 0, engagement: 0 });
+      const getEngagementRate = metrics => metrics.reach > 0
+        ? metrics.engagement / metrics.reach * 100
+        : 0;
+      const rangeDays = report.start && report.end
+        ? Math.floor((new Date(`${report.end}T12:00:00`) - new Date(`${report.start}T12:00:00`)) / 86400000) + 1
+        : Infinity;
+      const groupByMonth = report.mode === 'all' || (report.mode === 'range' && rangeDays > 62);
+      const periodMap = new Map();
+      const periodKeyForPost = post => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(post.post_date || ''))) return '';
+        const date = new Date(`${post.post_date}T12:00:00`);
+        if (groupByMonth) {
+          const key = post.post_date.slice(0, 7);
+          return {
+            key,
+            label: date.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })
+          };
+        }
+        const start = new Date(date);
+        start.setDate(start.getDate() - start.getDay());
+        const key = localDateString(start);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+        return {
+          key,
+          label: `${start.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}–${end.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`
+        };
+      };
+      allPosts.forEach(post => {
+        const period = periodKeyForPost(post);
+        if (!period) return;
+        if (!periodMap.has(period.key)) periodMap.set(period.key, { ...period, posts: [] });
+        periodMap.get(period.key).posts.push(post);
+      });
+      const allPeriods = [...periodMap.values()]
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .map(period => ({ ...period, metrics: getMetrics(period.posts) }));
+      const periods = allPeriods.slice(-3);
+      const platforms = [...new Set(allPosts.map(post => String(post.platform || 'Lainnya')))]
+        .sort((a, b) => a.localeCompare(b));
+      const platformRows = platforms.map(platform => {
+        const posts = allPosts.filter(post => String(post.platform || 'Lainnya') === platform);
+        const metrics = getMetrics(posts);
+        return {
+          name: platform,
+          posts,
+          metrics,
+          engagementRate: getEngagementRate(metrics),
+          periods: periods.map(period => {
+            const periodMetrics = getMetrics(period.posts.filter(post => String(post.platform || 'Lainnya') === platform));
+            return { ...periodMetrics, engagementRate: getEngagementRate(periodMetrics) };
+          })
+        };
+      }).sort((a, b) => b.metrics.reach - a.metrics.reach);
+      const getNiche = post => String(post.niche || post.reportAccountNiche || 'Belum dikategorikan').trim();
+      const nicheNames = [...new Set(allPosts.map(getNiche))].sort((a, b) => a.localeCompare(b));
+      const nicheRows = nicheNames.map(name => {
+        const posts = allPosts.filter(post => getNiche(post) === name);
+        const metrics = getMetrics(posts);
+        return {
+          name,
+          metrics,
+          engagementRate: getEngagementRate(metrics),
+          periods: periods.map(period => {
+            const periodMetrics = getMetrics(period.posts.filter(post => getNiche(post) === name));
+            return { ...periodMetrics, engagementRate: getEngagementRate(periodMetrics) };
+          })
+        };
+      }).sort((a, b) => b.metrics.posts - a.metrics.posts);
+      const accountPlatformRows = platformRows.map(platform => ({
+        platform: platform.name,
+        accounts: report.accounts.map(({ account }) => {
+          const posts = allPosts.filter(post =>
+            post.reportAccountId === String(account.id) && String(post.platform || 'Lainnya') === platform.name
+          );
+          const metrics = getMetrics(posts);
+          return {
+            name: account.name || 'Akun tanpa nama',
+            niche: account.niche || '',
+            metrics,
+            periods: periods.map(period => getMetrics(period.posts.filter(post =>
+              post.reportAccountId === String(account.id) && String(post.platform || 'Lainnya') === platform.name
+            )))
+          };
+        }).filter(item => item.metrics.posts > 0)
+          .sort((a, b) => b.metrics.impressions - a.metrics.impressions)
+      }));
+      const totals = getMetrics(allPosts);
+      const topPostsFor = posts => [...posts]
+        .sort((a, b) => (Number(b.impressions) || 0) - (Number(a.impressions) || 0))
+        .slice(0, 5);
+      return {
+        allPosts,
+        totals,
+        overallEngagementRate: getEngagementRate(totals),
+        periods,
+        hasOlderPeriods: allPeriods.length > periods.length,
+        periodUnit: groupByMonth ? 'Bulanan' : 'Mingguan',
+        platforms: platformRows,
+        niches: nicheRows,
+        accountPlatformRows: accountPlatformRows.length ? accountPlatformRows : [{ platform: 'Platform', accounts: [] }],
+        topPostsFor,
+        topPosts: topPostsFor(allPosts)
+      };
+    };
+
+    const reportNumber = value => (Number(value) || 0).toLocaleString('id-ID');
+    const reportRate = value => `${(Number(value) || 0).toFixed(2)}%`;
+
+    window.updateReportPreview = function() {
+      const container = document.getElementById('print-report-container');
+      if (!container) return;
+      const allBoxes = Array.from(document.querySelectorAll('.report-acc-checkbox'));
+      document.getElementById('report-select-all').checked = allBoxes.length > 0 && allBoxes.every(cb => cb.checked);
+      const report = getReportData();
+      if (report.error) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">${escapeReportHtml(report.error)}</p>`;
+        return;
+      }
+
+      const analysis = buildReportAnalysis(report);
+      const periods = analysis.periods;
+      const firstPeriod = periods[0];
+      const lastPeriod = periods[periods.length - 1];
+      const accountCount = report.accounts.length;
+      const esc = escapeReportHtml;
+      const slide = (eyebrow, title, subtitle, content, cover = false) => `
+        <article class="relative mx-auto w-full max-w-4xl aspect-video min-h-[230px] max-h-[440px] overflow-hidden rounded-xl bg-white p-4 sm:p-6 text-slate-900 shadow-xl">
+          <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500"></div>
+          ${cover
+            ? `<div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-cyan-100"></div><div class="absolute -right-4 top-12 h-28 w-28 rounded-full bg-purple-100/80"></div>`
+            : `<p class="mb-1 text-[8px] font-bold uppercase tracking-[0.18em] text-purple-600">${esc(eyebrow)}</p>
+               <h5 class="text-sm sm:text-lg font-extrabold tracking-tight">${esc(title)}</h5>
+               <p class="mt-1 text-[8px] sm:text-[10px] text-slate-500">${esc(subtitle)}</p>`}
+          <div class="${cover ? 'relative z-10 mt-4 sm:mt-7' : 'mt-3 sm:mt-5'}">${content}</div>
+          <div class="absolute inset-x-4 bottom-2 flex justify-between border-t border-slate-200 pt-1 text-[7px] text-slate-400 sm:inset-x-6">
+            <span>SocioNexus · Laporan Performa Media Sosial · ${esc(report.period)}</span>
+            <span>${esc(analysis.periodUnit)}</span>
+          </div>
+        </article>`;
+      const metricCard = (label, value, accent) => `
+        <div class="rounded-lg bg-slate-50 p-2 sm:p-3">
+          <p class="text-[7px] sm:text-[9px] font-semibold uppercase tracking-wide text-slate-500">${esc(label)}</p>
+          <p class="mt-1 text-sm sm:text-xl font-extrabold ${accent}">${esc(value)}</p>
+        </div>`;
+      const comparisonTable = (rows, firstColumn, metricSelector, rateSelector, limit = 8) => {
+        if (!rows.length) return '<p class="py-5 text-center text-slate-400">Belum ada data untuk ditampilkan.</p>';
+        return `<div class="overflow-hidden rounded-lg border border-slate-200">
+          <table class="w-full border-collapse text-[7px] sm:text-[9px]">
+            <thead class="bg-slate-100 text-slate-500"><tr>
+              <th class="p-1.5 text-left">${esc(firstColumn)}</th>
+              ${periods.map(period => `<th class="p-1.5 text-right">${esc(period.label)}</th>`).join('')}
+              <th class="p-1.5 text-right">Total</th>
+            </tr></thead>
+            <tbody>${rows.slice(0, limit).map((row, index) => `<tr class="${index % 2 ? 'bg-slate-50' : 'bg-white'}">
+              <td class="max-w-32 truncate p-1.5 font-semibold">${esc(row.name)}</td>
+              ${periods.map((period, periodIndex) => `<td class="p-1.5 text-right">${esc(metricSelector(row.periods[periodIndex] || {}))}${rateSelector ? `<span class="ml-1 text-slate-400">${esc(rateSelector(row.periods[periodIndex] || {}))}</span>` : ''}</td>`).join('')}
+              <td class="p-1.5 text-right font-bold">${esc(metricSelector(row.metrics))}${rateSelector ? `<span class="ml-1 text-slate-400">${esc(rateSelector(row.metrics))}</span>` : ''}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>`;
+      };
+      const periodOverview = periods.length
+        ? `<div class="grid grid-cols-3 gap-2">${periods.map(period => `
+            <div class="rounded-lg border border-slate-200 p-2 sm:p-3">
+              <p class="truncate text-[8px] font-bold text-slate-500">${esc(period.label)}</p>
+              <p class="mt-1 text-sm sm:text-lg font-extrabold text-slate-900">${reportNumber(period.metrics.posts)} <span class="text-[7px] font-medium text-slate-500">posts</span></p>
+              <p class="mt-1 text-[7px] sm:text-[9px] text-slate-500">Reach ${reportNumber(period.metrics.reach)} · ER ${reportRate(period.metrics.reach ? period.metrics.engagement / period.metrics.reach * 100 : 0)}</p>
+            </div>`).join('')}</div>`
+        : '<p class="rounded-lg bg-slate-50 p-3 text-center text-[9px] text-slate-500">Belum ada konten bertanggal untuk dibandingkan.</p>';
+      const highlights = [];
+      if (firstPeriod && lastPeriod && firstPeriod !== lastPeriod) {
+        const changeLine = (label, before, after) => {
+          const delta = after - before;
+          const percent = before > 0 ? `${Math.abs(delta / before * 100).toFixed(1)}%` : (after > 0 ? 'naik dari 0' : 'tetap 0');
+          return `${label} ${delta > 0 ? 'naik' : delta < 0 ? 'turun' : 'tetap'} ${percent} dari ${firstPeriod.label} ke ${lastPeriod.label} (${reportNumber(before)} → ${reportNumber(after)}).`;
+        };
+        highlights.push(changeLine('Jumlah konten', firstPeriod.metrics.posts, lastPeriod.metrics.posts));
+        highlights.push(changeLine('Jangkauan', firstPeriod.metrics.reach, lastPeriod.metrics.reach));
+      } else {
+        highlights.push('Pilih rentang yang mencakup lebih dari satu periode untuk membandingkan tren performa.');
+      }
+      const leadingPlatform = analysis.platforms[0];
+      highlights.push(leadingPlatform
+        ? `${leadingPlatform.name} memiliki jangkauan tertinggi (${reportNumber(leadingPlatform.metrics.reach)}) dari ${reportNumber(leadingPlatform.metrics.posts)} konten.`
+        : 'Belum ada data konten untuk membandingkan platform.');
+      const leadingNiche = analysis.niches[0];
+      highlights.push(leadingNiche
+        ? `${leadingNiche.name} merupakan kategori konten dengan volume tertinggi (${reportNumber(leadingNiche.metrics.posts)} konten).`
+        : 'Kategori konten belum tersedia untuk analisis pillar.');
+
+      const pages = [];
+      const coverSummary = `
+        <p class="text-[8px] font-bold uppercase tracking-[0.2em] text-purple-600">SOCIONEXUS / ANALITIK</p>
+        <h5 class="mt-2 text-xl sm:text-3xl font-black leading-tight">Laporan Performa<br>Media Sosial</h5>
+        <p class="mt-2 text-sm sm:text-xl font-extrabold text-purple-600">${esc(report.period)}</p>
+        <p class="mt-1 text-[8px] sm:text-[10px] text-slate-500">${accountCount} akun dipilih · ${reportNumber(analysis.totals.posts)} konten</p>
+        <div class="mt-3 grid grid-cols-3 gap-2">${metricCard('Jangkauan', reportNumber(analysis.totals.reach), 'text-cyan-600')}${metricCard('Tayangan', reportNumber(analysis.totals.impressions), 'text-purple-600')}${metricCard('Rasio interaksi', reportRate(analysis.overallEngagementRate), 'text-pink-600')}</div>`;
+      pages.push(slide('', '', '', coverSummary, true));
+
+      pages.push(slide('Ringkasan perbandingan', 'Ringkasan Perbandingan Antar-Periode',
+        `${analysis.periodUnit} · ${report.period}${analysis.hasOlderPeriods ? ' · menampilkan 3 periode terbaru' : ''}`,
+        `<div class="grid grid-cols-3 gap-2">${metricCard('Total konten', reportNumber(analysis.totals.posts), 'text-cyan-600')}${metricCard('Total jangkauan', reportNumber(analysis.totals.reach), 'text-purple-600')}${metricCard('Rasio interaksi', reportRate(analysis.overallEngagementRate), 'text-pink-600')}</div><div class="mt-3">${periodOverview}</div>`));
+
+      pages.push(slide('Platform performance', 'Performa Platform',
+        'Perbandingan jangkauan dan rasio interaksi setiap platform',
+        comparisonTable(analysis.platforms, 'Platform', row => reportNumber(row.reach), row => reportRate(row.engagementRate), 7)));
+
+      pages.push(slide('Tren content pillar', 'Tren Kategori Konten',
+        'Volume konten dan rasio interaksi per kategori di setiap periode',
+        comparisonTable(analysis.niches, 'Kategori konten', row => reportNumber(row.posts), row => reportRate(row.engagementRate), 8)));
+
+      analysis.accountPlatformRows.forEach(group => {
+        const accountRows = group.accounts.map(item => ({
+          ...item,
+          name: item.niche ? `${item.name} · ${item.niche}` : item.name
+        }));
+        pages.push(slide(group.platform.toUpperCase(), `Performa Akun — ${group.platform}`,
+          `Tayangan per periode · jangkauan dan tayangan total · ${report.period}`,
+          comparisonTable(accountRows, 'Akun', row => reportNumber(row.impressions), null, 8)));
+      });
+
+      const topPanels = [firstPeriod, lastPeriod].filter((period, index, list) =>
+        period && list.findIndex(item => item.key === period.key) === index
+      );
+      const topContent = topPanels.length
+        ? `<div class="grid ${topPanels.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-2">${topPanels.map(period => {
+            const topPosts = analysis.topPostsFor(period.posts);
+            return `<div><p class="mb-1 text-[8px] font-bold uppercase text-purple-600">${esc(period.label)}</p>
+              ${topPosts.length ? `<ol class="space-y-1">${topPosts.slice(0, 5).map((post, index) => `<li class="flex items-center justify-between gap-2 border-b border-slate-100 py-1">
+                <span class="min-w-0 truncate text-[7px] sm:text-[9px]"><b class="mr-1 text-slate-400">${index + 1}.</b>${esc(post.title || 'Konten tanpa judul')} <span class="text-slate-400">· ${esc(post.reportAccountName)}</span></span>
+                <b class="shrink-0 text-[7px] sm:text-[9px]">${reportNumber(post.impressions)}</b>
+              </li>`).join('')}</ol>` : '<p class="text-[8px] text-slate-400">Tidak ada konten pada periode ini.</p>'}
+            </div>`;
+          }).join('')}</div>`
+        : `<p class="text-center text-slate-400">Belum ada konten untuk ditampilkan.</p>`;
+      pages.push(slide('Top performing content', 'Konten Berkinerja Terbaik',
+        'Lima konten dengan tayangan tertinggi pada periode awal dan akhir',
+        `${topContent}<p class="mt-2 text-[7px] text-slate-400">Kolom angka menunjukkan tayangan; jangkauan dan rasio interaksi tersedia pada berkas PPTX.</p>`));
+      pages.push(slide('Sorotan utama', 'Sorotan Utama',
+        `Insight dari data ${report.period}`,
+        `<div class="space-y-2">${highlights.map((text, index) => `<div class="flex gap-2 rounded-lg bg-slate-50 p-2">
+          <span class="font-black ${['text-cyan-600', 'text-purple-600', 'text-pink-600', 'text-amber-600'][index]}">${['↗', '↓', '●', '★'][index]}</span>
+          <p class="text-[8px] sm:text-[10px] text-slate-700">${esc(text)}</p>
+        </div>`).join('')}
+        <p class="pt-1 text-[7px] text-slate-400">Laporan ini merangkum konten yang tercatat; data pengikut tidak disertakan.</p></div>`));
+      container.innerHTML = pages.map((page, index) =>
+        page.replace(`<span>${esc(analysis.periodUnit)}</span>`, `<span>${index + 1} / ${pages.length}</span>`)
+      ).join('');
+    };
+
+    window.buildPPTXReport = async function() {
+      const PptxConstructor = window.pptxgen || window.PptxGenJS;
+      if (typeof PptxConstructor !== 'function') {
+        alert('The presentation library did not load. Check your internet connection, refresh the page, and try again.');
+        return;
+      }
+      const report = getReportData();
+      if (report.error) {
+        alert(report.error);
+        return;
+      }
+      const button = document.getElementById('report-download-button');
+      button.disabled = true;
+      const originalLabel = button.innerHTML;
+      button.innerHTML = '<span>Building presentation...</span>';
+      try {
+        const analysis = buildReportAnalysis(report);
+        const pptx = new PptxConstructor();
+        pptx.layout = 'LAYOUT_WIDE';
+        pptx.author = 'SocioNexus Analytics';
+        pptx.company = 'SocioNexus';
+        pptx.subject = 'Laporan performa media sosial';
+        pptx.title = 'Laporan Performa Media Sosial';
+        const rect = pptx.ShapeType && pptx.ShapeType.rect ? pptx.ShapeType.rect : 'rect';
+        const colors = {
+          ink: '1A1A2E', muted: '6B7280', aqua: '25F4EE',
+          purple: '7B2FF7', pink: 'E1306C', pale: 'F7F8FA',
+          border: 'E5E7EB', white: 'FFFFFF', green: '10B981', amber: 'C7791A'
+        };
+        const fmt = reportNumber;
+        const allPeriods = analysis.periods;
+        const platformGroups = analysis.accountPlatformRows;
+        const accountPageSize = 16;
+        const accountPageCount = platformGroups.reduce((count, group) =>
+          count + Math.max(1, Math.ceil(group.accounts.length / accountPageSize)), 0);
+        const slideCount = 6 + accountPageCount;
+        let pageNumber = 0;
+        const addText = (slide, text, options = {}) => slide.addText(String(text == null ? '' : text), {
+          fontFace: 'Aptos', color: colors.ink, margin: 0, breakLine: false,
+          fit: 'shrink', ...options
+        });
+        const addBackground = slide => {
+          slide.background = { color: colors.white };
+          slide.addShape(rect, { x: 0, y: 0, w: 13.333, h: 0.1, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua } });
+        };
+        const addHeader = (slide, title, subtitle, eyebrow = '') => {
+          addBackground(slide);
+          if (eyebrow) addText(slide, eyebrow.toUpperCase(), { x: 0.62, y: 0.35, w: 11.9, h: 0.2, fontSize: 8, bold: true, charSpacing: 1.1, color: colors.purple });
+          addText(slide, title, { x: 0.62, y: 0.62, w: 12.0, h: 0.38, fontSize: 22, bold: true });
+          addText(slide, subtitle, { x: 0.62, y: 1.08, w: 12.0, h: 0.24, fontSize: 9, color: colors.muted });
+        };
+        const addFooter = slide => {
+          pageNumber++;
+          slide.addShape(rect, { x: 0.62, y: 7.03, w: 12.08, h: 0.012, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+          addText(slide, `SocioNexus · Laporan Performa Media Sosial · ${report.period}`, { x: 0.62, y: 7.12, w: 10.7, h: 0.14, fontSize: 7, color: colors.muted });
+          addText(slide, `${pageNumber} / ${slideCount}`, { x: 11.7, y: 7.12, w: 1.0, h: 0.14, fontSize: 7, color: colors.muted, align: 'right' });
+        };
+        const addCard = (slide, x, y, w, h, label, value, accent) => {
+          slide.addShape(rect, { x, y, w, h, line: { color: colors.border, width: 0.7 }, fill: { color: colors.pale } });
+          slide.addShape(rect, { x, y, w: 0.055, h, line: { color: accent, transparency: 100 }, fill: { color: accent } });
+          addText(slide, label.toUpperCase(), { x: x + 0.18, y: y + 0.15, w: w - 0.3, h: 0.16, fontSize: 8, bold: true, color: colors.muted });
+          addText(slide, value, { x: x + 0.18, y: y + 0.42, w: w - 0.3, h: 0.32, fontSize: 20, bold: true, color: accent });
+        };
+        const addTableHeading = (slide, labels, widths, y = 2.05) => {
+          let x = 0.72;
+          labels.forEach((label, index) => {
+            addText(slide, label, { x, y, w: widths[index], h: 0.22, fontSize: 7.5, bold: true, color: colors.muted, align: index ? 'right' : 'left' });
+            x += widths[index];
+          });
+        };
+        const addTableRow = (slide, values, widths, index, y, options = {}) => {
+          const rowHeight = options.rowHeight || 0.28;
+          if (index % 2 === 0) {
+            slide.addShape(rect, { x: 0.68, y: y - 0.045, w: 12.0, h: rowHeight, line: { color: colors.pale, transparency: 100 }, fill: { color: colors.pale } });
+          }
+          let x = 0.72;
+          values.forEach((value, colIndex) => {
+            addText(slide, value, {
+              x, y, w: widths[colIndex] - 0.08, h: 0.18,
+              fontSize: options.fontSize || 8.5,
+              bold: colIndex === 0 && options.boldFirst,
+              color: options.colors && options.colors[colIndex] ? options.colors[colIndex] : colors.ink,
+              align: colIndex ? 'right' : 'left'
+            });
+            x += widths[colIndex];
+          });
+        };
+        const periodValues = (row, metric, suffix = '') => allPeriods.map((period, index) =>
+          `${fmt(metric(row.periods[index] || {}))}${suffix}`
+        );
+        const getEr = metrics => metrics.reach > 0 ? metrics.engagement / metrics.reach * 100 : 0;
+        const getPeriodDelta = metric => {
+          if (allPeriods.length < 2) return '';
+          const first = metric(allPeriods[0].metrics);
+          const last = metric(allPeriods[allPeriods.length - 1].metrics);
+          if (!first) return last ? 'naik dari 0' : 'tetap 0';
+          const pct = Math.abs((last - first) / first * 100).toFixed(1);
+          return `${last > first ? '+' : last < first ? '−' : ''}${pct}%`;
+        };
+
+        let slide = pptx.addSlide();
+        addBackground(slide);
+        slide.addShape(rect, { x: 0, y: 0, w: 0.13, h: 7.5, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple } });
+        const ellipse = pptx.ShapeType && pptx.ShapeType.ellipse ? pptx.ShapeType.ellipse : 'ellipse';
+        slide.addShape(ellipse, { x: 9.0, y: -0.5, w: 4.7, h: 4.7, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua, transparency: 50 } });
+        slide.addShape(ellipse, { x: 10.1, y: 1.0, w: 3.0, h: 3.0, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple, transparency: 45 } });
+        slide.addShape(ellipse, { x: 11.0, y: 0.5, w: 1.6, h: 1.6, line: { color: colors.pink, transparency: 100 }, fill: { color: colors.pink, transparency: 20 } });
+        addText(slide, 'SOCIONEXUS  /  ANALITIK', { x: 0.8, y: 0.75, w: 7.5, h: 0.24, fontSize: 10, bold: true, charSpacing: 1.3, color: colors.purple });
+        addText(slide, 'Laporan Performa\nMedia Sosial', { x: 0.8, y: 1.6, w: 7.6, h: 1.35, fontSize: 31, bold: true, breakLine: false, valign: 'mid' });
+        addText(slide, report.period, { x: 0.82, y: 3.18, w: 7.3, h: 0.32, fontSize: 15, bold: true, color: colors.purple });
+        addText(slide, `${report.accounts.length} akun dipilih  ·  ${fmt(analysis.totals.posts)} konten pada periode ini`, { x: 0.82, y: 3.67, w: 7.4, h: 0.24, fontSize: 10, color: colors.muted });
+        slide.addShape(rect, { x: 8.45, y: 4.0, w: 4.0, h: 1.55, line: { color: colors.border, width: 0.8 }, fill: { color: colors.pale } });
+        addText(slide, 'RINGKASAN EKSEKUTIF', { x: 8.72, y: 4.25, w: 3.3, h: 0.2, fontSize: 9, bold: true, color: colors.purple, charSpacing: 0.8 });
+        [
+          `Jangkauan total: ${fmt(analysis.totals.reach)}.`,
+          `Tayangan dari konten: ${fmt(analysis.totals.impressions)}.`,
+          `Rasio interaksi: ${reportRate(analysis.overallEngagementRate)}.`
+        ].forEach((text, index) => {
+          slide.addShape(rect, { x: 8.72, y: 4.62 + index * 0.28, w: 0.045, h: 0.19, line: { color: [colors.aqua, colors.purple, colors.pink][index], transparency: 100 }, fill: { color: [colors.aqua, colors.purple, colors.pink][index] } });
+          addText(slide, text, { x: 8.9, y: 4.62 + index * 0.28, w: 3.2, h: 0.2, fontSize: 8, color: colors.ink });
+        });
+        addFooter(slide);
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Ringkasan Perbandingan Antar-Periode',
+          `${analysis.periodUnit} · ${report.period}${analysis.hasOlderPeriods ? ' · 3 periode terbaru ditampilkan' : ''}`, 'PERBANDINGAN PERFORMA');
+        const summaryCards = [
+          { label: 'Total konten', metric: row => row.posts, accent: colors.aqua },
+          { label: 'Total jangkauan', metric: row => row.reach, accent: colors.purple },
+          { label: 'Rasio interaksi', metric: row => getEr(row), accent: colors.pink }
+        ];
+        summaryCards.forEach((card, index) => {
+          const x = 0.72 + index * 4.0;
+          slide.addShape(rect, { x, y: 1.65, w: 3.72, h: 3.55, line: { color: colors.border, width: 0.8 }, fill: { color: colors.pale } });
+          addText(slide, card.label.toUpperCase(), { x: x + 0.2, y: 1.9, w: 3.3, h: 0.2, fontSize: 8, bold: true, color: colors.muted });
+          addText(slide, index === 0 ? fmt(analysis.totals.posts) : index === 1 ? fmt(analysis.totals.reach) : reportRate(analysis.overallEngagementRate), { x: x + 0.2, y: 2.23, w: 3.3, h: 0.42, fontSize: 22, bold: true, color: card.accent });
+          if (!allPeriods.length) {
+            addText(slide, 'Belum ada data bertanggal', { x: x + 0.2, y: 3.05, w: 3.3, h: 0.2, fontSize: 9, color: colors.muted });
+          } else {
+            allPeriods.forEach((period, periodIndex) => {
+              const metricValue = card.metric(period.metrics);
+              const valueText = index === 2 ? reportRate(metricValue) : fmt(metricValue);
+              const y = 3.02 + periodIndex * 0.55;
+              addText(slide, period.label, { x: x + 0.2, y, w: 2.0, h: 0.2, fontSize: 8, color: colors.muted });
+              addText(slide, valueText, { x: x + 2.2, y, w: 1.25, h: 0.2, fontSize: 9, bold: true, color: colors.ink, align: 'right' });
+            });
+            const delta = index === 2 ? '' : getPeriodDelta(card.metric);
+            if (delta) addText(slide, `Perubahan awal → akhir: ${delta}`, { x: x + 0.2, y: 4.82, w: 3.3, h: 0.18, fontSize: 8, bold: true, color: colors.purple });
+          }
+        });
+        addText(slide, 'Catatan: data pengikut tidak disertakan dalam laporan ini.', { x: 0.72, y: 5.55, w: 11.8, h: 0.25, fontSize: 9, color: colors.muted });
+        addFooter(slide);
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Platform Performance', 'Performa Platform',
+          `Jangkauan dan rasio interaksi sepanjang ${allPeriods.length ? `${allPeriods.length} periode` : 'periode terpilih'}`, 'PERBANDINGAN PLATFORM');
+        const platformWidths = [2.0, ...allPeriods.flatMap(() => [1.45, 1.15]), 1.5];
+        addTableHeading(slide, ['Platform', ...allPeriods.flatMap(period => [`${period.label} · Reach`, 'ER']), 'Total reach'], platformWidths, 1.85);
+        if (!analysis.platforms.length) {
+          addText(slide, 'Belum ada data platform pada periode ini.', { x: 0.72, y: 2.4, w: 11.8, h: 0.3, fontSize: 10, color: colors.muted });
+        } else {
+          analysis.platforms.slice(0, 10).forEach((row, index) => {
+            const values = [row.name, ...row.periods.flatMap(period => [fmt(period.reach), reportRate(period.engagementRate)]), fmt(row.metrics.reach)];
+            addTableRow(slide, values, platformWidths, index, 2.22 + index * 0.4, { fontSize: 8.5, boldFirst: true, colors: [colors.ink, ...allPeriods.flatMap(() => [colors.purple, colors.muted]), colors.ink], rowHeight: 0.32 });
+          });
+        }
+        addFooter(slide);
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Tren Content Pillar', 'Tren Kategori Konten',
+          'Jumlah konten dan rasio interaksi per kategori untuk setiap periode', 'CONTENT PILLAR');
+        const nicheWidths = [2.35, ...allPeriods.flatMap(() => [1.25, 1.0]), 1.25];
+        addTableHeading(slide, ['Kategori', ...allPeriods.flatMap(period => [`${period.label} · Posts`, 'ER']), 'Total posts'], nicheWidths, 1.85);
+        if (!analysis.niches.length) {
+          addText(slide, 'Kategori konten belum tersedia pada periode ini.', { x: 0.72, y: 2.4, w: 11.8, h: 0.3, fontSize: 10, color: colors.muted });
+        } else {
+          analysis.niches.slice(0, 10).forEach((row, index) => {
+            const values = [row.name, ...row.periods.flatMap(period => [fmt(period.posts), reportRate(period.engagementRate)]), fmt(row.metrics.posts)];
+            addTableRow(slide, values, nicheWidths, index, 2.22 + index * 0.4, { fontSize: 8.5, boldFirst: true, colors: [colors.ink, ...allPeriods.flatMap(() => [colors.purple, colors.muted]), colors.ink], rowHeight: 0.32 });
+          });
+        }
+        addFooter(slide);
+
+        platformGroups.forEach(group => {
+          const accountChunks = [];
+          for (let offset = 0; offset < group.accounts.length; offset += accountPageSize) {
+            accountChunks.push(group.accounts.slice(offset, offset + accountPageSize));
+          }
+          if (!accountChunks.length) accountChunks.push([]);
+          accountChunks.forEach((accounts, chunkIndex) => {
+            slide = pptx.addSlide();
+            const chunkNote = accountChunks.length > 1 ? ` · Bagian ${chunkIndex + 1} dari ${accountChunks.length}` : '';
+            addHeader(slide, `Performa Akun — ${group.platform}`,
+              `Tayangan per periode · reach merupakan total pada periode terpilih · ${report.period}${chunkNote}`, group.platform.toUpperCase());
+            const widths = [3.15, ...allPeriods.map(() => 1.35), 1.55, 1.55];
+            addTableHeading(slide, ['Akun', ...allPeriods.map(period => `${period.label} · Impr.`), 'Total impr.', 'Total reach'], widths, 1.8);
+            if (!accounts.length) {
+              addText(slide, 'Belum ada konten untuk platform ini pada periode terpilih.', { x: 0.72, y: 2.35, w: 11.8, h: 0.3, fontSize: 10, color: colors.muted });
+            } else {
+              accounts.forEach((account, index) => {
+                const label = account.niche ? `${account.name} · ${account.niche}` : account.name;
+                const values = [label, ...account.periods.map(period => fmt(period.impressions)), fmt(account.metrics.impressions), fmt(account.metrics.reach)];
+                addTableRow(slide, values, widths, index, 2.14 + index * 0.29, { fontSize: 8, boldFirst: index === 0, rowHeight: 0.25, colors: [index === 0 ? colors.purple : colors.ink] });
+              });
+              const groupTotals = accounts.reduce((sum, account) => {
+                sum.impressions += account.metrics.impressions;
+                sum.reach += account.metrics.reach;
+                return sum;
+              }, { impressions: 0, reach: 0 });
+              addText(slide, `TOTAL  ·  ${fmt(groupTotals.impressions)} tayangan  ·  ${fmt(groupTotals.reach)} reach`, { x: 0.72, y: 6.85, w: 11.8, h: 0.18, fontSize: 8.5, bold: true, color: colors.purple });
+            }
+            addFooter(slide);
+          });
+        });
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Top Performing Content', 'Konten Berkinerja Terbaik',
+          'Lima konten dengan tayangan tertinggi dari periode awal dan akhir', 'TOP CONTENT');
+        const comparisonPeriods = allPeriods.length > 1 ? [allPeriods[0], allPeriods[allPeriods.length - 1]] : allPeriods;
+        const panelWidth = comparisonPeriods.length > 1 ? 5.85 : 11.85;
+        comparisonPeriods.forEach((period, panelIndex) => {
+          const x = comparisonPeriods.length > 1 ? 0.72 + panelIndex * 6.0 : 0.72;
+          addText(slide, period ? period.label.toUpperCase() : 'TOP CONTENT', { x, y: 1.7, w: panelWidth, h: 0.22, fontSize: 9, bold: true, color: colors.purple });
+          const posts = period ? analysis.topPostsFor(period.posts) : analysis.topPosts;
+          if (!posts.length) {
+            addText(slide, 'Tidak ada konten untuk dibandingkan.', { x, y: 2.15, w: panelWidth, h: 0.25, fontSize: 9, color: colors.muted });
+          } else {
+            posts.forEach((post, index) => {
+              const y = 2.1 + index * 0.83;
+              const engagement = (Number(post.likes) || 0) + (Number(post.comments) || 0) + (Number(post.shares) || 0) + (Number(post.saves) || 0);
+              const rate = Number(post.reach) ? engagement / Number(post.reach) * 100 : 0;
+              const accountName = post.reportAccountName || 'Akun';
+              const title = String(post.title || 'Konten tanpa judul');
+              addText(slide, `${index + 1}. ${accountName}`, { x, y, w: panelWidth, h: 0.19, fontSize: 8, bold: true, color: colors.ink });
+              addText(slide, `${title.slice(0, 68)}${title.length > 68 ? '…' : ''}`, { x, y: y + 0.22, w: panelWidth * 0.55, h: 0.18, fontSize: 7.5, color: colors.muted });
+              addText(slide, `${fmt(post.impressions)} impr.  ·  ${fmt(post.reach)} reach  ·  ER ${reportRate(rate)}`, { x: x + panelWidth * 0.56, y: y + 0.22, w: panelWidth * 0.43, h: 0.18, fontSize: 7.5, color: colors.purple, align: 'right' });
+              slide.addShape(rect, { x, y: y + 0.53, w: panelWidth, h: 0.008, line: { color: colors.border, transparency: 100 }, fill: { color: colors.border } });
+            });
+          }
+        });
+        if (comparisonPeriods.length === 1) {
+          addText(slide, 'Data mencakup satu periode; perbandingan awal dan akhir belum tersedia.', { x: 0.72, y: 6.45, w: 11.8, h: 0.2, fontSize: 8, color: colors.muted });
+        }
+        addFooter(slide);
+
+        slide = pptx.addSlide();
+        addHeader(slide, 'Sorotan Utama', 'Insight Utama',
+          `Ringkasan data dari ${report.period}`, 'KEY INSIGHTS');
+        const first = allPeriods[0];
+        const last = allPeriods[allPeriods.length - 1];
+        const makeTrendInsight = (label, before, after) => {
+          if (!first || !last || first === last) return `${label}: data periode belum cukup untuk dibandingkan.`;
+          const delta = after - before;
+          const change = before > 0 ? `${Math.abs(delta / before * 100).toFixed(1)}%` : (after > 0 ? 'naik dari 0' : 'tetap 0');
+          return `${label} ${delta > 0 ? 'naik' : delta < 0 ? 'turun' : 'tidak berubah'} ${change} (${fmt(before)} → ${fmt(after)}).`;
+        };
+        const insights = [
+          { title: 'Volume konten', body: first && last ? makeTrendInsight('Jumlah konten', first.metrics.posts, last.metrics.posts) : 'Tambahkan konten bertanggal untuk membandingkan periode.' },
+          { title: 'Perubahan jangkauan', body: first && last ? makeTrendInsight('Jangkauan', first.metrics.reach, last.metrics.reach) : 'Jangkauan per periode belum tersedia.' },
+          { title: 'Platform dengan jangkauan tertinggi', body: analysis.platforms[0] ? `${analysis.platforms[0].name} · ${fmt(analysis.platforms[0].metrics.reach)} reach dari ${fmt(analysis.platforms[0].metrics.posts)} konten.` : 'Belum ada data platform.' },
+          { title: 'Kategori konten paling aktif', body: analysis.niches[0] ? `${analysis.niches[0].name} · ${fmt(analysis.niches[0].metrics.posts)} konten; rasio interaksi ${reportRate(analysis.niches[0].engagementRate)}.` : 'Kategori konten belum tersedia.' }
+        ];
+        insights.forEach((item, index) => {
+          const y = 1.65 + index * 1.12;
+          const accent = [colors.aqua, colors.pink, colors.purple, colors.amber][index];
+          slide.addShape(rect, { x: 0.72, y, w: 11.9, h: 0.92, line: { color: colors.border, width: 0.7 }, fill: { color: colors.pale } });
+          slide.addShape(rect, { x: 0.72, y, w: 0.06, h: 0.92, line: { color: accent, transparency: 100 }, fill: { color: accent } });
+          addText(slide, ['!', '↓', '●', '★'][index], { x: 0.95, y: y + 0.2, w: 0.35, h: 0.25, fontSize: 14, bold: true, color: accent });
+          addText(slide, item.title, { x: 1.45, y: y + 0.15, w: 10.8, h: 0.2, fontSize: 10, bold: true });
+          addText(slide, item.body, { x: 1.45, y: y + 0.44, w: 10.8, h: 0.25, fontSize: 8.5, color: colors.muted });
+        });
+        addText(slide, 'Catatan: data pengikut tidak disertakan karena laporan ini berfokus pada performa konten.', { x: 0.72, y: 6.3, w: 11.8, h: 0.22, fontSize: 8, color: colors.muted });
+        addFooter(slide);
+
+        const safePeriod = report.period.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
+        await pptx.writeFile({ fileName: `SocioNexus_Laporan_${safePeriod || localDateString(new Date())}.pptx` });
+        window.closeModal('modal-report');
+      } catch (err) {
+        console.error('PPTX Generation Error:', err);
         alert(`The presentation could not be generated. ${err && err.message ? err.message : 'Please check the browser console and try again.'}`);
       } finally {
         button.disabled = false;
