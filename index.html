@@ -33,11 +33,12 @@
     }
   </script>
 
-  <!-- Lucide Icons, Chart.js, Supabase JS & PptxGenJS Bundle -->
+  <!-- Lucide Icons, Chart.js, Supabase JS, PptxGenJS & JSZip -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
   <style>
     body {
@@ -3387,11 +3388,11 @@
       const getEr = metrics => metrics.reach ? metrics.engagement / metrics.reach * 100 : 0;
       const shortNumber = reportNumber;
       const periodName = index => `WEEK ${index + 1}`;
-      const footer = index => `<div style="position:absolute;left:4.3%;right:4.3%;bottom:3%;display:flex;justify-content:space-between;border-top:1px solid #e5e7eb;padding-top:5px;color:#6b7280;font-size:11pt"><span>Laporan Performa Social Media · ${esc(report.period)}</span><span>${index} / ${6 + analysis.accountPlatformRows.length}</span></div>`;
-      const page = (index, content, background = '#ffffff') => `
+      const footer = index => `<div style="position:absolute;left:4.3%;right:4.3%;bottom:3%;display:flex;justify-content:space-between;border-top:1px solid #e5e7eb;padding-top:5px;color:#6b7280;font-size:11pt"><span>Laporan Performa Social Media · ${esc(report.period)}</span><span>${index - 1} / ${5 + analysis.accountPlatformRows.length}</span></div>`;
+      const page = (index, content, background = '#ffffff', showFooter = true) => `
         <article class="report-slide" style="position:relative;box-sizing:border-box;width:100%;min-width:1000px;height:auto;overflow:hidden;aspect-ratio:16/9;min-height:0;max-height:none;margin:0 auto;background:${background};padding:4.3%;color:#1a1a2e;font-family:'Times New Roman',serif;font-size:11pt">
           <style>.report-slide,.report-slide *{box-sizing:border-box;font-family:'Times New Roman',serif!important;font-size:11pt!important;line-height:1.2}</style>
-          ${content}${footer(index)}
+          ${content}${showFooter ? footer(index) : ''}
         </article>`;
       const header = (title, subtitle) => `
         <h5 style="margin:0 0 7px;font-size:11pt;font-weight:bold;color:#1a1a2e">${esc(title)}</h5>
@@ -3412,17 +3413,23 @@
       };
       const pages = [];
 
+      const coverYearText = (report.end || (periods[periods.length - 1] && periods[periods.length - 1].key) || '').slice(0, 4);
+      const coverYear = /^\d{4}$/.test(coverYearText) ? coverYearText : String(new Date().getFullYear());
+      const coverWeekLabel = `WEEK 1–${Math.max(1, periods.length)} · ${coverYear}`;
+      const coverPeriodLabels = periods.map((period, index) => `Week ${index + 1}: ${period.label} ${coverYear}`).join(' · ');
       const cover = `
-        <div style="position:absolute;inset:0;background:#fff"></div>
-        <div style="position:absolute;inset:0 auto 0 0;width:28%;background:#11172e"></div>
-        <div style="position:absolute;left:28%;top:0;bottom:0;width:8px;background:#25f4ee"></div>
-        <div style="position:absolute;left:5.5%;top:16%;color:#25f4ee;font-weight:bold;letter-spacing:1.5px">SOCIONEXUS</div>
-        <div style="position:absolute;left:5.5%;top:25%;width:18%;height:3px;background:#7b2ff7"></div>
-        <div style="position:absolute;left:35%;top:24%;width:58%">
-          <div style="width:58px;height:4px;background:#7b2ff7;margin-bottom:18px"></div>
-          <h5 style="margin:0;color:#151b34;font-size:11pt;font-weight:bold">Laporan Performa Social Media</h5>
-          <p style="margin-top:14px;color:#6b7280">${esc(report.period)}</p>
-          <p style="margin-top:8px;color:#6b7280">${report.accounts.length} akun · ${shortNumber(analysis.totals.posts)} konten</p>
+        <div style="position:absolute;inset:0;background:#151b34;z-index:0"></div>
+        <div style="position:absolute;top:-39%;right:-22%;width:50%;height:90%;border-radius:50%;background:#17394a;z-index:0"></div>
+        <div style="position:absolute;left:-22%;bottom:-45%;width:45%;height:85%;border-radius:50%;background:#292152;z-index:0"></div>
+        <div style="position:absolute;right:-3%;bottom:-21%;width:23%;height:42%;border-radius:50%;background:#34213d;z-index:0"></div>
+        <div style="position:absolute;left:5.8%;top:20.5%;color:#dbeafe;font-size:8pt!important;font-weight:bold;letter-spacing:1.5px;z-index:1">SPEND GROUP INTERNATIONAL</div>
+        <div style="position:absolute;left:5.8%;top:29.5%;width:75%;color:#fff;font-size:22pt!important;font-weight:bold;z-index:1">Laporan Performa Social Media</div>
+        <div style="position:absolute;left:5.8%;top:42.5%;color:#dbeafe;z-index:1">TikTok &amp; Instagram — Portofolio Aplikasi</div>
+        <div style="position:absolute;left:5.8%;top:51.5%;width:26.5%;height:8%;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;border-radius:10px;color:#fff;font-size:8pt!important;font-weight:bold;z-index:1">${esc(coverWeekLabel)}</div>
+        <div style="position:absolute;left:5.8%;top:62.5%;width:74%;color:#a5b4fc;font-size:7.5pt!important;z-index:1">${esc(coverPeriodLabels || report.period)}</div>
+        <div style="position:absolute;left:5.8%;bottom:9.5%;display:flex;align-items:center;gap:40px;color:#dbeafe;font-size:8pt!important;font-weight:bold;letter-spacing:1px;z-index:1">
+          <span style="display:flex;align-items:center;gap:8px;font-size:8pt!important"><i style="width:8px;height:8px;border-radius:50%;background:#25f4ee"></i>TIKTOK</span>
+          <span style="display:flex;align-items:center;gap:8px;font-size:8pt!important"><i style="width:8px;height:8px;border-radius:50%;background:#e1306c"></i>INSTAGRAM</span>
         </div>`;
       pages.push(cover);
 
@@ -3586,7 +3593,7 @@
           </section>`).join('')}
         </div>`);
 
-      container.innerHTML = pages.map((content, index) => page(index + 1, content, index === pages.length - 1 ? '#f7f8fa' : '#ffffff')).join('');
+      container.innerHTML = pages.map((content, index) => page(index + 1, content, index === 0 ? '#151b34' : index === pages.length - 1 ? '#f7f8fa' : '#ffffff', index !== 0)).join('');
     };
 
     window.buildPPTXReport = async function() {
@@ -3624,9 +3631,13 @@
           label: 'No data', posts: [], metrics: { posts: 0, impressions: 0, reach: 0, engagement: 0 }
         }];
         const platformGroups = analysis.accountPlatformRows;
+        const JSZipConstructor = window.JSZip;
+        if (typeof JSZipConstructor !== 'function') {
+          throw new Error('The PowerPoint file-repair helper did not load. Check your internet connection, refresh the page, and try again.');
+        }
         const maxAccountsPerSlide = 18;
         const accountPages = platformGroups.map(group => Math.max(1, Math.ceil(group.accounts.length / maxAccountsPerSlide)));
-        const slideCount = 6 + accountPages.reduce((sum, count) => sum + count, 0);
+        const slideCount = 5 + accountPages.reduce((sum, count) => sum + count, 0);
         let pageNumber = 0;
         const fmt = reportNumber;
         const getEr = metrics => metrics.reach ? metrics.engagement / metrics.reach * 100 : 0;
@@ -3639,7 +3650,7 @@
           fit: 'shrink',
           ...options,
           fontFace: 'Times New Roman',
-          fontSize: 11
+          fontSize: options.fontSize == null ? 11 : options.fontSize
         });
         const addPage = () => {
           const slide = pptx.addSlide();
@@ -3745,15 +3756,24 @@
         };
 
         let slide = addPage();
-        slide.addShape(rect, { x: 0, y: 0, w: 4.05, h: 7.5, line: { color: '11172E', transparency: 100 }, fill: { color: '11172E' } });
-        slide.addShape(rect, { x: 4.05, y: 0, w: 0.1, h: 7.5, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua } });
-        slide.addShape(rect, { x: 4.8, y: 0.92, w: 0.72, h: 0.055, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple } });
-        addText(slide, 'SOCIONEXUS', { x: 0.72, y: 0.82, w: 2.65, h: 0.35, bold: true, color: colors.aqua });
-        addText(slide, 'Laporan Performa Social Media', { x: 4.8, y: 1.42, w: 7.7, h: 0.48, bold: true, color: colors.ink });
-        addText(slide, `${report.period} · ${report.accounts.length} akun · ${fmt(analysis.totals.posts)} konten`, { x: 4.8, y: 2.15, w: 7.5, h: 0.3, color: colors.muted });
-        slide.addShape(rect, { x: 4.8, y: 3.05, w: 7.55, h: 1.52, line: { color: colors.border, width: 0.8 }, fill: { color: colors.pale } });
-        addText(slide, `Reach ${fmt(analysis.totals.reach)}  ·  Impressions ${fmt(analysis.totals.impressions)}  ·  ER ${reportRate(analysis.overallEngagementRate)}`, { x: 5.12, y: 3.66, w: 6.9, h: 0.3, bold: true, color: colors.purple });
-        addFooter(slide);
+        slide.background = { color: '151B34' };
+        slide.addShape(ellipse, { x: 9.5, y: -2.1, w: 4.2, h: 4.2, line: { color: '17394A', transparency: 100 }, fill: { color: '17394A' } });
+        slide.addShape(ellipse, { x: -1.8, y: 4.6, w: 4.6, h: 4.6, line: { color: '292152', transparency: 100 }, fill: { color: '292152' } });
+        slide.addShape(ellipse, { x: 10.8, y: 5.35, w: 2.6, h: 2.6, line: { color: '34213D', transparency: 100 }, fill: { color: '34213D' } });
+        const coverYearText = (report.end || (periods[periods.length - 1] && periods[periods.length - 1].key) || '').slice(0, 4);
+        const coverYear = /^\d{4}$/.test(coverYearText) ? coverYearText : String(new Date().getFullYear());
+        const coverWeekLabel = `WEEK 1–${Math.max(1, periods.length)} · ${coverYear}`;
+        const coverPeriodLabels = periods.map((period, index) => `Week ${index + 1}: ${period.label} ${coverYear}`).join(' · ');
+        addText(slide, 'SPEND GROUP INTERNATIONAL', { x: 0.78, y: 1.52, w: 4.8, h: 0.18, bold: true, color: 'DBEAFE', charSpacing: 1.5, fontSize: 8 });
+        addText(slide, 'Laporan Performa Social Media', { x: 0.78, y: 2.18, w: 11.6, h: 0.48, bold: true, color: colors.white, fontSize: 22 });
+        addText(slide, 'TikTok & Instagram — Portofolio Aplikasi', { x: 0.78, y: 3.18, w: 8.8, h: 0.27, color: 'DBEAFE' });
+        slide.addShape(rect, { x: 0.78, y: 3.88, w: 3.45, h: 0.58, rectRadius: 0.12, line: { color: 'CBD5E1', width: 0.8 }, fill: { color: '151B34', transparency: 100 } });
+        addText(slide, coverWeekLabel, { x: 0.88, y: 4.07, w: 3.25, h: 0.18, bold: true, color: colors.white, align: 'center', fontSize: 8 });
+        addText(slide, coverPeriodLabels || report.period, { x: 0.78, y: 4.7, w: 9.8, h: 0.25, color: 'A5B4FC', fontSize: 8 });
+        slide.addShape(ellipse, { x: 0.78, y: 6.62, w: 0.12, h: 0.12, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua } });
+        addText(slide, 'TIKTOK', { x: 0.98, y: 6.6, w: 0.7, h: 0.18, bold: true, color: 'DBEAFE', charSpacing: 1, fontSize: 8 });
+        slide.addShape(ellipse, { x: 2.4, y: 6.62, w: 0.12, h: 0.12, line: { color: colors.pink, transparency: 100 }, fill: { color: colors.pink } });
+        addText(slide, 'INSTAGRAM', { x: 2.6, y: 6.6, w: 1.25, h: 0.18, bold: true, color: 'DBEAFE', charSpacing: 1, fontSize: 8 });
 
         slide = addPage();
         addHeader(slide, 'Ringkasan Perbandingan Antar-Minggu', periods.map((period, index) => `${weekLabel(index)} (${period.label})`).join(' · '));
@@ -3983,7 +4003,35 @@
         addFooter(slide);
 
         const safePeriod = report.period.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '');
-        await pptx.writeFile({ fileName: `SocioNexus_Laporan_${safePeriod || localDateString(new Date())}.pptx` });
+        const archive = await JSZipConstructor.loadAsync(await pptx.write());
+        const chartPaths = Object.keys(archive.files).filter(path => /^ppt\/charts\/chart\d+\.xml$/.test(path));
+        for (const chartPath of chartPaths) {
+          const chartFile = archive.file(chartPath);
+          if (!chartFile) throw new Error(`Could not read generated chart file: ${chartPath}`);
+          let chartXml = await chartFile.async('string');
+          // PptxGenJS 3.12.0 adds a dangling 3D series-axis reference to 2D charts.
+          if (!/<c:serAx\b/.test(chartXml)) {
+            chartXml = chartXml.replace(/<c:axId\b(?=[^>]*\bval=["']2094734556["'])[^>]*\/>/g, '');
+          }
+          if (!/<c:serAx\b/.test(chartXml) && /<c:axId\b(?=[^>]*\bval=["']2094734556["'])[^>]*\/>/.test(chartXml)) {
+            throw new Error(`Generated chart contains an unsupported series-axis reference: ${chartPath}`);
+          }
+          archive.file(chartPath, chartXml);
+        }
+        const downloadBlob = await archive.generateAsync({
+          type: 'blob',
+          mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        });
+        const fileName = `SocioNexus_Laporan_${safePeriod || localDateString(new Date())}.pptx`;
+        const downloadUrl = URL.createObjectURL(downloadBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = fileName;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
         window.closeModal('modal-report');
       } catch (err) {
         console.error('PPTX Generation Error:', err);
