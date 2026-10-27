@@ -4048,18 +4048,32 @@
           presentationXml.replace(/<p:notesMasterIdLst\b[^>]*>[\s\S]*?<\/p:notesMasterIdLst>/g, '')
         );
         const contentTypesXml = await contentTypesFile.async('string');
+        const actualPartNames = new Set(Object.keys(archive.files)
+          .filter(path => !archive.files[path].dir)
+          .map(path => `/${path}`));
+        const cleanedContentTypes = contentTypesXml.replace(/<Override\b[^>]*\/>/g, override => {
+          const partName = override.match(/\bPartName=["']([^"']+)["']/);
+          return partName && actualPartNames.has(partName[1]) ? override : '';
+        });
         archive.file(
           '[Content_Types].xml',
-          contentTypesXml.replace(
-            /<Override\b(?=[^>]*\bPartName=["']\/ppt\/notes(?:Slides|Masters)\/)[^>]*\/>/g,
-            ''
-          )
+          cleanedContentTypes
         );
+        const appPropertiesFile = archive.file('docProps/app.xml');
+        if (appPropertiesFile) {
+          const appProperties = await appPropertiesFile.async('string');
+          archive.file('docProps/app.xml', appProperties.replace(/<Notes>\d+<\/Notes>/, '<Notes>0</Notes>'));
+        }
         const remainingNoteParts = Object.keys(archive.files).filter(path =>
           !archive.files[path].dir && /^ppt\/notes(?:Slides|Masters)\//.test(path)
         );
         if (remainingNoteParts.length) {
           throw new Error(`Unused speaker-notes parts remain in the PowerPoint package: ${remainingNoteParts.join(', ')}`);
+        }
+        const danglingOverrides = Array.from(cleanedContentTypes.matchAll(/<Override\b[^>]*\bPartName=["']([^"']+)["'][^>]*\/>/g))
+          .filter(match => !actualPartNames.has(match[1]));
+        if (danglingOverrides.length) {
+          throw new Error(`The PowerPoint package has overrides that do not match exported files: ${danglingOverrides.map(match => match[1]).join(', ')}`);
         }
         const downloadBlob = await archive.generateAsync({
           type: 'blob',
