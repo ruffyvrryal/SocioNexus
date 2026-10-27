@@ -3413,15 +3413,17 @@
       const pages = [];
 
       const cover = `
-        <div style="position:absolute;inset:0;background:#f7f8fa"></div>
-        <div style="position:absolute;left:4.3%;top:12%;color:#151b34;font-size:11pt;font-weight:bold">SOCIONEXUS</div>
-        <div style="position:absolute;left:4.3%;top:22%;width:58%">
+        <div style="position:absolute;inset:0;background:#fff"></div>
+        <div style="position:absolute;inset:0 auto 0 0;width:28%;background:#11172e"></div>
+        <div style="position:absolute;left:28%;top:0;bottom:0;width:8px;background:#25f4ee"></div>
+        <div style="position:absolute;left:5.5%;top:16%;color:#25f4ee;font-weight:bold;letter-spacing:1.5px">SOCIONEXUS</div>
+        <div style="position:absolute;left:5.5%;top:25%;width:18%;height:3px;background:#7b2ff7"></div>
+        <div style="position:absolute;left:35%;top:24%;width:58%">
+          <div style="width:58px;height:4px;background:#7b2ff7;margin-bottom:18px"></div>
           <h5 style="margin:0;color:#151b34;font-size:11pt;font-weight:bold">Laporan Performa Social Media</h5>
-          <p style="margin-top:12px;color:#6b7280">${esc(report.period)}</p>
+          <p style="margin-top:14px;color:#6b7280">${esc(report.period)}</p>
           <p style="margin-top:8px;color:#6b7280">${report.accounts.length} akun · ${shortNumber(analysis.totals.posts)} konten</p>
-        </div>
-        <div style="position:absolute;right:5%;top:14%;width:30%;height:55%;border-radius:50%;background:#25f4ee;opacity:.65"></div>
-        <div style="position:absolute;right:12%;top:27%;width:20%;height:38%;border-radius:50%;background:#7b2ff7;opacity:.65"></div>`;
+        </div>`;
       pages.push(cover);
 
       const summaryCards = [
@@ -3612,7 +3614,6 @@
         pptx.title = 'Laporan Performa Media Sosial';
         const rect = pptx.ShapeType && pptx.ShapeType.rect ? pptx.ShapeType.rect : 'rect';
         const ellipse = pptx.ShapeType && pptx.ShapeType.ellipse ? pptx.ShapeType.ellipse : 'ellipse';
-        const line = pptx.ShapeType && pptx.ShapeType.line ? pptx.ShapeType.line : 'line';
         const colors = {
           ink: '1A1A2E', muted: '6B7280', aqua: '25F4EE',
           purple: '7B2FF7', pink: 'E1306C', pale: 'F7F8FA',
@@ -3655,7 +3656,7 @@
           addText(slide, title, { x: 0.55, y: 0.43, w: 12.0, h: 0.42, bold: true, color: colors.ink });
           addText(slide, subtitle, { x: 0.55, y: 0.95, w: 12.0, h: 0.28, color: colors.muted });
         };
-        const addGridTable = (slide, headers, rows, options = {}) => {
+        const addReportTable = (slide, headers, rows, options = {}) => {
           const x = options.x == null ? 0.55 : options.x;
           const y = options.y == null ? 2.6 : options.y;
           const w = options.w == null ? 12.15 : options.w;
@@ -3663,27 +3664,73 @@
           const widths = options.widths || headers.map(() => w / headers.length);
           const headerFill = options.headerFill || '151B34';
           const headerText = options.headerText || colors.white;
-          let currentX = x;
-          headers.forEach((header, index) => {
-            slide.addShape(rect, { x: currentX, y, w: widths[index], h: rowHeight, line: { color: colors.border, width: 0.6 }, fill: { color: headerFill } });
-            addText(slide, header, { x: currentX + 0.08, y: y + 0.1, w: widths[index] - 0.16, h: 0.18, bold: true, color: headerText, align: index ? 'center' : 'left' });
-            currentX += widths[index];
+          const cell = (text, cellOptions = {}) => ({
+            text: String(text == null ? '' : text),
+            options: {
+              fontFace: 'Times New Roman',
+              fontSize: 11,
+              margin: 0.06,
+              valign: 'mid',
+              ...cellOptions
+            }
           });
-          rows.forEach((row, rowIndex) => {
-            const rowY = y + rowHeight * (rowIndex + 1);
-            currentX = x;
-            row.forEach((value, index) => {
+          const tableRows = [
+            headers.map((header, index) => cell(header, {
+              bold: true,
+              color: headerText,
+              fill: headerFill,
+              align: index ? 'center' : 'left'
+            })),
+            ...rows.map((row, rowIndex) => {
               const isTotal = options.totalLast && rowIndex === rows.length - 1;
               const fill = isTotal ? 'E6E8EF' : (rowIndex % 2 === 0 ? colors.white : 'F0F1F5');
-              slide.addShape(rect, { x: currentX, y: rowY, w: widths[index], h: rowHeight, line: { color: colors.border, width: 0.6 }, fill: { color: fill } });
-              addText(slide, value, {
-                x: currentX + 0.08, y: rowY + 0.1, w: widths[index] - 0.16, h: 0.18,
+              return row.map((value, index) => cell(value, {
                 bold: index === 0 || Boolean(isTotal),
                 color: options.firstColumnColor && index === 0 ? options.firstColumnColor : colors.ink,
+                fill,
                 align: index ? 'center' : 'left'
-              });
-              currentX += widths[index];
-            });
+              }));
+            })
+          ];
+          slide.addTable(tableRows, {
+            x, y, w, colW: widths, rowH: rowHeight,
+            border: { type: 'solid', color: colors.border, pt: 0.6 },
+            fontFace: 'Times New Roman',
+            fontSize: 11,
+            color: colors.ink,
+            margin: 0.06,
+            valign: 'mid',
+            autoFit: false,
+            breakLine: false
+          });
+        };
+        const addReportChart = (slide, type, data, options) => {
+          slide.addChart(type, data, {
+            showTitle: false,
+            showLegend: true,
+            legendPos: 'b',
+            legendFontFace: 'Times New Roman',
+            legendFontSize: 11,
+            catAxisLabelFontFace: 'Times New Roman',
+            catAxisLabelFontSize: 11,
+            catAxisLabelColor: colors.ink,
+            valAxisLabelFontFace: 'Times New Roman',
+            valAxisLabelFontSize: 11,
+            valAxisLabelColor: colors.muted,
+            showValue: true,
+            showCatName: false,
+            showValAxisTitle: false,
+            showCatAxisTitle: false,
+            chartColors: [colors.teal, colors.purple, colors.pink, colors.amber],
+            showBorder: false,
+            showPlotArea: true,
+            showChartArea: true,
+            chartArea: { fill: { color: colors.white }, line: { color: colors.white, transparency: 100 } },
+            plotArea: { fill: { color: colors.white }, line: { color: colors.white, transparency: 100 } },
+            showValAxis: true,
+            valAxisMinVal: 0,
+            valGridLine: { color: colors.border, width: 0.6 },
+            ...options
           });
         };
         const weekLabel = index => `WEEK ${index + 1}`;
@@ -3698,13 +3745,14 @@
         };
 
         let slide = addPage();
-        slide.addShape(rect, { x: 0, y: 0, w: 0.14, h: 7.5, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple } });
-        slide.addShape(ellipse, { x: 9.0, y: -0.5, w: 4.7, h: 4.7, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua, transparency: 48 } });
-        slide.addShape(ellipse, { x: 10.1, y: 1.0, w: 3.0, h: 3.0, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple, transparency: 45 } });
-        addText(slide, 'SOCIONEXUS', { x: 0.8, y: 0.75, w: 7.3, h: 0.35, bold: true, color: colors.purple });
-        addText(slide, 'Laporan Performa Social Media', { x: 0.8, y: 1.8, w: 7.4, h: 0.45, bold: true, color: colors.ink });
-        addText(slide, `${report.period} · ${report.accounts.length} akun · ${fmt(analysis.totals.posts)} konten`, { x: 0.8, y: 2.55, w: 7.5, h: 0.3, color: colors.muted });
-        addText(slide, `Reach ${fmt(analysis.totals.reach)}  ·  Impressions ${fmt(analysis.totals.impressions)}  ·  ER ${reportRate(analysis.overallEngagementRate)}`, { x: 0.8, y: 3.1, w: 8.0, h: 0.3, bold: true, color: colors.purple });
+        slide.addShape(rect, { x: 0, y: 0, w: 4.05, h: 7.5, line: { color: '11172E', transparency: 100 }, fill: { color: '11172E' } });
+        slide.addShape(rect, { x: 4.05, y: 0, w: 0.1, h: 7.5, line: { color: colors.aqua, transparency: 100 }, fill: { color: colors.aqua } });
+        slide.addShape(rect, { x: 4.8, y: 0.92, w: 0.72, h: 0.055, line: { color: colors.purple, transparency: 100 }, fill: { color: colors.purple } });
+        addText(slide, 'SOCIONEXUS', { x: 0.72, y: 0.82, w: 2.65, h: 0.35, bold: true, color: colors.aqua });
+        addText(slide, 'Laporan Performa Social Media', { x: 4.8, y: 1.42, w: 7.7, h: 0.48, bold: true, color: colors.ink });
+        addText(slide, `${report.period} · ${report.accounts.length} akun · ${fmt(analysis.totals.posts)} konten`, { x: 4.8, y: 2.15, w: 7.5, h: 0.3, color: colors.muted });
+        slide.addShape(rect, { x: 4.8, y: 3.05, w: 7.55, h: 1.52, line: { color: colors.border, width: 0.8 }, fill: { color: colors.pale } });
+        addText(slide, `Reach ${fmt(analysis.totals.reach)}  ·  Impressions ${fmt(analysis.totals.impressions)}  ·  ER ${reportRate(analysis.overallEngagementRate)}`, { x: 5.12, y: 3.66, w: 6.9, h: 0.3, bold: true, color: colors.purple });
         addFooter(slide);
 
         slide = addPage();
@@ -3742,28 +3790,22 @@
         addHeader(slide, `Platform Performance — ${analysis.platforms.slice(0, 2).map(row => row.name).join(' vs ') || 'Platform Comparison'}`,
           `Perbandingan performa platform sepanjang Week 1–${periods.length}`);
         addText(slide, `Total Reach per Platform — ${periods.map((_, index) => weekLabel(index)).join(' s.d. ')}`, { x: 2.6, y: 1.48, w: 8.1, h: 0.24, align: 'center', color: colors.ink });
-        const chartX = 2.1, chartY = 1.9, chartW = 8.8, chartH = 1.5;
-        const maxPlatformReach = Math.max(1, ...topPlatforms.flatMap(item => item.periods.map(row => row.reach)));
-        topPlatforms.forEach((platform, platformIndex) => {
-          const color = [colors.teal, colors.purple, colors.pink, colors.amber][platformIndex];
-          const points = platform.periods.map((period, index) => ({
-            x: chartX + (periods.length === 1 ? chartW / 2 : index * chartW / Math.max(1, periods.length - 1)),
-            y: chartY + chartH - period.reach / maxPlatformReach * chartH
-          }));
-          points.slice(1).forEach((point, index) => {
-            slide.addShape(line, { x: points[index].x, y: points[index].y, w: point.x - points[index].x, h: point.y - points[index].y, line: { color, width: 2.2 } });
+        if (topPlatforms.length) {
+          addReportChart(slide, pptx.ChartType.line, topPlatforms.map(platform => ({
+            name: platform.name,
+            labels: periods.map((_, index) => weekLabel(index)),
+            values: periods.map((_, index) => platform.periods[index]?.reach || 0)
+          })), {
+            x: 1.35, y: 1.72, w: 10.6, h: 2.28,
+            chartColors: [colors.teal, colors.purple, colors.pink, colors.amber],
+            showMarker: true,
+            markerSize: 5,
+            lineSize: 2,
+            showValue: true,
+            dataLabelPosition: 't',
+            showLegend: topPlatforms.length > 1
           });
-          points.forEach((point, index) => {
-            slide.addShape(ellipse, { x: point.x - 0.04, y: point.y - 0.04, w: 0.08, h: 0.08, line: { color, transparency: 100 }, fill: { color } });
-            addText(slide, fmt(platform.periods[index].reach), { x: point.x - 0.42, y: point.y - 0.32, w: 0.84, h: 0.18, align: 'center' });
-          });
-        });
-        periods.forEach((period, index) => addText(slide, weekLabel(index), { x: chartX + (periods.length === 1 ? chartW / 2 - 0.6 : index * chartW / Math.max(1, periods.length - 1) - 0.6), y: 3.48, w: 1.2, h: 0.2, align: 'center' }));
-        topPlatforms.forEach((platform, index) => {
-          const x = 5.1 + index * 1.5;
-          slide.addShape(line, { x, y: 3.86, w: 0.28, h: 0, line: { color: [colors.teal, colors.purple, colors.pink, colors.amber][index], width: 2.5 } });
-          addText(slide, platform.name, { x: x + 0.35, y: 3.75, w: 1.1, h: 0.2, color: colors.muted });
-        });
+        }
         const platformHeaders = ['Platform', ...periods.flatMap((_, index) => [`${weekLabel(index)} Reach`, 'ER'])];
         const platformRows = analysis.platforms.map(platform => [
           platform.name,
@@ -3772,8 +3814,9 @@
             reportRate(platform.periods[index]?.engagementRate || 0)
           ])
         ]);
-        const platformWidths = [2.4, ...periods.flatMap(() => [1.55, 1.35])];
-        addGridTable(slide, platformHeaders, platformRows, { y: 4.25, rowHeight: 0.37, widths: platformWidths });
+        const platformMetricWidth = (12.15 - 2.4) / (periods.length * 2);
+        const platformWidths = [2.4, ...periods.flatMap(() => [platformMetricWidth, platformMetricWidth])];
+        addReportTable(slide, platformHeaders, platformRows, { x: 0.58, y: 4.2, w: 12.15, rowHeight: 0.37, widths: platformWidths });
         const topPlatform = analysis.platforms[0];
         const topPlatformText = topPlatform ? `${topPlatform.name} memiliki reach tertinggi (${fmt(topPlatform.metrics.reach)}). ER periode terakhir ${reportRate(topPlatform.periods[topPlatform.periods.length - 1]?.engagementRate || 0)}.` : 'Belum ada data performa platform.';
         addText(slide, topPlatformText, { x: 0.58, y: 6.35, w: 12.0, h: 0.35, italic: true, color: colors.muted });
@@ -3782,24 +3825,22 @@
         slide = addPage();
         addHeader(slide, 'Tren Content Pillar', `Dominasi pillar dan reach per kategori konten — ${periods.map((_, index) => weekLabel(index)).join(' vs ')}`);
         const pillars = analysis.niches.slice(0, 4);
-        const maxPillarReach = Math.max(1, ...pillars.flatMap(item => item.periods.map(row => row.reach)));
-        const chartBaseY = 3.25;
-        pillars.forEach((pillar, pillarIndex) => {
-          const baseX = 0.85 + pillarIndex * 3.05;
-          pillar.periods.forEach((period, periodIndex) => {
-            const barHeight = period.reach / maxPillarReach * 1.32;
-            const x = baseX + periodIndex * 0.55;
-            const color = ['9AA8BC', '596984', '151B34'][periodIndex];
-            slide.addShape(rect, { x, y: chartBaseY - barHeight, w: 0.5, h: Math.max(0.015, barHeight), line: { color, transparency: 100 }, fill: { color } });
-            addText(slide, fmt(period.reach), { x: x - 0.1, y: chartBaseY - barHeight - 0.22, w: 0.7, h: 0.18, align: 'center' });
+        if (pillars.length) {
+          addReportChart(slide, pptx.ChartType.bar, periods.map((period, periodIndex) => ({
+            name: weekLabel(periodIndex),
+            labels: pillars.map(pillar => pillar.name),
+            values: pillars.map(pillar => pillar.periods[periodIndex]?.reach || 0)
+          })), {
+            x: 0.72, y: 1.42, w: 11.95, h: 2.35,
+            barDir: 'col',
+            grouping: 'clustered',
+            gapWidthPct: 60,
+            chartColors: ['9AA8BC', '596984', '151B34'],
+            showValue: true,
+            dataLabelPosition: 'outEnd',
+            showLegend: periods.length > 1
           });
-          addText(slide, pillar.name, { x: baseX - 0.15, y: 3.3, w: 2.0, h: 0.2, align: 'center' });
-        });
-        periods.forEach((_, index) => {
-          const x = 5.0 + index * 1.15;
-          slide.addShape(rect, { x, y: 3.7, w: 0.14, h: 0.14, line: { color: ['9AA8BC', '596984', '151B34'][index], transparency: 100 }, fill: { color: ['9AA8BC', '596984', '151B34'][index] } });
-          addText(slide, weekLabel(index), { x: x + 0.2, y: 3.67, w: 0.9, h: 0.2, color: colors.muted });
-        });
+        }
         const pillarRows = pillars.map(pillar => [
           `● ${pillar.name}`,
           ...periods.flatMap((_, index) => [
@@ -3808,8 +3849,9 @@
           ])
         ]);
         const pillarHeaders = ['Pillar', ...periods.flatMap((_, index) => [`W${index + 1} Posts`, `W${index + 1} ER`])];
-        const pillarWidths = [2.2, ...periods.flatMap(() => [1.52, 1.35])];
-        addGridTable(slide, pillarHeaders, pillarRows, { y: 4.05, rowHeight: 0.4, widths: pillarWidths });
+        const pillarMetricWidth = (12.15 - 2.2) / (periods.length * 2);
+        const pillarWidths = [2.2, ...periods.flatMap(() => [pillarMetricWidth, pillarMetricWidth])];
+        addReportTable(slide, pillarHeaders, pillarRows, { x: 0.58, y: 4.05, w: 12.15, rowHeight: 0.4, widths: pillarWidths });
         const dominantPillar = pillars[0];
         const pillarText = dominantPillar
           ? `${dominantPillar.name} memiliki volume konten tertinggi (${fmt(dominantPillar.metrics.posts)} posts). ${pillars.length > 1 ? `ER ${pillars.map(item => `${item.name}: ${reportRate(item.engagementRate)}`).join(' · ')}.` : ''}`
@@ -3845,10 +3887,11 @@
               return sum;
             }, { impressions: 0, reach: 0, periods: periods.map(() => 0) });
             rows.push(['TOTAL', ...total.periods.map(fmt), fmt(total.impressions), fmt(total.reach)]);
-            addGridTable(slide,
+            const periodColumnWidth = (12.15 - 3.25 - 3.7) / periods.length;
+            addReportTable(slide,
               ['Aplikasi', ...periods.map((_, index) => `W${index + 1}`), 'Total Impr.', 'Total Reach'],
               rows,
-              { y: 1.28, rowHeight: accounts.length > 15 ? 0.27 : 0.3, widths: [3.0, ...periods.map(() => 1.55), 2.0, 2.0], totalLast: true, headerFill: platformStyle.header, headerText: platformStyle.foreground, firstColumnColor: platformStyle.header });
+              { y: 1.28, rowHeight: accounts.length > 15 ? 0.27 : 0.3, widths: [3.25, ...periods.map(() => periodColumnWidth), 1.85, 1.85], totalLast: true, headerFill: platformStyle.header, headerText: platformStyle.foreground, firstColumnColor: platformStyle.header });
             if (pageCount > 1) addText(slide, `Bagian ${pageIndex + 1} dari ${pageCount}`, { x: 10.8, y: 6.75, w: 1.8, h: 0.2, align: 'right', color: colors.muted });
             addFooter(slide);
           }
@@ -3869,9 +3912,9 @@
             const engagement = (Number(post.likes) || 0) + (Number(post.comments) || 0) + (Number(post.shares) || 0) + (Number(post.saves) || 0);
             return [post.platform || '—', post.reportAccountName, fmt(post.impressions), fmt(post.reach), reportRate(post.reach ? engagement / post.reach * 100 : 0)];
           });
-          addGridTable(slide, ['Platform', 'Akun', 'Impr.', 'Reach', 'ER'], rows, {
+          addReportTable(slide, ['Platform', 'Akun', 'Impr.', 'Reach', 'ER'], rows, {
             x, y: 1.85, w: panelWidth,
-            widths: topPeriods.length > 1 ? [1.25, 1.7, 0.95, 0.95, 0.95] : [2.4, 3.4, 2.0, 2.0, 2.0],
+            widths: topPeriods.length > 1 ? [1.25, 1.7, 1.0, 1.0, 0.9] : [2.4, 3.75, 2.0, 2.0, 2.0],
             rowHeight: 0.55, headerFill: '151B34', headerText: colors.white,
             firstColumnColor: colors.teal
           });
