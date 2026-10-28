@@ -254,7 +254,7 @@
       display: block;
       width: 100%;
       height: 3.25rem;
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid rgba(148, 163, 184, 0.14);
       border-radius: 0.45rem;
       background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
@@ -790,7 +790,7 @@
             <span class="hidden xs:inline">Delete</span>
           </button>
 
-          <button id="add-content-button" onclick="window.openAddPostModal()" class="col-span-3 md:col-span-1 px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
+          <button id="add-content-button" onclick="window.openAddPostModal()" class="hidden col-span-3 md:col-span-1 px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl shadow-md shadow-cyan-950/30 transition-all flex items-center justify-center gap-2">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span>Add Content</span>
           </button>
@@ -4200,6 +4200,8 @@
       document.getElementById('sign-out-button')?.classList.toggle('hidden', !state.authUser);
       document.getElementById('add-account-button')?.classList.toggle('hidden', !canEditActiveVaultQuietly());
       document.getElementById('add-content-button')?.classList.toggle('hidden', !canEditActiveVaultQuietly());
+      document.getElementById('floating-add-content')?.classList.toggle('hidden', !canEditActiveVaultQuietly());
+      lucide.createIcons();
       document.querySelectorAll('[data-vault-write]').forEach(element => {
         element.classList.toggle('hidden', !canEditActiveVaultQuietly());
       });
@@ -5319,10 +5321,22 @@
         const posts = byDay[day] || [];
         const visible = posts.slice(0, 2).map(post => {
           const type = post.content_type === 'video' ? 'Video' : 'Feed';
+          let platformIcon = '';
+          if (post.platform === 'tiktok') {
+            platformIcon = '<svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.68v13.7a2.4 2.4 0 0 1-2.4 2.4 2.4 2.4 0 0 1-2.4-2.4 2.4 2.4 0 0 1 2.4-2.4c.34 0 .67.03 1 .09V9.4a6.11 6.11 0 0 0-6 6.11 6.11 6.11 0 0 0 6.11 6.11 6.11 6.11 0 0 0 6.11-6.11V9.5a7.9 7.9 0 0 0 3.77 1.03V7.51a4.83 4.83 0 0 1-.87-.07z"/></svg>';
+          } else if (post.platform === 'instagram') {
+            platformIcon = '<svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/></svg>';
+          } else if (post.platform === 'youtube') {
+            platformIcon = '<svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>';
+          } else {
+            platformIcon = '<i data-lucide="share-2" class="h-3 w-3 text-slate-400"></i>';
+          }
+          const platformBg = post.platform === 'tiktok' ? 'bg-black' : post.platform === 'instagram' ? 'bg-gradient-to-br from-purple-600 to-pink-600' : post.platform === 'youtube' ? 'bg-red-600' : 'bg-slate-600';
           return `<button type="button" onclick="window.openCalendarPost('${escapeReportHtml(post.id)}')" class="calendar-post-preview" aria-label="Preview ${type}: ${escapeReportHtml(post.title || 'Untitled content')}" title="${escapeReportHtml(post.title || `${type} post`)}">
             <span class="calendar-post-preview-fallback" aria-hidden="true"><i data-lucide="${type === 'Video' ? 'play' : 'image'}" class="h-4 w-4"></i></span>
             <img data-calendar-thumbnail="${escapeReportHtml(post.id)}" class="hidden" alt="${escapeReportHtml(post.title || `${type} preview`)}">
             ${type === 'Video' ? '<span class="calendar-post-preview-play" aria-hidden="true"><i data-lucide="play" class="h-3 w-3 fill-current"></i></span>' : ''}
+            <span class="absolute top-1 left-1 flex items-center justify-center rounded-full w-5 h-5 ${platformBg} text-white" aria-label="${post.platform || 'Unknown platform'}" title="${post.platform || 'Unknown platform'}">${platformIcon}</span>
           </button>`;
         }).join('');
         const extra = posts.length > 2 ? `<div class="text-[9px] text-cyan-400">+${posts.length - 2} more</div>` : '';
@@ -5796,5 +5810,11 @@
       });
     }
   </script>
+
+  <!-- Floating Action Button for Add Content -->
+  <button id="floating-add-content" onclick="window.openAddPostModal()" class="hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/40 hover:shadow-cyan-500/60 hover:scale-110 transition-all duration-200 flex items-center justify-center md:bottom-8 md:right-8" title="Add Content" aria-label="Add new content">
+    <i data-lucide="plus" class="w-6 h-6"></i>
+  </button>
+
 </body>
 </html>
