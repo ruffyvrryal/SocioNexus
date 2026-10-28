@@ -50,6 +50,244 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
+
+    /* Light Mode Styles */
+    html.light-mode {
+      color-scheme: light;
+    }
+
+    html.light-mode body {
+      background:
+        radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 18%),
+        radial-gradient(circle at top right, rgba(168, 85, 247, 0.06), transparent 22%),
+        #f8fafc;
+      color: #1e293b;
+    }
+
+    html.light-mode .glass-panel {
+      background: rgba(248, 250, 252, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(203, 213, 225, 0.5);
+      box-shadow: 0 12px 32px rgba(2, 6, 23, 0.06);
+    }
+
+    html.light-mode .text-slate-500 {
+      color: #64748b !important;
+    }
+
+    html.light-mode .text-white {
+      color: #1e293b;
+    }
+
+    html.light-mode .text-slate-300 {
+      color: #475569;
+    }
+
+    html.light-mode .text-slate-400 {
+      color: #94a3b8;
+    }
+
+    html.light-mode .text-slate-200 {
+      color: #e2e8f0;
+    }
+
+    html.light-mode button:not(.platform-pill):not([data-lucide]) {
+      background-color: #e2e8f0;
+      color: #1e293b;
+      border-color: #cbd5e1;
+    }
+
+    html.light-mode button:hover:not(.platform-pill) {
+      background-color: #d4e0e7;
+      color: #0c1117;
+    }
+
+    html.light-mode input,
+    html.light-mode select,
+    html.light-mode textarea {
+      background-color: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    html.light-mode input::placeholder,
+    html.light-mode textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    html.light-mode input:focus,
+    html.light-mode select:focus,
+    html.light-mode textarea:focus {
+      border-color: #0ea5e9;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    html.light-mode .bg-slate-900 {
+      background-color: #f1f5f9 !important;
+    }
+
+    html.light-mode .bg-slate-800 {
+      background-color: #e2e8f0 !important;
+    }
+
+    html.light-mode .bg-slate-950 {
+      background-color: #0f172a !important;
+    }
+
+    html.light-mode .border-slate-700 {
+      border-color: #cbd5e1 !important;
+    }
+
+    html.light-mode .border-slate-800 {
+      border-color: #cbd5e1 !important;
+    }
+
+    html.light-mode table thead th {
+      background-color: #f1f5f9;
+      color: #64748b;
+      border-color: #e2e8f0;
+    }
+
+    html.light-mode table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    html.light-mode .metric-card {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    html.light-mode .metric-card-primary {
+      background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+      border-color: #0ea5e9;
+      color: #0369a1;
+    }
+
+    html.light-mode .dashboard-shell {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+
+    html.light-mode .workspace-banner {
+      background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+      border-color: #0ea5e9;
+      color: #0369a1;
+    }
+
+    html.light-mode header.glass-panel {
+      background: rgba(248, 250, 252, 0.9);
+      border-color: #e2e8f0;
+    }
+
+    html.light-mode .auth-form {
+      background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+
+    html.light-mode .modern-filter-box {
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+
+    html.light-mode .modern-filter-box label {
+      color: #64748b;
+    }
+
+    html.light-mode .calendar-post-preview {
+      background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+
+    html.light-mode .calendar-post-preview:hover {
+      border-color: #0ea5e9;
+    }
+
+    html.light-mode .platform-pill {
+      background-color: #e2e8f0;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
+    html.light-mode .platform-pill:hover {
+      background-color: #d4e0e7;
+    }
+
+    html.light-mode .platform-pill-all.active {
+      background: linear-gradient(135deg, #cbd5e1, #bdbdbd);
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    html.light-mode .platform-pill-tiktok.active {
+      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+      border-color: #1f2937;
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    html.light-mode .platform-pill-instagram.active {
+      background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+      border-color: #ec4899;
+      color: #be123c;
+    }
+
+    html.light-mode .platform-pill-youtube.active {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    html.light-mode #comparison-table-body tr:hover,
+    html.light-mode #content-type-comparison-body tr:hover,
+    html.light-mode #posts-table-body tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    html.light-mode .text-cyan-300 {
+      color: #0369a1 !important;
+    }
+
+    html.light-mode .text-cyan-400 {
+      color: #0284c7 !important;
+    }
+
+    html.light-mode .text-rose-300 {
+      color: #f87171 !important;
+    }
+
+    html.light-mode .text-purple-300 {
+      color: #d8b4fe !important;
+    }
+
+    html.light-mode .text-emerald-400 {
+      color: #10b981 !important;
+    }
+
+    html.light-mode .text-amber-300 {
+      color: #fbbf24 !important;
+    }
+
+    html.light-mode .bg-cyan-500 {
+      background-color: #06b6d4 !important;
+      color: #ffffff !important;
+    }
+
+    html.light-mode .bg-gradient-to-r {
+      background-image: linear-gradient(90deg, #0ea5e9, #0284c7) !important;
+      color: #ffffff !important;
+    }
+
+    html.light-mode .divide-slate-800 {
+      border-color: #e2e8f0 !important;
+    }
+
+    html.light-mode .focus\\:border-cyan-500:focus {
+      border-color: #0ea5e9 !important;
+    }
+
     .glass-panel {
       background: rgba(15, 23, 42, 0.78);
       backdrop-filter: blur(14px);
@@ -620,6 +858,38 @@
       from { opacity: 0; transform: translateY(14px) scale(0.985); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
+    .platform-pill {
+      cursor: pointer;
+      position: relative;
+    }
+    .platform-pill.active {
+      font-weight: 600;
+      border-width: 2px;
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+    .platform-pill-all.active {
+      background: linear-gradient(135deg, rgba(100, 116, 139, 0.4), rgba(71, 85, 105, 0.4));
+      border-color: rgba(148, 163, 184, 0.6);
+      color: #f1f5f9;
+    }
+    .platform-pill-tiktok.active {
+      background: linear-gradient(135deg, rgba(30, 30, 30, 0.8), rgba(15, 15, 15, 0.9));
+      border-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+    .platform-pill-instagram.active {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(219, 39, 119, 0.25));
+      border-color: rgba(236, 72, 153, 0.6);
+      color: #fce7f3;
+      box-shadow: 0 0 12px rgba(236, 72, 153, 0.3), 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+    .platform-pill-youtube.active {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.25));
+      border-color: rgba(239, 68, 68, 0.6);
+      color: #fee2e2;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3), 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
   </style>
 </head>
 <body class="auth-locked min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
@@ -656,6 +926,10 @@
         <span>Workspaces</span>
       </button>
 
+      <button id="theme-toggle-desktop" onclick="window.toggleTheme()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors" title="Toggle dark/light mode">
+        <i data-lucide="moon" class="w-4 h-4"></i>
+      </button>
+
       <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors relative" title="Cloud Sync Settings">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
@@ -665,6 +939,9 @@
 
     <!-- Mobile Header Quick Actions -->
     <div class="flex md:hidden items-center space-x-2">
+      <button id="theme-toggle-mobile" onclick="window.toggleTheme()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60" title="Toggle dark/light mode">
+        <i data-lucide="moon" class="w-4 h-4"></i>
+      </button>
       <button id="mobile-settings-button" onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60 relative">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator-mobile" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
@@ -812,14 +1089,22 @@
               <option value="monthly">Monthly</option>
             </select>
           </div>
-          <div class="modern-filter-box">
-            <label for="platform-filter">Platform</label>
-            <select id="platform-filter" onchange="window.selectPlatform(this.value)" class="w-full sm:w-44 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
-              <option value="all">All platforms</option>
-              <option value="tiktok">TikTok</option>
-              <option value="instagram">Instagram</option>
-              <option value="youtube">YouTube</option>
-            </select>
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="text-xs font-medium text-slate-400">Platform</label>
+            <div id="platform-filter-pills" class="flex flex-wrap gap-2">
+              <button type="button" onclick="window.selectPlatform('all')" class="platform-pill platform-pill-all px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600" data-platform="all">
+                All
+              </button>
+              <button type="button" onclick="window.selectPlatform('tiktok')" class="platform-pill platform-pill-tiktok px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-slate-900 text-white hover:bg-slate-800 border border-slate-700" data-platform="tiktok">
+                <span class="inline-block w-2 h-2 rounded-full bg-black mr-1.5"></span>TikTok
+              </button>
+              <button type="button" onclick="window.selectPlatform('instagram')" class="platform-pill platform-pill-instagram px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-slate-900 text-white hover:bg-slate-800 border border-slate-700" data-platform="instagram">
+                <span class="inline-block w-2 h-2 rounded-full bg-pink-500 mr-1.5"></span>Instagram
+              </button>
+              <button type="button" onclick="window.selectPlatform('youtube')" class="platform-pill platform-pill-youtube px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-slate-900 text-white hover:bg-slate-800 border border-slate-700" data-platform="youtube">
+                <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>YouTube
+              </button>
+            </div>
           </div>
           <div class="modern-filter-box">
             <label for="content-type-filter">Content type</label>
@@ -2184,6 +2469,13 @@
       if (!['all', 'tiktok', 'instagram', 'youtube'].includes(plat)) return;
       state.currentPlatform = plat;
       state.contentPage = 1;
+      
+      // Update platform pill styles
+      document.querySelectorAll('.platform-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      document.querySelector(`[data-platform="${plat}"]`)?.classList.add('active');
+      
       renderDashboard();
     };
 
@@ -4126,7 +4418,48 @@
       if (id === 'modal-account') resetAccountProfilePicturePicker();
     };
 
+    window.toggleTheme = function() {
+      const currentTheme = localStorage.getItem('sn_theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('sn_theme', newTheme);
+      applyTheme(newTheme);
+    };
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const desktopToggle = document.getElementById('theme-toggle-desktop');
+      const mobileToggle = document.getElementById('theme-toggle-mobile');
+      
+      if (theme === 'light') {
+        html.classList.add('light-mode');
+        html.classList.remove('dark');
+        if (desktopToggle) {
+          desktopToggle.querySelector('i').setAttribute('data-lucide', 'sun');
+          desktopToggle.title = 'Switch to dark mode';
+        }
+        if (mobileToggle) {
+          mobileToggle.querySelector('i').setAttribute('data-lucide', 'sun');
+          mobileToggle.title = 'Switch to dark mode';
+        }
+      } else {
+        html.classList.remove('light-mode');
+        html.classList.add('dark');
+        if (desktopToggle) {
+          desktopToggle.querySelector('i').setAttribute('data-lucide', 'moon');
+          desktopToggle.title = 'Switch to light mode';
+        }
+        if (mobileToggle) {
+          mobileToggle.querySelector('i').setAttribute('data-lucide', 'moon');
+          mobileToggle.title = 'Switch to light mode';
+        }
+      }
+      lucide.createIcons();
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
+      const savedTheme = localStorage.getItem('sn_theme') || 'dark';
+      applyTheme(savedTheme);
+      
       lucide.createIcons();
       initRevealAnimations();
       initSupabaseClient();
@@ -4808,7 +5141,12 @@
       const filteredPosts = getFilteredPosts();
       const tablePosts = getFilteredPosts({ includeNonUploaded: true });
       document.getElementById('timeframe-filter').value = state.timeframe;
-      document.getElementById('platform-filter').value = state.currentPlatform;
+      
+      // Update platform pill active state
+      document.querySelectorAll('.platform-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.platform === state.currentPlatform);
+      });
+      
       document.getElementById('content-type-filter').value = state.contentTypeFilter;
       renderDataStatus('dashboard-data-status');
       renderMetricsCards(filteredPosts, getPreviousPeriodPosts());
