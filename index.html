@@ -58,17 +58,17 @@
 
     html.light-mode body {
       background:
-        radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 18%),
-        radial-gradient(circle at top right, rgba(168, 85, 247, 0.06), transparent 22%),
-        #f8fafc;
+        radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 18%),
+        radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 22%),
+        #ffffff;
       color: #1e293b;
     }
 
     html.light-mode .glass-panel {
-      background: rgba(248, 250, 252, 0.85);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(203, 213, 225, 0.5);
-      box-shadow: 0 12px 32px rgba(2, 6, 23, 0.06);
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
     }
 
     html.light-mode .text-slate-500 {
@@ -84,28 +84,36 @@
     }
 
     html.light-mode .text-slate-400 {
-      color: #94a3b8;
+      color: #64748b;
     }
 
     html.light-mode .text-slate-200 {
-      color: #e2e8f0;
+      color: #94a3b8;
     }
 
-    html.light-mode button:not(.platform-pill):not([data-lucide]) {
-      background-color: #e2e8f0;
+    html.light-mode .text-slate-600 {
+      color: #475569;
+    }
+
+    html.light-mode button:not(.platform-pill):not([class*="pill"]) {
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
       color: #1e293b;
       border-color: #cbd5e1;
+      transition: all 200ms ease-out;
     }
 
     html.light-mode button:hover:not(.platform-pill) {
-      background-color: #d4e0e7;
-      color: #0c1117;
+      background: linear-gradient(135deg, #e2e8f0, #d4dce7);
+      color: #0f172a;
+      border-color: #94a3b8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     }
 
     html.light-mode input,
     html.light-mode select,
     html.light-mode textarea {
-      background-color: #f1f5f9;
+      background-color: #f8fafc;
       border-color: #e2e8f0;
       color: #1e293b;
     }
@@ -125,14 +133,17 @@
 
     html.light-mode .bg-slate-900 {
       background-color: #f1f5f9 !important;
+      color: #1e293b !important;
     }
 
     html.light-mode .bg-slate-800 {
       background-color: #e2e8f0 !important;
+      color: #1e293b !important;
     }
 
     html.light-mode .bg-slate-950 {
-      background-color: #0f172a !important;
+      background-color: #f8fafc !important;
+      color: #1e293b !important;
     }
 
     html.light-mode .border-slate-700 {
@@ -143,9 +154,18 @@
       border-color: #cbd5e1 !important;
     }
 
+    html.light-mode .border-slate-900 {
+      border-color: #cbd5e1 !important;
+    }
+
     html.light-mode table thead th {
-      background-color: #f1f5f9;
-      color: #64748b;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      color: #475569;
+      border-color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    html.light-mode table tbody tr {
       border-color: #e2e8f0;
     }
 
@@ -157,87 +177,108 @@
       background: linear-gradient(180deg, #ffffff, #f8fafc);
       border-color: #e2e8f0;
       color: #1e293b;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
     }
 
     html.light-mode .metric-card-primary {
-      background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
-      border-color: #0ea5e9;
+      background: linear-gradient(135deg, #ecf8ff, #f0f9ff);
+      border: 1px solid rgba(14, 165, 233, 0.3);
       color: #0369a1;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1);
+    }
+
+    html.light-mode .metric-card::before {
+      background: linear-gradient(90deg, rgba(14, 165, 233, 0.3), transparent 52%, rgba(168, 85, 247, 0.2));
     }
 
     html.light-mode .dashboard-shell {
       background: linear-gradient(180deg, #ffffff, #f8fafc);
-      border-color: #cbd5e1;
+      border: 1px solid rgba(226, 232, 240, 0.8);
       color: #1e293b;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
     }
 
     html.light-mode .workspace-banner {
-      background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
-      border-color: #0ea5e9;
+      background: linear-gradient(135deg, #ecf8ff, #f5f3ff);
+      border: 1px solid rgba(14, 165, 233, 0.2);
       color: #0369a1;
     }
 
     html.light-mode header.glass-panel {
-      background: rgba(248, 250, 252, 0.9);
-      border-color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
     }
 
     html.light-mode .auth-form {
-      background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-      border-color: #cbd5e1;
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
     }
 
     html.light-mode .modern-filter-box {
       background: linear-gradient(180deg, #f8fafc, #f1f5f9);
-      border-color: #cbd5e1;
+      border: 1px solid rgba(226, 232, 240, 0.8);
     }
 
     html.light-mode .modern-filter-box label {
-      color: #64748b;
+      color: #475569;
+      font-weight: 500;
     }
 
     html.light-mode .calendar-post-preview {
-      background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-      border-color: #cbd5e1;
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
     }
 
     html.light-mode .calendar-post-preview:hover {
       border-color: #0ea5e9;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
     }
 
     html.light-mode .platform-pill {
-      background-color: #e2e8f0;
+      background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
       color: #475569;
-      border-color: #cbd5e1;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 150ms ease-out;
     }
 
     html.light-mode .platform-pill:hover {
-      background-color: #d4e0e7;
+      background: linear-gradient(135deg, #e2e8f0, #d4dce7);
+      border-color: #94a3b8;
     }
 
     html.light-mode .platform-pill-all.active {
-      background: linear-gradient(135deg, #cbd5e1, #bdbdbd);
-      border-color: #94a3b8;
+      background: linear-gradient(135deg, #cbd5e1, #b0bac7);
+      border: 2px solid #94a3b8;
       color: #0f172a;
+      font-weight: 600;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
     }
 
     html.light-mode .platform-pill-tiktok.active {
       background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-      border-color: #1f2937;
+      border: 2px solid #1f2937;
       color: #000;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     html.light-mode .platform-pill-instagram.active {
       background: linear-gradient(135deg, #fce7f3, #fbcfe8);
-      border-color: #ec4899;
+      border: 2px solid #ec4899;
       color: #be123c;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
     }
 
     html.light-mode .platform-pill-youtube.active {
       background: linear-gradient(135deg, #fee2e2, #fecaca);
-      border-color: #ef4444;
+      border: 2px solid #ef4444;
       color: #991b1b;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
     }
 
     html.light-mode #comparison-table-body tr:hover,
@@ -254,15 +295,31 @@
       color: #0284c7 !important;
     }
 
+    html.light-mode .text-cyan-500 {
+      color: #0ea5e9 !important;
+    }
+
     html.light-mode .text-rose-300 {
       color: #f87171 !important;
+    }
+
+    html.light-mode .text-rose-500 {
+      color: #ef4444 !important;
     }
 
     html.light-mode .text-purple-300 {
       color: #d8b4fe !important;
     }
 
+    html.light-mode .text-purple-500 {
+      color: #a855f7 !important;
+    }
+
     html.light-mode .text-emerald-400 {
+      color: #10b981 !important;
+    }
+
+    html.light-mode .text-emerald-500 {
       color: #10b981 !important;
     }
 
@@ -270,8 +327,12 @@
       color: #fbbf24 !important;
     }
 
+    html.light-mode .text-amber-500 {
+      color: #f59e0b !important;
+    }
+
     html.light-mode .bg-cyan-500 {
-      background-color: #06b6d4 !important;
+      background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
       color: #ffffff !important;
     }
 
@@ -284,8 +345,48 @@
       border-color: #e2e8f0 !important;
     }
 
-    html.light-mode .focus\\:border-cyan-500:focus {
-      border-color: #0ea5e9 !important;
+    html.light-mode .bg-slate-800\/60 {
+      background-color: rgba(226, 232, 240, 0.6) !important;
+    }
+
+    html.light-mode .bg-slate-800\/80 {
+      background-color: rgba(226, 232, 240, 0.8) !important;
+    }
+
+    html.light-mode .auth-brand {
+      color: #1e293b;
+      text-shadow: 0 0 0 transparent;
+    }
+
+    html.light-mode .auth-brand span {
+      color: #0ea5e9;
+    }
+
+    html.light-mode .auth-password-icon {
+      color: #94a3b8;
+    }
+
+    html.light-mode .metric-card-icon {
+      background: rgba(226, 232, 240, 0.5);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    html.light-mode .landing-hero {
+      background: linear-gradient(135deg, #ecf8ff, #f5f3ff);
+      border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    html.light-mode .feature-card,
+    html.light-mode .pricing-card {
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    }
+
+    html.light-mode .pricing-card.featured {
+      background: linear-gradient(180deg, #ecf8ff, #f5f3ff);
+      border-color: rgba(14, 165, 233, 0.3);
+      box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
     }
 
     .glass-panel {
@@ -890,6 +991,151 @@
       color: #fee2e2;
       box-shadow: 0 0 12px rgba(239, 68, 68, 0.3), 0 0 0 3px rgba(34, 211, 238, 0.1);
     }
+
+    /* Floating Action Button Enhanced Glow */
+    #floating-add-content {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 
+        0 8px 24px rgba(14, 165, 233, 0.4),
+        0 0 20px rgba(14, 165, 233, 0.2);
+    }
+
+    #floating-add-content:hover {
+      transform: scale(1.15) translateY(-2px);
+      box-shadow: 
+        0 12px 40px rgba(14, 165, 233, 0.6),
+        0 0 40px rgba(14, 165, 233, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    #floating-add-content:active {
+      transform: scale(1.08);
+    }
+
+    /* Light mode floating button enhancement */
+    html.light-mode #floating-add-content {
+      box-shadow: 
+        0 8px 24px rgba(14, 165, 233, 0.35),
+        0 0 20px rgba(14, 165, 233, 0.15);
+    }
+
+    html.light-mode #floating-add-content:hover {
+      box-shadow: 
+        0 12px 40px rgba(14, 165, 233, 0.5),
+        0 0 40px rgba(14, 165, 233, 0.35),
+        inset 0 0 20px rgba(255, 255, 255, 0.15);
+    }
+
+    /* Metric Card Pulse Animation */
+    @keyframes pulse-bounce {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 16px 36px rgba(14, 165, 233, 0.2);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
+      }
+    }
+
+    .metric-card.animate-pulse-bounce {
+      animation: pulse-bounce 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes value-change-glow {
+      0% {
+        filter: brightness(1);
+        text-shadow: 0 0 0 rgba(34, 211, 238, 0);
+      }
+      50% {
+        filter: brightness(1.2);
+        text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+      }
+      100% {
+        filter: brightness(1);
+        text-shadow: 0 0 0 rgba(34, 211, 238, 0);
+      }
+    }
+
+    .metric-card-value.animate-value-change {
+      animation: value-change-glow 500ms ease-out;
+    }
+
+    /* Loading Skeleton Styles */
+    @keyframes skeleton-loading {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        rgba(148, 163, 184, 0.1),
+        rgba(148, 163, 184, 0.2),
+        rgba(148, 163, 184, 0.1)
+      );
+      background-size: 1000px 100%;
+      animation: skeleton-loading 2s infinite;
+      border-radius: 0.5rem;
+    }
+
+    .skeleton-text {
+      height: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .skeleton-metric-card {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.5));
+      border: 1px solid rgba(71, 85, 105, 0.42);
+      border-radius: 1.5rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .skeleton-metric-card .skeleton {
+      height: 1.75rem;
+    }
+
+    .skeleton-metric-card .skeleton-text {
+      height: 0.75rem;
+    }
+
+    .skeleton-table-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+    }
+
+    .skeleton-table-row .skeleton {
+      height: 1rem;
+    }
+
+    html.light-mode .skeleton {
+      background: linear-gradient(
+        90deg,
+        rgba(203, 213, 225, 0.2),
+        rgba(203, 213, 225, 0.3),
+        rgba(203, 213, 225, 0.2)
+      );
+    }
+
+    html.light-mode .skeleton-metric-card {
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.8), rgba(240, 245, 250, 0.8));
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
   </style>
 </head>
 <body class="auth-locked min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
@@ -1288,11 +1534,17 @@
             <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Logged content for this account and selected platform. This is a history view, not a publishing scheduler.</p>
           </div>
           <div class="flex items-center gap-2">
-            <label for="content-calendar-month" class="text-xs font-medium text-slate-400">Month</label>
+            <button id="calendar-prev-month" onclick="window.navigateCalendarMonth(-1)" class="hidden sm:inline p-2 text-slate-400 hover:text-white transition-colors" title="Previous month" aria-label="Previous month">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <label for="content-calendar-month" class="text-xs font-medium text-slate-400 hidden sm:inline">Month</label>
             <select id="content-calendar-month" class="min-w-40 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderContentCalendar()"></select>
+            <button id="calendar-next-month" onclick="window.navigateCalendarMonth(1)" class="hidden sm:inline p-2 text-slate-400 hover:text-white transition-colors" title="Next month" aria-label="Next month">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
-        <div class="overflow-x-auto custom-scrollbar">
+        <div class="overflow-x-auto custom-scrollbar" id="calendar-swipe-container">
           <div class="min-w-[560px]">
             <div class="grid grid-cols-7 text-center text-[10px] uppercase tracking-wider text-slate-500 border-b border-slate-800 pb-2">
               <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
@@ -2248,6 +2500,48 @@
       const { error } = await supabaseClient.storage.from(POST_THUMBNAIL_BUCKET).remove(uniquePaths);
       if (error) throw error;
       uniquePaths.forEach(path => calendarThumbnailCache.delete(path));
+    }
+
+    // Skeleton Screen Helpers
+    function showMetricCardSkeleton(elementId) {
+      const element = document.getElementById(elementId);
+      if (!element) return;
+      element.innerHTML = `
+        <div class="skeleton-metric-card">
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton" style="height: 2rem;"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      `;
+    }
+
+    function showTableSkeleton(elementId, rows = 5) {
+      const element = document.getElementById(elementId);
+      if (!element) return;
+      element.innerHTML = Array(rows).fill(0).map(() => `
+        <div class="skeleton-table-row">
+          ${Array(6).fill(0).map(() => '<div class="skeleton"></div>').join('')}
+        </div>
+      `).join('');
+    }
+
+    function showLoadingOverlay(message = 'Syncing data...') {
+      const overlay = document.createElement('div');
+      overlay.id = 'sync-loading-overlay';
+      overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-30 flex items-center justify-center';
+      overlay.innerHTML = `
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 flex flex-col items-center gap-3">
+          <div class="w-8 h-8 border-3 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+          <p class="text-sm font-medium text-slate-300">${message}</p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      return overlay;
+    }
+
+    function removeLoadingOverlay() {
+      const overlay = document.getElementById('sync-loading-overlay');
+      if (overlay) overlay.remove();
     }
 
     window.openAddPostModal = function() {
@@ -4463,6 +4757,7 @@
       lucide.createIcons();
       initRevealAnimations();
       initSupabaseClient();
+      window.initKeyboardShortcuts();
       await loadInitialData();
     });
 
@@ -5626,6 +5921,141 @@
       }).join('');
     }
 
+    window.navigateCalendarMonth = function(direction) {
+      const input = document.getElementById('content-calendar-month');
+      if (!input) return;
+      const currentDate = new Date(input.value + '-01');
+      currentDate.setMonth(currentDate.getMonth() + direction);
+      const newMonth = localDateString(currentDate).slice(0, 7);
+      input.value = newMonth;
+      window.renderContentCalendar();
+    }
+
+    // Swipe gesture handling for mobile calendar
+    function initCalendarSwipe() {
+      const container = document.getElementById('calendar-swipe-container');
+      if (!container) return;
+      
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      container.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, false);
+      
+      container.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, false);
+      
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swiped left, go to next month
+            window.navigateCalendarMonth(1);
+          } else {
+            // Swiped right, go to previous month
+            window.navigateCalendarMonth(-1);
+          }
+        }
+      }
+    }
+
+    // Keyboard Shortcuts Handler
+    window.initKeyboardShortcuts = function() {
+      document.addEventListener('keydown', (e) => {
+        // Ignore if typing in input or textarea
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+          return;
+        }
+
+        // Check for modifier keys
+        const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+        switch(e.key.toLowerCase()) {
+          case 'n':
+            // N - Open Add Content modal
+            if (!isCtrlOrCmd) {
+              e.preventDefault();
+              window.openAddPostModal();
+            }
+            break;
+          case 'r':
+            // R - Open Report modal
+            if (!isCtrlOrCmd) {
+              e.preventDefault();
+              window.openReportModal();
+            }
+            break;
+          case 'h':
+            // H - Navigate to Hub/Workspaces
+            if (!isCtrlOrCmd) {
+              e.preventDefault();
+              window.navigateToHub();
+            }
+            break;
+          case '?':
+            // ? - Show keyboard shortcuts help
+            e.preventDefault();
+            showKeyboardShortcutsHelp();
+            break;
+          case 'escape':
+            // Escape - Close all modals
+            e.preventDefault();
+            document.querySelectorAll('[id^="modal-"]:not(.hidden)').forEach(modal => {
+              window.closeModal(modal.id);
+            });
+            break;
+        }
+      });
+    }
+
+    function showKeyboardShortcutsHelp() {
+      const shortcuts = [
+        { key: 'N', action: 'Add new content' },
+        { key: 'R', action: 'Open report/presentation' },
+        { key: 'H', action: 'Go to workspaces' },
+        { key: '?', action: 'Show this help' },
+        { key: 'ESC', action: 'Close modals' }
+      ];
+
+      const content = `
+        <div class="space-y-3">
+          <h4 class="font-bold text-white mb-4">Keyboard Shortcuts</h4>
+          <div class="space-y-2 text-[11px]">
+            ${shortcuts.map(s => `
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">${s.action}</span>
+                <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-white font-mono">${s.key}</kbd>
+              </div>
+            `).join('')}
+          </div>
+          <p class="text-[10px] text-slate-500 mt-4 pt-3 border-t border-slate-700">Press any key again to close</p>
+        </div>
+      `;
+
+      // Create modal-like overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      overlay.innerHTML = `
+        <div class="glass-panel border border-slate-700 rounded-xl p-4 max-w-xs w-full">
+          ${content}
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      const closeHelp = () => {
+        overlay.remove();
+        document.removeEventListener('keydown', closeHelp);
+      };
+
+      document.addEventListener('keydown', closeHelp);
+    }
+
     window.renderContentCalendar = function() {
       const input = document.getElementById('content-calendar-month');
       const grid = document.getElementById('content-calendar-grid');
@@ -5634,6 +6064,7 @@
       state.calendarMonth = month;
       renderCalendarMonthOptions(month);
       input.value = month;
+      initCalendarSwipe();
       const [year, monthNumber] = month.split('-').map(Number);
       if (!year || monthNumber < 1 || monthNumber > 12) {
         grid.innerHTML = `<div class="col-span-7 py-8 text-center text-xs text-slate-500">Choose a valid month.</div>`;
@@ -5871,6 +6302,19 @@
         element.textContent = target.toLocaleString();
         metricAnimationFrames.delete(element);
         return;
+      }
+
+      // Add pulse animation to parent metric card
+      const metricCard = element.closest('.metric-card');
+      if (metricCard && start !== target) {
+        metricCard.classList.remove('animate-pulse-bounce');
+        void metricCard.offsetWidth; // Trigger reflow to restart animation
+        metricCard.classList.add('animate-pulse-bounce');
+        
+        // Add glow animation to the value
+        element.classList.remove('animate-value-change');
+        void element.offsetWidth; // Trigger reflow
+        element.classList.add('animate-value-change');
       }
 
       const startTime = performance.now();
@@ -6150,7 +6594,7 @@
   </script>
 
   <!-- Floating Action Button for Add Content -->
-  <button id="floating-add-content" onclick="window.openAddPostModal()" class="hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/40 hover:shadow-cyan-500/60 hover:scale-110 transition-all duration-200 flex items-center justify-center md:bottom-8 md:right-8" title="Add Content" aria-label="Add new content">
+  <button id="floating-add-content" onclick="window.openAddPostModal()" class="hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full text-white flex items-center justify-center md:bottom-8 md:right-8" title="Add Content" aria-label="Add new content">
     <i data-lucide="plus" class="w-6 h-6"></i>
   </button>
 
