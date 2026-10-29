@@ -423,6 +423,30 @@
     #comparison-table-body td, #content-type-comparison-body td {
       font-variant-numeric: tabular-nums;
     }
+    .comparison-bubble-card {
+      transition: transform 220ms var(--ease-premium), border-color 220ms ease, box-shadow 220ms ease;
+    }
+    .comparison-bubble-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(2, 6, 23, 0.28);
+    }
+    html.light-mode .comparison-bubble-card {
+      background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+    }
+    html.light-mode #bubble-total-accounts {
+      background: linear-gradient(135deg, rgba(224, 242, 254, 0.7), rgba(240, 249, 255, 0.95)) !important;
+      border-color: rgba(56, 189, 248, 0.45) !important;
+    }
+    html.light-mode #bubble-total-views {
+      background: linear-gradient(135deg, rgba(207, 250, 254, 0.7), rgba(236, 254, 255, 0.95)) !important;
+      border-color: rgba(34, 211, 238, 0.45) !important;
+    }
+    html.light-mode #bubble-total-engagement {
+      background: linear-gradient(135deg, rgba(243, 232, 255, 0.7), rgba(250, 245, 255, 0.95)) !important;
+      border-color: rgba(192, 132, 252, 0.45) !important;
+    }
     table thead th {
       position: sticky;
       top: 0;
@@ -1246,34 +1270,179 @@
         </div>
       </div>
 
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <!-- ACCOUNT COMPARISON & PERFORMANCE BUBBLES SECTION -->
+      <div id="comparison-section" class="glass-panel p-4 sm:p-6 rounded-2xl border border-slate-800 space-y-5">
+        <!-- Section Header & Filter Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
           <div>
-            <h3 class="text-sm font-bold text-white">Account Comparison</h3>
-            <p class="text-xs text-slate-400 mt-1">Compare logged performance for a selected month. Choose the accounts and platform to include.</p>
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <i data-lucide="circle-dot" class="w-4 h-4"></i>
+              </span>
+              <h3 class="text-base sm:text-lg font-bold text-white tracking-tight">Account Comparison & Performance Bubbles</h3>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Real-time bubbles of total accounts, total views, and total engagement across your selected filters.</p>
           </div>
-          <div class="grid grid-cols-2 gap-2 sm:flex">
-            <label class="text-[10px] text-slate-400">Month
-              <input id="comparison-month" type="month" class="mt-1 block w-full sm:w-36 px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderComparison()">
-            </label>
-            <label class="text-[10px] text-slate-400">Platform
-              <select id="comparison-platform" class="mt-1 block w-full sm:w-36 px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white" onchange="window.renderComparison()">
+
+          <!-- Controls: Timeframe & Platform -->
+          <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <!-- Time Period selector -->
+            <div class="flex flex-col">
+              <label for="comparison-timeframe" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1">
+                <i data-lucide="calendar" class="w-3 h-3 text-cyan-400"></i>
+                Time Period
+              </label>
+              <select id="comparison-timeframe" onchange="window.handleComparisonTimeframeChange(this.value)" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
+                <option value="all">All Time</option>
+                <option value="this_month" selected>This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="last_7">Last 7 Days</option>
+                <option value="last_30">Last 30 Days</option>
+                <option value="last_90">Last 90 Days</option>
+                <option value="this_year">This Year</option>
+                <option value="month">Specific Month</option>
+                <option value="range">Custom Date Range</option>
+              </select>
+            </div>
+
+            <!-- Specific Month Input -->
+            <div id="comparison-month-container" class="hidden flex-col">
+              <label for="comparison-month" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Select Month</label>
+              <input id="comparison-month" type="month" class="px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderComparison()">
+            </div>
+
+            <!-- Custom Date Range Inputs -->
+            <div id="comparison-range-container" class="hidden items-center gap-2">
+              <div class="flex flex-col">
+                <label for="comparison-start-date" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">From</label>
+                <input id="comparison-start-date" type="date" class="px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderComparison()">
+              </div>
+              <div class="flex flex-col">
+                <label for="comparison-end-date" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">To</label>
+                <input id="comparison-end-date" type="date" class="px-2.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderComparison()">
+              </div>
+            </div>
+
+            <!-- Platform selector -->
+            <div class="flex flex-col">
+              <label for="comparison-platform" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1">
+                <i data-lucide="share-2" class="w-3 h-3 text-cyan-400"></i>
+                Platform
+              </label>
+              <select id="comparison-platform" class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none" onchange="window.renderComparison()">
                 <option value="all">All platforms</option>
                 <option value="tiktok">TikTok</option>
                 <option value="instagram">Instagram</option>
                 <option value="youtube">YouTube</option>
               </select>
-            </label>
+            </div>
           </div>
         </div>
-        <div id="comparison-account-filters" class="flex flex-wrap gap-2"></div>
-        <div class="overflow-x-auto custom-scrollbar">
-          <table class="w-full min-w-[520px] text-left text-xs text-slate-300">
-            <thead class="text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
-              <tr><th class="px-3 py-2">Account</th><th class="px-3 py-2 text-right">Posts</th><th class="px-3 py-2 text-right">Impressions</th><th class="px-3 py-2 text-right">Reach</th><th class="px-3 py-2 text-right">Engagement</th></tr>
-            </thead>
-            <tbody id="comparison-table-body" class="divide-y divide-slate-800/60"></tbody>
-          </table>
+
+        <!-- Account Selection Filter Bar -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-cyan-400"></i>
+              Select Accounts:
+            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="window.toggleComparisonSelectAll(true)" class="text-[11px] font-medium text-cyan-400 hover:text-cyan-300 transition-colors">Select All</button>
+              <span class="text-slate-600">|</span>
+              <button type="button" onclick="window.toggleComparisonSelectAll(false)" class="text-[11px] font-medium text-slate-400 hover:text-slate-300 transition-colors">Clear</button>
+            </div>
+          </div>
+          <div id="comparison-account-filters" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- HERO SUMMARY BUBBLES (TOTAL ACCOUNTS, TOTAL VIEWS, TOTAL ENGAGEMENT) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 pt-1">
+          <!-- Total Accounts Bubble -->
+          <div id="bubble-total-accounts" class="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-sky-500/25 bg-gradient-to-br from-sky-950/40 via-slate-900/80 to-slate-950/90 shadow-lg shadow-sky-950/20 group hover:border-sky-500/40 transition-all">
+            <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-sky-500/10 blur-2xl pointer-events-none group-hover:bg-sky-500/20 transition-all"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+                Total Accounts
+              </span>
+              <div class="w-9 h-9 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-300 flex items-center justify-center shrink-0">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <div id="bubble-accounts-val" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+              <p id="bubble-accounts-sub" class="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">0 accounts selected</p>
+            </div>
+          </div>
+
+          <!-- Total Views Bubble -->
+          <div id="bubble-total-views" class="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-cyan-500/25 bg-gradient-to-br from-cyan-950/40 via-slate-900/80 to-slate-950/90 shadow-lg shadow-cyan-950/20 group hover:border-cyan-500/40 transition-all">
+            <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-cyan-500/10 blur-2xl pointer-events-none group-hover:bg-cyan-500/20 transition-all"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                Total Views
+              </span>
+              <div class="w-9 h-9 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 flex items-center justify-center shrink-0">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <div id="bubble-views-val" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+              <p id="bubble-views-sub" class="text-[11px] text-slate-400 mt-1">Impressions across selected accounts</p>
+            </div>
+          </div>
+
+          <!-- Total Engagement Bubble -->
+          <div id="bubble-total-engagement" class="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-purple-500/25 bg-gradient-to-br from-purple-950/40 via-slate-900/80 to-slate-950/90 shadow-lg shadow-purple-950/20 group hover:border-purple-500/40 transition-all">
+            <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-purple-500/10 blur-2xl pointer-events-none group-hover:bg-purple-500/20 transition-all"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+                Total Engagement
+              </span>
+              <div class="w-9 h-9 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-300 flex items-center justify-center shrink-0">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="mt-3">
+              <div id="bubble-engagement-val" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+              <div class="flex items-center justify-between mt-1">
+                <p id="bubble-engagement-sub" class="text-[11px] text-slate-400">Likes, comments, shares & saves</p>
+                <span id="bubble-engagement-rate-badge" class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-semibold border border-purple-500/30">0% ER</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT COMPARISON BUBBLES BREAKDOWN -->
+        <div class="pt-2">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-400"></i>
+              Account Breakdown
+            </span>
+            <div class="inline-flex p-0.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px]">
+              <button type="button" id="comparison-view-cards-btn" onclick="window.setComparisonDisplayView('cards')" class="px-3 py-1 rounded-lg font-medium transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                Bubble Cards
+              </button>
+              <button type="button" id="comparison-view-chart-btn" onclick="window.setComparisonDisplayView('chart')" class="px-3 py-1 rounded-lg font-medium transition-all text-slate-400 hover:text-white">
+                Visual Bubble Chart
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards View Container -->
+          <div id="comparison-bubbles-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+          <!-- Visual Bubble Chart Container -->
+          <div id="comparison-bubbles-chart-container" class="hidden relative h-72 sm:h-80 w-full p-4 rounded-2xl bg-slate-950/60 border border-slate-800">
+            <canvas id="comparisonBubbleChart"></canvas>
+            <div id="comparison-bubble-chart-empty" class="hidden absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-2xl bg-slate-950/90 text-center">
+              <i data-lucide="circle-dot" class="w-7 h-7 text-slate-500"></i>
+              <p class="text-xs text-slate-400">No performance data found for the selected accounts & period.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2029,6 +2198,8 @@
       searchQuery: '',
       reportFilterMode: 'all',
       comparisonAccountIds: null,
+      comparisonTimeframe: 'this_month',
+      comparisonDisplayView: 'cards',
       calendarMonth: '',
       contentTypeFilter: 'all',
       contentPage: 1,
@@ -2038,6 +2209,7 @@
     let supabaseClient = null;
     let trendChartInstance = null;
     let engagementChartInstance = null;
+    let comparisonBubbleChartInstance = null;
     const metricAnimationFrames = new WeakMap();
 
     window.openAuthFocus = function() {
@@ -5368,51 +5540,423 @@
       });
     }
 
+    function isPostInComparisonPeriod(post, mode, monthVal, startDate, endDate) {
+      const pDate = String(post.post_date || '');
+      if (!pDate) return false;
+      const now = new Date();
+      if (mode === 'all') return true;
+      if (mode === 'this_month') {
+        const ym = localDateString(now).slice(0, 7);
+        return pDate.startsWith(ym);
+      }
+      if (mode === 'last_month') {
+        const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const ym = localDateString(d).slice(0, 7);
+        return pDate.startsWith(ym);
+      }
+      if (mode === 'last_7') {
+        const d = new Date(now);
+        d.setDate(d.getDate() - 7);
+        return pDate >= localDateString(d);
+      }
+      if (mode === 'last_30') {
+        const d = new Date(now);
+        d.setDate(d.getDate() - 30);
+        return pDate >= localDateString(d);
+      }
+      if (mode === 'last_90') {
+        const d = new Date(now);
+        d.setDate(d.getDate() - 90);
+        return pDate >= localDateString(d);
+      }
+      if (mode === 'this_year') {
+        const yr = String(now.getFullYear());
+        return pDate.startsWith(yr);
+      }
+      if (mode === 'month') {
+        if (!monthVal) return true;
+        return pDate.startsWith(monthVal);
+      }
+      if (mode === 'range') {
+        if (startDate && pDate < startDate) return false;
+        if (endDate && pDate > endDate) return false;
+        return true;
+      }
+      return true;
+    }
+
+    function getComparisonPeriodLabel(mode, monthVal, startDate, endDate) {
+      switch (mode) {
+        case 'all': return 'All Time';
+        case 'this_month': return 'This Month';
+        case 'last_month': return 'Last Month';
+        case 'last_7': return 'Last 7 Days';
+        case 'last_30': return 'Last 30 Days';
+        case 'last_90': return 'Last 90 Days';
+        case 'this_year': return 'This Year';
+        case 'month': return monthVal ? ('Month ' + monthVal) : 'Selected Month';
+        case 'range': return (startDate && endDate) ? (startDate + ' to ' + endDate) : 'Custom Range';
+        default: return 'Selected Period';
+      }
+    }
+
+    window.handleComparisonTimeframeChange = function(value) {
+      state.comparisonTimeframe = value;
+      const monthContainer = document.getElementById('comparison-month-container');
+      const rangeContainer = document.getElementById('comparison-range-container');
+      if (monthContainer) {
+        monthContainer.classList.toggle('hidden', value !== 'month');
+        monthContainer.classList.toggle('flex', value === 'month');
+      }
+      if (rangeContainer) {
+        rangeContainer.classList.toggle('hidden', value !== 'range');
+        rangeContainer.classList.toggle('flex', value === 'range');
+      }
+      window.renderComparison();
+    };
+
+    window.toggleComparisonSelectAll = function(selectAll) {
+      if (selectAll) {
+        state.comparisonAccountIds = state.accounts.map(acc => String(acc.id));
+      } else {
+        state.comparisonAccountIds = [];
+      }
+      window.renderComparison();
+    };
+
+    window.setComparisonDisplayView = function(view) {
+      state.comparisonDisplayView = view;
+      const cardsBtn = document.getElementById('comparison-view-cards-btn');
+      const chartBtn = document.getElementById('comparison-view-chart-btn');
+      const cardsContainer = document.getElementById('comparison-bubbles-cards-container');
+      const chartContainer = document.getElementById('comparison-bubbles-chart-container');
+      if (cardsBtn && chartBtn && cardsContainer && chartContainer) {
+        if (view === 'chart') {
+          chartBtn.className = 'px-3 py-1 rounded-lg font-medium transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+          cardsBtn.className = 'px-3 py-1 rounded-lg font-medium transition-all text-slate-400 hover:text-white';
+          cardsContainer.classList.add('hidden');
+          chartContainer.classList.remove('hidden');
+          window.renderComparison();
+        } else {
+          cardsBtn.className = 'px-3 py-1 rounded-lg font-medium transition-all bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+          chartBtn.className = 'px-3 py-1 rounded-lg font-medium transition-all text-slate-400 hover:text-white';
+          cardsContainer.classList.remove('hidden');
+          chartContainer.classList.add('hidden');
+        }
+      }
+    };
+
+    function renderComparisonBubbleChart(accountMetrics, totalViews, totalEngagement) {
+      const canvas = document.getElementById('comparisonBubbleChart');
+      const emptyEl = document.getElementById('comparison-bubble-chart-empty');
+      if (!canvas) return;
+
+      const activeMetrics = (accountMetrics || []).filter(item => item.impressions > 0 || item.engagement > 0 || item.posts.length > 0);
+      if (!activeMetrics.length) {
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        if (comparisonBubbleChartInstance) {
+          comparisonBubbleChartInstance.destroy();
+          comparisonBubbleChartInstance = null;
+        }
+        return;
+      }
+      if (emptyEl) emptyEl.classList.add('hidden');
+
+      const ctx = canvas.getContext('2d');
+      if (comparisonBubbleChartInstance) {
+        comparisonBubbleChartInstance.destroy();
+      }
+
+      const maxViews = Math.max(...activeMetrics.map(m => m.impressions), 1);
+
+      const datasets = activeMetrics.map(item => {
+        const color = /^#[0-9a-f]{6}$/i.test(item.account.color || '') ? item.account.color : '#0ea5e9';
+        const r = Math.max(10, Math.min(36, Math.round(12 + (item.impressions / maxViews) * 24)));
+        return {
+          label: item.account.name,
+          data: [{
+            x: item.impressions,
+            y: item.engagement,
+            r: r,
+            accountName: item.account.name,
+            niche: item.account.niche || '',
+            postsCount: item.posts.length,
+            er: item.er.toFixed(1)
+          }],
+          backgroundColor: color + 'bf',
+          borderColor: color,
+          borderWidth: 2,
+          hoverBorderWidth: 3
+        };
+      });
+
+      comparisonBubbleChartInstance = new Chart(ctx, {
+        type: 'bubble',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500,
+            easing: 'easeOutQuart'
+          },
+          plugins: {
+            legend: {
+              display: activeMetrics.length <= 8,
+              position: 'top',
+              labels: { color: '#94a3b8', boxWidth: 10, font: { size: 10 } }
+            },
+            tooltip: {
+              backgroundColor: '#0f172a',
+              borderColor: '#334155',
+              borderWidth: 1,
+              titleColor: '#f8fafc',
+              bodyColor: '#cbd5e1',
+              padding: 10,
+              callbacks: {
+                title: (items) => items[0]?.raw?.accountName || 'Account',
+                label: (context) => {
+                  const d = context.raw;
+                  return [
+                    'Views: ' + Number(d.x).toLocaleString(),
+                    'Engagement: ' + Number(d.y).toLocaleString() + ' (' + d.er + '% ER)',
+                    'Posts: ' + d.postsCount
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Total Views (Impressions)', color: '#64748b', font: { size: 10 } },
+              ticks: { color: '#64748b', font: { size: 9 }, callback: val => Number(val).toLocaleString() },
+              grid: { color: '#1e293b' },
+              beginAtZero: true
+            },
+            y: {
+              title: { display: true, text: 'Total Engagement', color: '#64748b', font: { size: 10 } },
+              ticks: { color: '#64748b', font: { size: 9 }, callback: val => Number(val).toLocaleString() },
+              grid: { color: '#1e293b' },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
     window.renderComparison = function() {
+      const timeframeSelect = document.getElementById('comparison-timeframe');
+      const platformSelect = document.getElementById('comparison-platform');
       const monthInput = document.getElementById('comparison-month');
+      const startInput = document.getElementById('comparison-start-date');
+      const endInput = document.getElementById('comparison-end-date');
       const filters = document.getElementById('comparison-account-filters');
-      const tbody = document.getElementById('comparison-table-body');
-      if (!monthInput || !filters || !tbody) return;
-      if (!monthInput.value) monthInput.value = localDateString(new Date()).slice(0, 7);
+      const cardsContainer = document.getElementById('comparison-bubbles-cards-container');
 
+      if (!filters || !cardsContainer) return;
+
+      const now = new Date();
+      if (monthInput && !monthInput.value) {
+        monthInput.value = localDateString(now).slice(0, 7);
+      }
+      if (startInput && !startInput.value) {
+        startInput.value = localDateString(new Date(now.getFullYear(), now.getMonth(), 1));
+      }
+      if (endInput && !endInput.value) {
+        endInput.value = localDateString(now);
+      }
+
+      const allAccounts = state.accounts || [];
       const selectedIds = state.comparisonAccountIds;
-      filters.innerHTML = state.accounts.map(account => {
-        const id = String(account.id);
-        const checked = selectedIds === null || selectedIds.includes(id);
-        return `<label class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300 cursor-pointer">
-          <input type="checkbox" value="${escapeReportHtml(id)}" ${checked ? 'checked' : ''} onchange="window.updateComparisonSelection()" class="rounded bg-slate-800 border-slate-700 text-cyan-500">
-          ${escapeReportHtml(account.name)}
-        </label>`;
-      }).join('');
 
-      const platform = document.getElementById('comparison-platform').value;
-      const month = monthInput.value;
-      const accounts = state.accounts.filter(account =>
-        (selectedIds === null || selectedIds.includes(String(account.id)))
-      ).map(account => {
+      // Render account filter pills
+      if (allAccounts.length === 0) {
+        filters.innerHTML = '<span class="text-xs text-slate-500">No accounts created yet.</span>';
+      } else {
+        filters.innerHTML = allAccounts.map(account => {
+          const id = String(account.id);
+          const checked = selectedIds === null || selectedIds.includes(id);
+          const color = /^#[0-9a-f]{6}$/i.test(account.color || '') ? account.color : '#0ea5e9';
+          return `<label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border cursor-pointer text-xs transition-all select-none ${checked ? 'bg-cyan-500/10 border-cyan-500/40 text-white shadow-sm shadow-cyan-950/20' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'}">
+            <input type="checkbox" value="${escapeReportHtml(id)}" ${checked ? 'checked' : ''} onchange="window.updateComparisonSelection()" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color}"></span>
+            <span class="font-medium truncate max-w-[120px] sm:max-w-none">${escapeReportHtml(account.name)}</span>
+          </label>`;
+        }).join('');
+      }
+
+      const timeframe = timeframeSelect ? timeframeSelect.value : (state.comparisonTimeframe || 'this_month');
+      const platform = platformSelect ? platformSelect.value : 'all';
+      const monthVal = monthInput ? monthInput.value : '';
+      const startVal = startInput ? startInput.value : '';
+      const endVal = endInput ? endInput.value : '';
+
+      // Filter accounts based on selection
+      const selectedAccounts = allAccounts.filter(account =>
+        selectedIds === null || selectedIds.includes(String(account.id))
+      );
+
+      // Compute metrics per selected account
+      const accountMetrics = selectedAccounts.map(account => {
         const posts = state.posts.filter(post =>
           String(post.account_id) === String(account.id) &&
           isUploadedContent(post) &&
-          String(post.post_date || '').startsWith(month) &&
-          (platform === 'all' || post.platform === platform)
+          (platform === 'all' || post.platform === platform) &&
+          isPostInComparisonPeriod(post, timeframe, monthVal, startVal, endVal)
         );
         const total = key => posts.reduce((sum, post) => sum + (Number(post[key]) || 0), 0);
-        return { account, posts, impressions: total('impressions'), reach: total('reach'),
-          engagement: total('likes') + total('comments') + total('shares') + total('saves') };
+        const impressions = total('impressions');
+        const reach = total('reach');
+        const engagement = total('likes') + total('comments') + total('shares') + total('saves');
+        const er = reach > 0 ? (engagement / reach) * 100 : (impressions > 0 ? (engagement / impressions) * 100 : 0);
+        return {
+          account,
+          posts,
+          impressions,
+          reach,
+          engagement,
+          er
+        };
       }).sort((a, b) => b.impressions - a.impressions || a.account.name.localeCompare(b.account.name));
 
-      if (!accounts.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-3 py-5 text-center text-slate-500">${state.accounts.length ? 'Select at least one account to compare.' : 'Add an account to start comparing performance.'}</td></tr>`;
-        return;
+      // Calculate aggregated totals
+      const totalAccountsCount = selectedAccounts.length;
+      const totalViews = accountMetrics.reduce((sum, item) => sum + item.impressions, 0);
+      const totalEngagement = accountMetrics.reduce((sum, item) => sum + item.engagement, 0);
+      const totalReach = accountMetrics.reduce((sum, item) => sum + item.reach, 0);
+      const overallEr = totalReach > 0 ? (totalEngagement / totalReach) * 100 : (totalViews > 0 ? (totalEngagement / totalViews) * 100 : 0);
+
+      // Period and platform labels
+      const periodLabel = getComparisonPeriodLabel(timeframe, monthVal, startVal, endVal);
+      const platformLabel = platform === 'all' ? 'All Platforms' : (platform.charAt(0).toUpperCase() + platform.slice(1));
+
+      // Populate Hero Summary Bubbles
+      const accountsCountEl = document.getElementById('bubble-accounts-val');
+      const accountsSubEl = document.getElementById('bubble-accounts-sub');
+      const viewsCountEl = document.getElementById('bubble-views-val');
+      const viewsSubEl = document.getElementById('bubble-views-sub');
+      const engagementCountEl = document.getElementById('bubble-engagement-val');
+      const engagementSubEl = document.getElementById('bubble-engagement-sub');
+      const engagementRateEl = document.getElementById('bubble-engagement-rate-badge');
+
+      if (accountsCountEl) animateMetricValue(accountsCountEl, totalAccountsCount);
+      if (accountsSubEl) {
+        accountsSubEl.textContent = totalAccountsCount === 0
+          ? '0 accounts selected'
+          : `${totalAccountsCount} of ${allAccounts.length} account${allAccounts.length === 1 ? '' : 's'} selected`;
       }
-      tbody.innerHTML = accounts.map(({ account, posts, impressions, reach, engagement }, index) => `
-        <tr>
-          <td class="px-3 py-2.5"><span class="mr-2 text-slate-500">${index + 1}.</span><span class="font-medium text-white">${escapeReportHtml(account.name)}</span></td>
-          <td class="px-3 py-2.5 text-right">${posts.length.toLocaleString()}</td>
-          <td class="px-3 py-2.5 text-right font-semibold text-cyan-300">${impressions.toLocaleString()}</td>
-          <td class="px-3 py-2.5 text-right">${reach.toLocaleString()}</td>
-          <td class="px-3 py-2.5 text-right">${engagement.toLocaleString()}</td>
-        </tr>`).join('');
+
+      if (viewsCountEl) animateMetricValue(viewsCountEl, totalViews);
+      if (viewsSubEl) {
+        viewsSubEl.textContent = `Impressions across ${totalAccountsCount} account${totalAccountsCount === 1 ? '' : 's'} • ${periodLabel}`;
+      }
+
+      if (engagementCountEl) animateMetricValue(engagementCountEl, totalEngagement);
+      if (engagementSubEl) {
+        engagementSubEl.textContent = `Likes, comments, shares & saves (${platformLabel})`;
+      }
+      if (engagementRateEl) {
+        engagementRateEl.textContent = `${overallEr.toFixed(1)}% ER`;
+      }
+
+      // Populate Account Comparison Bubbles Cards
+      if (!selectedAccounts.length) {
+        cardsContainer.innerHTML = `
+          <div class="col-span-full text-center py-8 px-4 rounded-2xl border border-dashed border-slate-800 text-slate-500 text-xs space-y-1">
+            <i data-lucide="users" class="w-6 h-6 mx-auto mb-1 text-slate-600"></i>
+            <p class="font-medium text-slate-400">No accounts selected</p>
+            <p>Select one or more accounts from the filters above to view performance bubbles.</p>
+          </div>
+        `;
+      } else {
+        cardsContainer.innerHTML = accountMetrics.map(({ account, posts, impressions, reach, engagement, er }) => {
+          const accountColor = /^#[0-9a-f]{6}$/i.test(account.color || '') ? account.color : '#0ea5e9';
+          const viewsShare = totalViews > 0 ? Math.min(100, Math.round((impressions / totalViews) * 100)) : 0;
+          const engagementShare = totalEngagement > 0 ? Math.min(100, Math.round((engagement / totalEngagement) * 100)) : 0;
+
+          return `
+            <div class="comparison-bubble-card glass-panel p-4 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all space-y-3 group">
+              <!-- Account Header -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="relative w-9 h-9 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-sm shrink-0" style="background-color: ${accountColor}">
+                    <span data-account-avatar-fallback class="absolute">${escapeReportHtml((account.name || '?').charAt(0).toUpperCase())}</span>
+                    <img data-account-avatar class="hidden absolute inset-0 h-full w-full object-cover" alt="${escapeReportHtml(account.name || 'Account')}">
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="text-xs sm:text-sm font-bold text-white truncate group-hover:text-cyan-400 transition-colors">${escapeReportHtml(account.name)}</h4>
+                    <p class="text-[10px] text-slate-400 truncate">${escapeReportHtml(account.niche || 'General')}</p>
+                  </div>
+                </div>
+                <button type="button" onclick="window.openAccountWorkspace('${escapeReportHtml(account.id)}')" title="Open account workspace" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-cyan-400 hover:bg-slate-700 transition-colors shrink-0">
+                  <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- Bubbles Grid for this Account -->
+              <div class="grid grid-cols-2 gap-2">
+                <!-- Views Bubble -->
+                <div class="p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 space-y-1">
+                  <div class="flex items-center justify-between text-[10px] text-cyan-400 font-semibold uppercase tracking-wider">
+                    <span class="flex items-center gap-1">
+                      <i data-lucide="eye" class="w-3 h-3"></i>
+                      Views
+                    </span>
+                    <span class="text-[9px] text-cyan-300/80">${viewsShare}%</span>
+                  </div>
+                  <div class="text-sm sm:text-base font-bold text-white">${impressions.toLocaleString()}</div>
+                  <div class="w-full bg-slate-800/80 rounded-full h-1 overflow-hidden">
+                    <div class="bg-cyan-400 h-full rounded-full transition-all duration-500" style="width: ${viewsShare}%"></div>
+                  </div>
+                </div>
+
+                <!-- Engagement Bubble -->
+                <div class="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20 space-y-1">
+                  <div class="flex items-center justify-between text-[10px] text-purple-400 font-semibold uppercase tracking-wider">
+                    <span class="flex items-center gap-1">
+                      <i data-lucide="sparkles" class="w-3 h-3"></i>
+                      Engage
+                    </span>
+                    <span class="text-[9px] text-purple-300/80">${er.toFixed(1)}% ER</span>
+                  </div>
+                  <div class="text-sm sm:text-base font-bold text-white">${engagement.toLocaleString()}</div>
+                  <div class="w-full bg-slate-800/80 rounded-full h-1 overflow-hidden">
+                    <div class="bg-purple-400 h-full rounded-full transition-all duration-500" style="width: ${engagementShare}%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Stats: Posts & Reach -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px] text-slate-400">
+                <span class="flex items-center gap-1">
+                  <i data-lucide="file-text" class="w-3 h-3 text-slate-500"></i>
+                  <b>${posts.length}</b> post${posts.length === 1 ? '' : 's'}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i data-lucide="users" class="w-3 h-3 text-slate-500"></i>
+                  <b>${reach.toLocaleString()}</b> reach
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Load account avatars
+        cardsContainer.querySelectorAll('.comparison-bubble-card').forEach((card, index) => {
+          const acc = accountMetrics[index]?.account;
+          if (!acc) return;
+          const avatar = card.querySelector('[data-account-avatar]');
+          const fallback = card.querySelector('[data-account-avatar-fallback]');
+          if (avatar && fallback) loadAccountProfilePicture(avatar, fallback, acc);
+        });
+      }
+
+      // Update Chart if currently on chart view
+      if (state.comparisonDisplayView === 'chart') {
+        renderComparisonBubbleChart(accountMetrics, totalViews, totalEngagement);
+      }
+
+      lucide.createIcons();
     };
 
     window.updateComparisonSelection = function() {
