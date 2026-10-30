@@ -1661,13 +1661,13 @@
       @keyframes cursor-glow {
         0%, 100% {
           box-shadow: 
-            0 0 20px rgba(14, 165, 233, 0.6),
-            inset 0 0 10px rgba(14, 165, 233, 0.3);
+            0 0 28px rgba(168, 85, 247, 0.7),
+            inset 0 0 14px rgba(168, 85, 247, 0.4);
         }
         50% {
           box-shadow: 
-            0 0 30px rgba(14, 165, 233, 0.8),
-            inset 0 0 15px rgba(14, 165, 233, 0.5);
+            0 0 40px rgba(168, 85, 247, 0.9),
+            inset 0 0 20px rgba(168, 85, 247, 0.6);
         }
       }
 
@@ -1692,9 +1692,9 @@
     .cursor-trail {
       position: fixed;
       pointer-events: none;
-      width: 8px;
-      height: 8px;
-      background: radial-gradient(circle, rgba(14, 165, 233, 0.8), rgba(14, 165, 233, 0.2));
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.9), rgba(168, 85, 247, 0.2));
       border-radius: 50%;
       transform: translate(-50%, -50%);
       animation: trail-fade 0.8s forwards;
@@ -1712,14 +1712,14 @@
     .cursor-click {
       position: fixed;
       pointer-events: none;
-      width: 40px;
-      height: 40px;
-      border: 2px solid rgba(14, 165, 233, 0.8);
+      width: 50px;
+      height: 50px;
+      border: 2.5px solid rgba(168, 85, 247, 0.9);
       border-radius: 50%;
       transform: translate(-50%, -50%) scale(1);
       animation: click-burst 0.5s ease-out forwards;
       z-index: 99996;
-      box-shadow: 0 0 20px rgba(14, 165, 233, 0.6);
+      box-shadow: 0 0 28px rgba(168, 85, 247, 0.8);
     }
 
     @keyframes click-burst {
@@ -1737,23 +1737,23 @@
     .cursor-hover {
       position: fixed;
       pointer-events: none;
-      width: 36px;
-      height: 36px;
-      background: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.4), transparent);
-      border: 2px solid rgba(14, 165, 233, 0.8);
+      width: 44px;
+      height: 44px;
+      background: radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.5), transparent);
+      border: 2.5px solid rgba(168, 85, 247, 0.9);
       border-radius: 50%;
       transform: translate(-50%, -50%);
       z-index: 99998;
       animation: hover-pulse 1s ease-in-out infinite;
-      box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+      box-shadow: 0 0 36px rgba(168, 85, 247, 0.6);
     }
 
     @keyframes hover-pulse {
       0%, 100% {
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        box-shadow: 0 0 28px rgba(168, 85, 247, 0.5);
       }
       50% {
-        box-shadow: 0 0 35px rgba(14, 165, 233, 0.7);
+        box-shadow: 0 0 44px rgba(168, 85, 247, 0.8);
       }
     }
   </style>
@@ -1812,9 +1812,9 @@
   </header>
 
   <!-- Custom Cursor Element - Desktop Only -->
-  <div id="custom-cursor" style="display: none; position: fixed; pointer-events: none; z-index: 99999; width: 24px; height: 24px; left: 0; top: 0;">
-    <div style="position: absolute; width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 1), rgba(14, 165, 233, 0.4)); border: 2px solid rgba(14, 165, 233, 0.6); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px rgba(14, 165, 233, 0.6), inset 0 0 10px rgba(14, 165, 233, 0.3); animation: cursor-glow 2s ease-in-out infinite;"></div>
-    <div style="position: absolute; width: 32px; height: 32px; border: 1.5px solid rgba(14, 165, 233, 0.3); border-radius: 50%; transform: translate(-50%, -50%) translate(4px, 4px); animation: cursor-ring 3s linear infinite; left: 12px; top: 12px;"></div>
+  <div id="custom-cursor" style="display: none; position: fixed; pointer-events: none; z-index: 99999; width: 32px; height: 32px; left: 0; top: 0;">
+    <div style="position: absolute; width: 32px; height: 32px; background: radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 1), rgba(168, 85, 247, 0.4)); border: 2px solid rgba(168, 85, 247, 0.7); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 28px rgba(168, 85, 247, 0.7), inset 0 0 14px rgba(168, 85, 247, 0.4); animation: cursor-glow 2s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 44px; height: 44px; border: 2px solid rgba(168, 85, 247, 0.4); border-radius: 50%; transform: translate(-50%, -50%) translate(4px, 4px); animation: cursor-ring 3s linear infinite; left: 16px; top: 16px;"></div>
   </div>
 
   <!-- MAIN VIEW CONTAINER -->
