@@ -3968,6 +3968,11 @@
     window.savePost = async function(e) {
       e.preventDefault();
       if (!canEditActiveVault()) return;
+      
+      // Debug: Log what hashtags/subjects we're about to save
+      console.log('SAVING POST - Current hashtags:', hashtags, 'Current subjects:', subjects);
+      console.log('getHashtagsString():', window.getHashtagsString());
+      console.log('getSubjectsString():', window.getSubjectsString());
       const existingId = document.getElementById('post-id').value;
       const postId = existingId || ('p-' + Date.now());
       const existingPost = state.posts.find(post => String(post.id) === String(postId));
