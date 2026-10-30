@@ -400,21 +400,20 @@
     #bubble-accounts,
     #bubble-views,
     #bubble-engagement {
-      background: rgba(15, 23, 42, 0.78) !important;
       backdrop-filter: blur(14px);
       box-shadow: 0 12px 32px rgba(2, 6, 23, 0.12);
     }
 
     #bubble-accounts {
-      border-color: rgba(34, 211, 238, 0.24) !important;
+      border-color: rgba(102, 126, 234, 0.4) !important;
     }
 
     #bubble-views {
-      border-color: rgba(34, 211, 238, 0.24) !important;
+      border-color: rgba(245, 87, 108, 0.4) !important;
     }
 
     #bubble-engagement {
-      border-color: rgba(168, 85, 247, 0.24) !important;
+      border-color: rgba(79, 172, 254, 0.4) !important;
     }
     .text-slate-500 {
       color: #8b9ab0 !important;
@@ -1449,47 +1448,47 @@
       <!-- SUMMARY BUBBLES: TOTAL ACCOUNTS, VIEWS, ENGAGEMENT -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
         <!-- Total Accounts Bubble -->
-        <div id="bubble-accounts" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-md" style="background: linear-gradient(135deg, #e0f2fe, #cffafe); border-color: #0284c7;">
+        <div id="bubble-accounts" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: rgba(255,255,255,0.2);">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #0369a1;">
+            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
               <i data-lucide="layers" class="w-4 h-4"></i>
               Total Accounts
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #0369a1;"></span>
+            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
           </div>
           <div>
-            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #0c4a6e;">0</div>
-            <p class="text-[10px] mt-1" style="color: #0d47a1;">Accounts in this vault</p>
+            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
+            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Accounts in this vault</p>
           </div>
         </div>
 
         <!-- Total Views Bubble -->
-        <div id="bubble-views" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-md" style="background: linear-gradient(135deg, #ecf0ff, #dbeafe); border-color: #0284c7;">
+        <div id="bubble-views" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-color: rgba(255,255,255,0.2);">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #0369a1;">
+            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
               <i data-lucide="eye" class="w-4 h-4"></i>
               Total Views
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #0369a1;"></span>
+            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
           </div>
           <div>
-            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #0c4a6e;">0</div>
-            <p class="text-[10px] mt-1" style="color: #0d47a1;">Impressions all accounts</p>
+            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
+            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Impressions all accounts</p>
           </div>
         </div>
 
         <!-- Total Engagement Bubble -->
-        <div id="bubble-engagement" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-md" style="background: linear-gradient(135deg, #f3e8ff, #fce7f3); border-color: #9333ea;">
+        <div id="bubble-engagement" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-color: rgba(255,255,255,0.2);">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #6d28d9;">
+            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
               Total Engagement
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #6d28d9;"></span>
+            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
           </div>
           <div>
-            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #581c87;">0</div>
-            <p class="text-[10px] mt-1" style="color: #581c87;">Likes, comments, shares & saves</p>
+            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
+            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Likes, comments, shares & saves</p>
           </div>
         </div>
       </div>
