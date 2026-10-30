@@ -1425,7 +1425,55 @@
         </div>
       </div>
 
-<div id="hub-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
+      <!-- SUMMARY BUBBLES: TOTAL ACCOUNTS, VIEWS, ENGAGEMENT -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+        <!-- Total Accounts Bubble -->
+        <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-sky-500/25 space-y-3 hover:border-sky-500/40 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+              Total Accounts
+            </span>
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+          </div>
+          <div>
+            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Accounts in this vault</p>
+          </div>
+        </div>
+
+        <!-- Total Views Bubble -->
+        <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-cyan-500/25 space-y-3 hover:border-cyan-500/40 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+              Total Views
+            </span>
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          </div>
+          <div>
+            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Impressions all accounts</p>
+          </div>
+        </div>
+
+        <!-- Total Engagement Bubble -->
+        <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-purple-500/25 space-y-3 hover:border-purple-500/40 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              Total Engagement
+            </span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+          </div>
+          <div>
+            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Likes, comments, shares & saves</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="hub-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
       <div id="accounts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6"></div>
     </section>
 
@@ -5473,6 +5521,23 @@
     function renderHub() {
       renderComparison();
       renderDataStatus('hub-data-status');
+      
+      // Calculate and render summary bubbles
+      const totalAccounts = state.accounts.length;
+      let totalImpressions = 0;
+      let totalEngagement = 0;
+      
+      state.accounts.forEach(acc => {
+        const accPosts = state.posts.filter(p => p.account_id === acc.id && isUploadedContent(p));
+        totalImpressions += accPosts.reduce((sum, p) => sum + (Number(p.impressions) || 0), 0);
+        totalEngagement += accPosts.reduce((sum, p) => 
+          sum + (Number(p.likes) || 0) + (Number(p.comments) || 0) + (Number(p.shares) || 0) + (Number(p.saves) || 0), 0);
+      });
+      
+      document.getElementById('hub-total-accounts').textContent = totalAccounts.toLocaleString();
+      document.getElementById('hub-total-views').textContent = totalImpressions.toLocaleString();
+      document.getElementById('hub-total-engagement').textContent = totalEngagement.toLocaleString();
+      
       const grid = document.getElementById('accounts-grid');
       grid.innerHTML = '';
 
