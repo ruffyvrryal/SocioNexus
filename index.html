@@ -403,8 +403,14 @@
     #hashtag-subjects-section.unlocked {
       max-height: 500px;
       opacity: 1;
-      pointer-events: auto;
+      pointer-events: auto !important;
       animation: section-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    
+    /* Ensure inputs in unlocked section are interactive */
+    #hashtag-subjects-section.unlocked input,
+    #hashtag-subjects-section.unlocked * {
+      pointer-events: auto !important;
     }
 
     @keyframes section-reveal {
@@ -6232,13 +6238,17 @@
       const section = document.getElementById('hashtag-subjects-section');
       const btn = document.getElementById('modal-secret-unlock-btn');
       
+      console.log('Toggling unlock. Before:', section.classList.contains('unlocked'));
       section.classList.toggle('unlocked');
       btn.classList.toggle('unlocked');
+      console.log('After toggle:', section.classList.contains('unlocked'), 'Classes:', section.className);
       
       // Focus on hashtag input when unlocked
       if (section.classList.contains('unlocked')) {
         setTimeout(() => {
-          document.getElementById('hashtag-input').focus();
+          const input = document.getElementById('hashtag-input');
+          console.log('Focusing hashtag input:', input);
+          input.focus();
         }, 300);
       }
     };
