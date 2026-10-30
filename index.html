@@ -6525,6 +6525,34 @@
       }
     };
 
+    // Helper function to get hashtags and subjects analytics for an account
+    function getAccountHashtagsSubjectsAnalytics(posts) {
+      const hashtags = {};
+      const subjects = {};
+
+      posts.forEach(post => {
+        if (post.hashtags) {
+          post.hashtags.split(',').forEach(tag => {
+            const cleanTag = tag.trim();
+            if (cleanTag) {
+              hashtags[cleanTag] = (hashtags[cleanTag] || 0) + 1;
+            }
+          });
+        }
+
+        if (post.subjects) {
+          post.subjects.split(',').forEach(subject => {
+            const cleanSubject = subject.trim();
+            if (cleanSubject) {
+              subjects[cleanSubject] = (subjects[cleanSubject] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      return { hashtags, subjects };
+    };
+
     // Apply shine effect to metric values on update
     window.updateMetricValue = function(element, newValue) {
       if (!element) return;
@@ -7162,6 +7190,9 @@
         const reach = accPosts.reduce((sum, p) => sum + (Number(p.reach) || 0), 0);
         const accountColor = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
 
+        // Check if account has hashtags or subjects data
+        const hasHashtagsOrSubjects = accPosts.some(p => (p.hashtags && p.hashtags.trim()) || (p.subjects && p.subjects.trim()));
+
         const card = document.createElement('div');
         card.className = "glass-panel p-4 sm:p-6 rounded-2xl border border-slate-700/40 hover:border-slate-700 transition-all cursor-pointer space-y-3 sm:space-y-4 group";
         card.onclick = () => window.openAccountWorkspace(acc.id);
@@ -7183,6 +7214,26 @@
             <div><span class="text-slate-500 block text-[10px]">Reach</span><span class="font-bold text-white">${reach.toLocaleString()}</span></div>
           </div>
         `;
+
+        // Add hashtags/subjects analytics if account has data
+        if (hasHashtagsOrSubjects) {
+          const hashtagsAnalytics = getAccountHashtagsSubjectsAnalytics(accPosts);
+          const hashtagCount = Object.keys(hashtagsAnalytics.hashtags).length;
+          const subjectCount = Object.keys(hashtagsAnalytics.subjects).length;
+          
+          const analyticsHTML = `
+            <div class="pt-2.5 sm:pt-3 border-t border-slate-800/80">
+              <p class="text-[10px] font-semibold text-slate-400 mb-2">Hashtags & Subjects</p>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                ${hashtagCount > 0 ? `<div><span class="text-slate-500 block text-[10px]">Hashtags</span><span class="font-bold text-cyan-400">${hashtagCount}</span></div>` : ''}
+                ${subjectCount > 0 ? `<div><span class="text-slate-500 block text-[10px]">Subjects</span><span class="font-bold text-purple-400">${subjectCount}</span></div>` : ''}
+              </div>
+            </div>
+          `;
+          
+          card.innerHTML += analyticsHTML;
+        }
+
         grid.appendChild(card);
         const avatar = card.querySelector('[data-account-avatar]');
         const fallback = card.querySelector('[data-account-avatar-fallback]');
