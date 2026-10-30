@@ -6365,6 +6365,11 @@
       const filteredPosts = getFilteredPosts();
       console.log('Analytics render called. Filtered posts:', filteredPosts.length, 'Posts with hashtags:', filteredPosts.filter(p => p.hashtags).length, 'Posts with subjects:', filteredPosts.filter(p => p.subjects).length);
       
+      // Debug: Log first few posts to see what data they contain
+      if (filteredPosts.length > 0) {
+        console.log('Sample post 1:', { hashtags: filteredPosts[0].hashtags, subjects: filteredPosts[0].subjects, title: filteredPosts[0].title });
+      }
+      
       // Extract all hashtags and subjects with their metrics
       const hashtagMap = {};
       const subjectMap = {};
