@@ -6267,7 +6267,12 @@
 
     window.handleHashtagInput = function(event) {
       console.log('Hashtag input event:', event.key, 'Current value:', event.target.value);
-      if (event.key === 'Enter') {
+      
+      // Check for Enter key - handle both keyCode and key
+      const isEnter = event.key === 'Enter' || event.keyCode === 13 || event.which === 13;
+      console.log('Is Enter?', isEnter, 'keyCode:', event.keyCode, 'which:', event.which);
+      
+      if (isEnter) {
         event.preventDefault();
         const input = event.target;
         let value = input.value.trim();
@@ -6291,7 +6296,12 @@
 
     window.handleSubjectInput = function(event) {
       console.log('Subject input event:', event.key, 'Current value:', event.target.value);
-      if (event.key === 'Enter') {
+      
+      // Check for Enter key - handle both keyCode and key
+      const isEnter = event.key === 'Enter' || event.keyCode === 13 || event.which === 13;
+      console.log('Is Enter?', isEnter, 'keyCode:', event.keyCode, 'which:', event.which);
+      
+      if (isEnter) {
         event.preventDefault();
         const input = event.target;
         const value = input.value.trim();
