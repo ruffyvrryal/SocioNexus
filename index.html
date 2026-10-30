@@ -3079,7 +3079,6 @@
                   id="hashtag-input" 
                   class="tag-input" 
                   placeholder="Type hashtag and press Enter... (e.g. #fitness)"
-                  onkeydown="window.handleHashtagInput(event)"
                 >
               </div>
               <p class="text-[10px] text-slate-500 mt-1">Max 30 hashtags. Separate with Enter.</p>
@@ -3094,7 +3093,6 @@
                   id="subject-input" 
                   class="tag-input" 
                   placeholder="Type subject and press Enter... (e.g. motivation)"
-                  onkeydown="window.handleSubjectInput(event)"
                 >
               </div>
               <p class="text-[10px] text-slate-500 mt-1">Track topics covered in this content. Separate with Enter.</p>
@@ -6249,8 +6247,22 @@
           const input = document.getElementById('hashtag-input');
           console.log('Focusing hashtag input:', input);
           input.focus();
+          
+          // Attach event listeners
+          input.addEventListener('keydown', window.handleHashtagInputEvent);
+          document.getElementById('subject-input').addEventListener('keydown', window.handleSubjectInputEvent);
         }, 300);
       }
+    };
+    
+    window.handleHashtagInputEvent = function(event) {
+      console.log('Hashtag keydown event:', event.key, 'Value:', event.target.value);
+      window.handleHashtagInput(event);
+    };
+    
+    window.handleSubjectInputEvent = function(event) {
+      console.log('Subject keydown event:', event.key, 'Value:', event.target.value);
+      window.handleSubjectInput(event);
     };
 
     window.handleHashtagInput = function(event) {
