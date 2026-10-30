@@ -75,6 +75,13 @@ begin
   end if;
 end;
 $$;
+
+-- Add hashtags and subjects columns for hashtag/subject analytics
+alter table public.content_posts
+  add column if not exists hashtags text not null default '';
+alter table public.content_posts
+  add column if not exists subjects text not null default '';
+
 alter table public.accounts
   add column if not exists vault_id uuid references public.vaults(id) on delete cascade;
 alter table public.accounts
