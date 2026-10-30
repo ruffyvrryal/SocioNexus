@@ -2754,7 +2754,7 @@
             <i data-lucide="inbox" class="w-8 h-8 text-slate-500"></i>
             <div>
               <p class="text-xs font-semibold text-slate-300">No hashtags or subjects logged</p>
-              <p class="text-[10px] text-slate-500 mt-1">Add hashtags or subjects to your content to see performance analytics here.</p>
+              <p class="text-[10px] text-slate-500 mt-1">Add hashtags or subjects to your content using the "Add Content" form to see performance analytics here.</p>
             </div>
           </div>
         </div>
@@ -6357,9 +6357,13 @@
       const grid = document.getElementById('hashtags-subjects-grid');
       const empty = document.getElementById('hashtags-subjects-empty');
       
-      if (!section || !grid || !empty) return;
+      if (!section || !grid || !empty) {
+        console.error('Analytics section elements not found!');
+        return;
+      }
 
       const filteredPosts = getFilteredPosts();
+      console.log('Analytics render called. Filtered posts:', filteredPosts.length, 'Posts with hashtags:', filteredPosts.filter(p => p.hashtags).length, 'Posts with subjects:', filteredPosts.filter(p => p.subjects).length);
       
       // Extract all hashtags and subjects with their metrics
       const hashtagMap = {};
