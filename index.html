@@ -181,38 +181,10 @@
     }
 
     html.light-mode .metric-card-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      color: #ffffff !important;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2) !important;
-    }
-
-    html.light-mode .metric-card:not(.metric-card-primary):not(.metric-card-secondary) {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      color: #ffffff !important;
-      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.2) !important;
-    }
-
-    html.light-mode .metric-card-secondary {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      color: #ffffff !important;
-      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.2) !important;
-    }
-
-    html.light-mode .metric-card-value {
-      color: #ffffff !important;
-    }
-
-    html.light-mode .metric-card span,
-    html.light-mode .metric-card-primary span,
-    html.light-mode .metric-card-secondary span {
-      color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    html.light-mode .text-slate-400 {
-      color: #64748b !important;
+      background: linear-gradient(135deg, #ecf8ff, #f0f9ff);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      color: #0369a1;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.1);
     }
 
     html.light-mode .metric-card::before {
@@ -433,15 +405,15 @@
     }
 
     #bubble-accounts {
-      border-color: rgba(102, 126, 234, 0.4) !important;
+      border-color: rgba(34, 211, 238, 0.24) !important;
     }
 
     #bubble-views {
-      border-color: rgba(245, 87, 108, 0.4) !important;
+      border-color: rgba(34, 211, 238, 0.24) !important;
     }
 
     #bubble-engagement {
-      border-color: rgba(79, 172, 254, 0.4) !important;
+      border-color: rgba(168, 85, 247, 0.24) !important;
     }
     .text-slate-500 {
       color: #8b9ab0 !important;
@@ -668,19 +640,15 @@
       overflow: hidden;
       border-color: rgba(71, 85, 105, 0.42);
       transition: transform 180ms ease-out, border-color 180ms ease-out, box-shadow 180ms ease-out;
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      box-shadow: 0 8px 20px rgba(245, 87, 108, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.72));
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.08);
     }
     .metric-card-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2) !important;
+      background: linear-gradient(135deg, rgba(8, 47, 73, 0.82), rgba(15, 23, 42, 0.9) 72%);
+      border-color: rgba(34, 211, 238, 0.24);
     }
     .metric-card-secondary {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.2) !important;
+      background: linear-gradient(135deg, rgba(46, 16, 101, 0.35), rgba(15, 23, 42, 0.9) 72%);
     }
     .metric-card::before {
       content: "";
@@ -1480,47 +1448,47 @@
       <!-- SUMMARY BUBBLES: TOTAL ACCOUNTS, VIEWS, ENGAGEMENT -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
         <!-- Total Accounts Bubble -->
-        <div id="bubble-accounts" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: rgba(255,255,255,0.2);">
+        <div id="bubble-accounts" class="glass-panel p-4 sm:p-5 rounded-2xl border border-sky-500/25 space-y-3 hover:border-sky-500/40 transition-all">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
               <i data-lucide="layers" class="w-4 h-4"></i>
               Total Accounts
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
-            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Accounts in this vault</p>
+            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Accounts in this vault</p>
           </div>
         </div>
 
         <!-- Total Views Bubble -->
-        <div id="bubble-views" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-color: rgba(255,255,255,0.2);">
+        <div id="bubble-views" class="glass-panel p-4 sm:p-5 rounded-2xl border border-cyan-500/25 space-y-3 hover:border-cyan-500/40 transition-all">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
               <i data-lucide="eye" class="w-4 h-4"></i>
               Total Views
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
-            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Impressions all accounts</p>
+            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Impressions all accounts</p>
           </div>
         </div>
 
         <!-- Total Engagement Bubble -->
-        <div id="bubble-engagement" class="p-4 sm:p-5 rounded-2xl border space-y-3 transition-all shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-color: rgba(255,255,255,0.2);">
+        <div id="bubble-engagement" class="glass-panel p-4 sm:p-5 rounded-2xl border border-purple-500/25 space-y-3 hover:border-purple-500/40 transition-all">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: #ffffff;">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
               Total Engagement
             </span>
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #ffffff;"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #ffffff;">0</div>
-            <p class="text-[10px] mt-1" style="color: rgba(255,255,255,0.85);">Likes, comments, shares & saves</p>
+            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Likes, comments, shares & saves</p>
           </div>
         </div>
       </div>
