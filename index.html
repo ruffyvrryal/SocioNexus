@@ -1612,71 +1612,99 @@
 
     /* ========== CUSTOM CURSOR SYSTEM ========== */
 
-    /* Custom Cursor Base */
+    /* Hide default cursor everywhere */
     * {
-      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3" fill="%230ea5e9" opacity="0.8"/><circle cx="8" cy="8" r="6" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.4"/></svg>') 8 8, auto;
+      cursor: none !important;
     }
 
     body {
-      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3" fill="%230ea5e9" opacity="0.8"/><circle cx="8" cy="8" r="6" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.4"/></svg>') 8 8, auto;
+      cursor: none !important;
     }
 
-    /* Interactive Elements - Pointer */
-    a,
-    button,
-    [role="button"],
-    [role="link"],
-    input[type="submit"],
-    input[type="button"],
-    [onclick],
-    select,
-    textarea,
-    input[type="text"],
-    input[type="password"],
-    input[type="email"],
-    input[type="number"],
-    input[type="color"],
-    input[type="file"] {
-      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><circle cx="10" cy="10" r="5" fill="%230ea5e9"/><circle cx="10" cy="10" r="9" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.5"/></svg>') 10 10, pointer;
+    /* Custom Cursor Base - Desktop Only */
+    @media (hover: hover) and (pointer: fine) {
+      * {
+        cursor: none !important;
+      }
+
+      /* Main Cursor Element */
+      body::before {
+        content: '';
+        position: fixed;
+        width: 24px;
+        height: 24px;
+        background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 1), rgba(14, 165, 233, 0.4));
+        border: 2px solid rgba(14, 165, 233, 0.6);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        box-shadow: 
+          0 0 20px rgba(14, 165, 233, 0.6),
+          inset 0 0 10px rgba(14, 165, 233, 0.3);
+        animation: cursor-glow 2s ease-in-out infinite;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        width: 32px;
+        height: 32px;
+        border: 1.5px solid rgba(14, 165, 233, 0.3);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 99998;
+        transform: translate(-50%, -50%);
+        animation: cursor-ring 3s linear infinite;
+      }
+
+      @keyframes cursor-glow {
+        0%, 100% {
+          box-shadow: 
+            0 0 20px rgba(14, 165, 233, 0.6),
+            inset 0 0 10px rgba(14, 165, 233, 0.3);
+        }
+        50% {
+          box-shadow: 
+            0 0 30px rgba(14, 165, 233, 0.8),
+            inset 0 0 15px rgba(14, 165, 233, 0.5);
+        }
+      }
+
+      @keyframes cursor-ring {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
     }
 
-    /* Draggable Elements */
-    [draggable="true"] {
-      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><path d="M8 4l4 4M20 4l-4 4M8 20l4-4M20 20l-4-4M14 8v12M8 14h12" stroke="%230ea5e9" stroke-width="2" stroke-linecap="round" fill="none"/></svg>') 14 14, move;
-    }
-
-    /* Text Selection */
-    input[type="text"]:focus,
-    textarea:focus,
-    [contenteditable] {
-      cursor: text;
-    }
-
-    /* Disabled Elements */
-    button:disabled,
-    input:disabled,
-    select:disabled,
-    textarea:disabled {
-      cursor: not-allowed;
+    /* Mobile - Disable custom cursor */
+    @media (hover: none) and (pointer: coarse) {
+      * {
+        cursor: auto !important;
+      }
     }
 
     /* Cursor Trail Animation */
     .cursor-trail {
       position: fixed;
       pointer-events: none;
-      width: 10px;
-      height: 10px;
-      border: 2px solid rgba(14, 165, 233, 0.6);
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.8), rgba(14, 165, 233, 0.2));
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      animation: trail-fade 0.6s forwards;
-      z-index: 9999;
+      animation: trail-fade 0.8s forwards;
+      z-index: 99997;
     }
 
     @keyframes trail-fade {
       to {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
+        transform: translate(-50%, -50%) scale(0.2);
       }
     }
 
@@ -1684,19 +1712,48 @@
     .cursor-click {
       position: fixed;
       pointer-events: none;
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       border: 2px solid rgba(14, 165, 233, 0.8);
       border-radius: 50%;
       transform: translate(-50%, -50%) scale(1);
-      animation: click-pulse 0.4s ease-out forwards;
-      z-index: 9999;
+      animation: click-burst 0.5s ease-out forwards;
+      z-index: 99996;
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.6);
     }
 
-    @keyframes click-pulse {
-      to {
-        transform: translate(-50%, -50%) scale(2);
+    @keyframes click-burst {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.5);
         opacity: 0;
+      }
+    }
+
+    /* Hover state for interactive elements */
+    .cursor-hover {
+      position: fixed;
+      pointer-events: none;
+      width: 36px;
+      height: 36px;
+      background: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.4), transparent);
+      border: 2px solid rgba(14, 165, 233, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 99998;
+      animation: hover-pulse 1s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+    }
+
+    @keyframes hover-pulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(14, 165, 233, 0.7);
       }
     }
   </style>
@@ -1753,6 +1810,12 @@
       </button>
     </div>
   </header>
+
+  <!-- Custom Cursor Element - Desktop Only -->
+  <div id="custom-cursor" style="display: none; position: fixed; pointer-events: none; z-index: 99999; width: 24px; height: 24px; left: 0; top: 0;">
+    <div style="position: absolute; width: 24px; height: 24px; background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 1), rgba(14, 165, 233, 0.4)); border: 2px solid rgba(14, 165, 233, 0.6); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px rgba(14, 165, 233, 0.6), inset 0 0 10px rgba(14, 165, 233, 0.3); animation: cursor-glow 2s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 32px; height: 32px; border: 1.5px solid rgba(14, 165, 233, 0.3); border-radius: 50%; transform: translate(-50%, -50%) translate(4px, 4px); animation: cursor-ring 3s linear infinite; left: 12px; top: 12px;"></div>
+  </div>
 
   <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -5292,50 +5355,128 @@
 
     /* ========== CUSTOM CURSOR INTERACTION ========== */
     
-    // Initialize cursor tracking and effects
-    let mouseX = 0, mouseY = 0;
-    let lastTrailTime = 0;
-    const trailDelay = 30; // ms between trail particles
+    // Check if device is mobile/touch device
+    const isMobile = () => {
+      return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    };
 
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      // Create trail effect (throttled)
-      const now = Date.now();
-      if (now - lastTrailTime > trailDelay) {
-        createCursorTrail(mouseX, mouseY);
-        lastTrailTime = now;
+    if (!isMobile()) {
+      let mouseX = 0, mouseY = 0;
+      let lastTrailTime = 0;
+      const trailDelay = 40; // ms between trail particles
+      let isOverInteractive = false;
+      let cursorHover = null;
+      const customCursor = document.getElementById('custom-cursor');
+      
+      // Show custom cursor on desktop
+      if (customCursor) {
+        customCursor.style.display = 'block';
       }
-    });
 
-    document.addEventListener('click', (e) => {
-      // Only create click effect on interactive elements
-      if (e.target.closest('button, a, [role="button"], input, select, textarea')) {
-        createClickEffect(e.clientX, e.clientY);
+      // Update cursor position
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Update custom cursor position
+        if (customCursor) {
+          customCursor.style.left = mouseX + 'px';
+          customCursor.style.top = mouseY + 'px';
+        }
+
+        // Create trail effect (throttled)
+        const now = Date.now();
+        if (now - lastTrailTime > trailDelay) {
+          createCursorTrail(mouseX, mouseY);
+          lastTrailTime = now;
+        }
+
+        // Check if hovering interactive element
+        const target = e.target;
+        const isInteractive = target.closest('button, a, [role="button"], input, select, textarea, [onclick], [data-clickable]');
+        
+        if (isInteractive && !isOverInteractive) {
+          isOverInteractive = true;
+          if (cursorHover) cursorHover.remove();
+          cursorHover = createCursorHover(mouseX, mouseY);
+        } else if (!isInteractive && isOverInteractive) {
+          isOverInteractive = false;
+          if (cursorHover) {
+            cursorHover.remove();
+            cursorHover = null;
+          }
+        }
+
+        // Update hover position
+        if (cursorHover) {
+          cursorHover.style.left = mouseX + 'px';
+          cursorHover.style.top = mouseY + 'px';
+        }
+      });
+
+      // Click effect
+      document.addEventListener('click', (e) => {
+        // Only create click effect on interactive elements
+        if (e.target.closest('button, a, [role="button"], input, select, textarea, [onclick]')) {
+          createClickEffect(e.clientX, e.clientY);
+        }
+      });
+
+      // Hide cursor elements on mouse leave
+      document.addEventListener('mouseleave', () => {
+        if (customCursor) {
+          customCursor.style.display = 'none';
+        }
+        if (cursorHover) {
+          cursorHover.remove();
+          cursorHover = null;
+        }
+        isOverInteractive = false;
+      });
+
+      // Show cursor on mouse enter
+      document.addEventListener('mouseenter', () => {
+        if (customCursor) {
+          customCursor.style.display = 'block';
+        }
+      });
+
+      function createCursorTrail(x, y) {
+        const trail = document.createElement('div');
+        trail.className = 'cursor-trail';
+        trail.style.left = x + 'px';
+        trail.style.top = y + 'px';
+        document.body.appendChild(trail);
+
+        // Remove after animation completes
+        setTimeout(() => trail.remove(), 800);
       }
-    });
 
-    function createCursorTrail(x, y) {
-      const trail = document.createElement('div');
-      trail.className = 'cursor-trail';
-      trail.style.left = x + 'px';
-      trail.style.top = y + 'px';
-      document.body.appendChild(trail);
+      function createClickEffect(x, y) {
+        const click = document.createElement('div');
+        click.className = 'cursor-click';
+        click.style.left = x + 'px';
+        click.style.top = y + 'px';
+        document.body.appendChild(click);
 
-      // Remove after animation completes
-      setTimeout(() => trail.remove(), 600);
-    }
+        // Remove after animation completes
+        setTimeout(() => click.remove(), 500);
+      }
 
-    function createClickEffect(x, y) {
-      const click = document.createElement('div');
-      click.className = 'cursor-click';
-      click.style.left = x + 'px';
-      click.style.top = y + 'px';
-      document.body.appendChild(click);
-
-      // Remove after animation completes
-      setTimeout(() => click.remove(), 400);
+      function createCursorHover(x, y) {
+        const hover = document.createElement('div');
+        hover.className = 'cursor-hover';
+        hover.style.left = x + 'px';
+        hover.style.top = y + 'px';
+        document.body.appendChild(hover);
+        return hover;
+      }
+    } else {
+      // Mobile: hide custom cursor
+      const customCursor = document.getElementById('custom-cursor');
+      if (customCursor) {
+        customCursor.style.display = 'none';
+      }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
