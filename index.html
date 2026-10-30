@@ -532,6 +532,135 @@
       50% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.3); }
     }
 
+    /* ========== HASHTAG & SUBJECTS ANALYTICS BUBBLES ========== */
+
+    .hashtag-subject-bubble {
+      position: relative;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(34, 211, 238, 0.05));
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 16px;
+      transition: all 300ms cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .hashtag-subject-bubble::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent 50%);
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    .hashtag-subject-bubble:hover {
+      transform: translateY(-4px);
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 12px 32px rgba(168, 85, 247, 0.2);
+    }
+
+    .hashtag-subject-bubble.subject {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(16, 185, 129, 0.05));
+      border-color: rgba(34, 211, 238, 0.3);
+    }
+
+    .hashtag-subject-bubble.subject:hover {
+      border-color: rgba(34, 211, 238, 0.6);
+      box-shadow: 0 12px 32px rgba(34, 211, 238, 0.2);
+    }
+
+    .bubble-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .bubble-tag {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      word-break: break-word;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bubble-tag-icon {
+      width: 18px;
+      height: 18px;
+      color: rgba(168, 85, 247, 0.8);
+      flex-shrink: 0;
+    }
+
+    .hashtag-subject-bubble.subject .bubble-tag-icon {
+      color: rgba(34, 211, 238, 0.8);
+    }
+
+    .bubble-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(148, 163, 184, 0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bubble-bottom {
+      padding-top: 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .bottom-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bottom-stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(148, 163, 184, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bottom-stat-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: #a5f3fc;
+    }
+
+    .bottom-stat-value.success {
+      color: #86efac;
+    }
+
+    .bottom-stat-value.warning {
+      color: #fbbf24;
+    }
+
     .glass-panel {
       background: rgba(15, 23, 42, 0.78);
       backdrop-filter: blur(14px);
@@ -2585,6 +2714,49 @@
             </thead>
             <tbody id="viewer-location-body" class="divide-y divide-slate-800/60"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- HASHTAGS & SUBJECTS ANALYTICS -->
+      <div id="hashtags-subjects-analytics-section" class="hidden">
+        <div class="dashboard-shell glass-panel gloss-layer p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="hash" class="w-4 h-4 text-cyan-400"></i>
+                Hashtags & Subjects Performance
+              </h3>
+              <p id="hashtags-subjects-period" class="text-[10px] sm:text-xs text-slate-400 mt-0.5"></p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <label for="hashtags-filter-type" class="text-xs font-medium text-slate-300">Show:</label>
+              <select id="hashtags-filter-type" onchange="window.renderHashtagsSubjectsAnalytics()" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+                <option value="hashtags">Hashtags</option>
+                <option value="subjects">Subjects</option>
+                <option value="both">Both</option>
+              </select>
+              <label for="hashtags-sort-by" class="text-xs font-medium text-slate-300">Sort by:</label>
+              <select id="hashtags-sort-by" onchange="window.renderHashtagsSubjectsAnalytics()" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:border-cyan-500 focus:outline-none">
+                <option value="alphabet">Alphabet (A-Z)</option>
+                <option value="usage">Usage (High to Low)</option>
+                <option value="impressions">Impressions (High to Low)</option>
+                <option value="reach">Reach (High to Low)</option>
+                <option value="engagement">Engagement (High to Low)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Hashtags/Subjects Bubble Grid -->
+          <div id="hashtags-subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+
+          <!-- Empty State -->
+          <div id="hashtags-subjects-empty" class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <i data-lucide="inbox" class="w-8 h-8 text-slate-500"></i>
+            <div>
+              <p class="text-xs font-semibold text-slate-300">No hashtags or subjects logged</p>
+              <p class="text-[10px] text-slate-500 mt-1">Add hashtags or subjects to your content to see performance analytics here.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -6178,6 +6350,181 @@
       document.getElementById('subject-input').value = '';
     };
 
+    /* ========== HASHTAG & SUBJECTS ANALYTICS ========== */
+
+    window.renderHashtagsSubjectsAnalytics = function() {
+      const section = document.getElementById('hashtags-subjects-analytics-section');
+      const grid = document.getElementById('hashtags-subjects-grid');
+      const empty = document.getElementById('hashtags-subjects-empty');
+      
+      if (!section || !grid || !empty) return;
+
+      const filteredPosts = getFilteredPosts();
+      
+      // Extract all hashtags and subjects with their metrics
+      const hashtagMap = {};
+      const subjectMap = {};
+
+      filteredPosts.forEach(post => {
+        const impressions = parseInt(post.impressions) || 0;
+        const reach = parseInt(post.reach) || 0;
+        const engagement = (parseInt(post.likes) || 0) + (parseInt(post.comments) || 0) + 
+                          (parseInt(post.shares) || 0) + (parseInt(post.saves) || 0);
+
+        // Process hashtags
+        if (post.hashtags) {
+          post.hashtags.split(',').forEach(tag => {
+            const cleanTag = tag.trim();
+            if (cleanTag) {
+              if (!hashtagMap[cleanTag]) {
+                hashtagMap[cleanTag] = {
+                  tag: cleanTag,
+                  count: 0,
+                  impressions: 0,
+                  reach: 0,
+                  engagement: 0,
+                  engagementRate: 0
+                };
+              }
+              hashtagMap[cleanTag].count++;
+              hashtagMap[cleanTag].impressions += impressions;
+              hashtagMap[cleanTag].reach += reach;
+              hashtagMap[cleanTag].engagement += engagement;
+            }
+          });
+        }
+
+        // Process subjects
+        if (post.subjects) {
+          post.subjects.split(',').forEach(subject => {
+            const cleanSubject = subject.trim();
+            if (cleanSubject) {
+              if (!subjectMap[cleanSubject]) {
+                subjectMap[cleanSubject] = {
+                  tag: cleanSubject,
+                  count: 0,
+                  impressions: 0,
+                  reach: 0,
+                  engagement: 0,
+                  engagementRate: 0
+                };
+              }
+              subjectMap[cleanSubject].count++;
+              subjectMap[cleanSubject].impressions += impressions;
+              subjectMap[cleanSubject].reach += reach;
+              subjectMap[cleanSubject].engagement += engagement;
+            }
+          });
+        }
+      });
+
+      // Calculate engagement rates
+      Object.values(hashtagMap).forEach(item => {
+        item.engagementRate = item.impressions > 0 ? ((item.engagement / item.impressions) * 100).toFixed(2) : 0;
+      });
+      Object.values(subjectMap).forEach(item => {
+        item.engagementRate = item.impressions > 0 ? ((item.engagement / item.impressions) * 100).toFixed(2) : 0;
+      });
+
+      // Get filter and sort options
+      const filterType = document.getElementById('hashtags-filter-type')?.value || 'hashtags';
+      const sortBy = document.getElementById('hashtags-sort-by')?.value || 'alphabet';
+
+      // Determine which data to show
+      let itemsToShow = [];
+      if (filterType === 'hashtags') {
+        itemsToShow = Object.values(hashtagMap);
+      } else if (filterType === 'subjects') {
+        itemsToShow = Object.values(subjectMap);
+      } else {
+        itemsToShow = [...Object.values(hashtagMap), ...Object.values(subjectMap)];
+      }
+
+      // If no data, show empty state
+      if (itemsToShow.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        section.classList.add('hidden');
+        return;
+      }
+
+      // Sort items
+      itemsToShow.sort((a, b) => {
+        switch (sortBy) {
+          case 'alphabet':
+            return a.tag.localeCompare(b.tag);
+          case 'usage':
+            return b.count - a.count;
+          case 'impressions':
+            return b.impressions - a.impressions;
+          case 'reach':
+            return b.reach - a.reach;
+          case 'engagement':
+            return b.engagement - a.engagement;
+          default:
+            return a.tag.localeCompare(b.tag);
+        }
+      });
+
+      // Render bubbles
+      grid.innerHTML = itemsToShow.map(item => {
+        const isSubject = filterType === 'both' && Object.values(subjectMap).some(s => s.tag === item.tag);
+        const bubbleClass = isSubject ? 'hashtag-subject-bubble subject' : 'hashtag-subject-bubble';
+        
+        return `
+          <div class="${bubbleClass}">
+            <div class="bubble-header">
+              <i data-lucide="${isSubject ? 'tag' : 'hash'}" class="bubble-tag-icon"></i>
+              <div class="bubble-tag">${escapeReportHtml(item.tag)}</div>
+            </div>
+
+            <div class="bubble-metrics">
+              <div class="metric-item">
+                <div class="metric-label">Used</div>
+                <div class="metric-value">${item.count}x</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">Avg Impressions</div>
+                <div class="metric-value">${Math.round(item.impressions / item.count).toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div class="bubble-metrics">
+              <div class="metric-item">
+                <div class="metric-label">Total Reach</div>
+                <div class="metric-value">${item.reach.toLocaleString()}</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label">Total Engagement</div>
+                <div class="metric-value">${item.engagement.toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div class="bubble-bottom">
+              <div class="bottom-stat">
+                <div class="bottom-stat-label">Total Impressions</div>
+                <div class="bottom-stat-value">${item.impressions.toLocaleString()}</div>
+              </div>
+              <div class="bottom-stat">
+                <div class="bottom-stat-label">ER %</div>
+                <div class="bottom-stat-value success">${item.engagementRate}%</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      empty.classList.add('hidden');
+      section.classList.remove('hidden');
+      lucide.createIcons();
+
+      // Update period text
+      const periodEl = document.getElementById('hashtags-subjects-period');
+      if (periodEl) {
+        periodEl.textContent = `Data from selected filters. Showing ${itemsToShow.length} unique ${filterType === 'both' ? 'hashtags and subjects' : filterType}.`;
+      }
+    };
+
     // Apply shine effect to metric values on update
     window.updateMetricValue = function(element, newValue) {
       if (!element) return;
@@ -7293,6 +7640,7 @@
       renderContentTypeComparison();
       renderNichePerformance();
       renderViewerLocations();
+      window.renderHashtagsSubjectsAnalytics();
       renderCharts(filteredPosts);
       updateVaultControls();
       const totalPages = Math.max(1, Math.ceil(tablePosts.length / state.contentPageSize));
