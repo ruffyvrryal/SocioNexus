@@ -1610,6 +1610,95 @@
       @apply transition-colors duration-300;
     }
 
+    /* ========== CUSTOM CURSOR SYSTEM ========== */
+
+    /* Custom Cursor Base */
+    * {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3" fill="%230ea5e9" opacity="0.8"/><circle cx="8" cy="8" r="6" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.4"/></svg>') 8 8, auto;
+    }
+
+    body {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3" fill="%230ea5e9" opacity="0.8"/><circle cx="8" cy="8" r="6" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.4"/></svg>') 8 8, auto;
+    }
+
+    /* Interactive Elements - Pointer */
+    a,
+    button,
+    [role="button"],
+    [role="link"],
+    input[type="submit"],
+    input[type="button"],
+    [onclick],
+    select,
+    textarea,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"],
+    input[type="color"],
+    input[type="file"] {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><circle cx="10" cy="10" r="5" fill="%230ea5e9"/><circle cx="10" cy="10" r="9" fill="none" stroke="%230ea5e9" stroke-width="1.5" opacity="0.5"/></svg>') 10 10, pointer;
+    }
+
+    /* Draggable Elements */
+    [draggable="true"] {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><path d="M8 4l4 4M20 4l-4 4M8 20l4-4M20 20l-4-4M14 8v12M8 14h12" stroke="%230ea5e9" stroke-width="2" stroke-linecap="round" fill="none"/></svg>') 14 14, move;
+    }
+
+    /* Text Selection */
+    input[type="text"]:focus,
+    textarea:focus,
+    [contenteditable] {
+      cursor: text;
+    }
+
+    /* Disabled Elements */
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+    }
+
+    /* Cursor Trail Animation */
+    .cursor-trail {
+      position: fixed;
+      pointer-events: none;
+      width: 10px;
+      height: 10px;
+      border: 2px solid rgba(14, 165, 233, 0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: trail-fade 0.6s forwards;
+      z-index: 9999;
+    }
+
+    @keyframes trail-fade {
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+    }
+
+    /* Active Click Effect */
+    .cursor-click {
+      position: fixed;
+      pointer-events: none;
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(14, 165, 233, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      animation: click-pulse 0.4s ease-out forwards;
+      z-index: 9999;
+    }
+
+    @keyframes click-pulse {
+      to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body class="auth-locked min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
@@ -5200,6 +5289,54 @@
     };
 
     // Dark mode only - theme functions removed
+
+    /* ========== CUSTOM CURSOR INTERACTION ========== */
+    
+    // Initialize cursor tracking and effects
+    let mouseX = 0, mouseY = 0;
+    let lastTrailTime = 0;
+    const trailDelay = 30; // ms between trail particles
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // Create trail effect (throttled)
+      const now = Date.now();
+      if (now - lastTrailTime > trailDelay) {
+        createCursorTrail(mouseX, mouseY);
+        lastTrailTime = now;
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      // Only create click effect on interactive elements
+      if (e.target.closest('button, a, [role="button"], input, select, textarea')) {
+        createClickEffect(e.clientX, e.clientY);
+      }
+    });
+
+    function createCursorTrail(x, y) {
+      const trail = document.createElement('div');
+      trail.className = 'cursor-trail';
+      trail.style.left = x + 'px';
+      trail.style.top = y + 'px';
+      document.body.appendChild(trail);
+
+      // Remove after animation completes
+      setTimeout(() => trail.remove(), 600);
+    }
+
+    function createClickEffect(x, y) {
+      const click = document.createElement('div');
+      click.className = 'cursor-click';
+      click.style.left = x + 'px';
+      click.style.top = y + 'px';
+      document.body.appendChild(click);
+
+      // Remove after animation completes
+      setTimeout(() => click.remove(), 400);
+    }
 
     window.addEventListener('DOMContentLoaded', async () => {
       // Dark mode only - theme initialization removed
