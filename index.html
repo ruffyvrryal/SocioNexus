@@ -1335,6 +1335,222 @@
       background: linear-gradient(180deg, rgba(248, 250, 252, 0.8), rgba(240, 245, 250, 0.8));
       border: 1px solid rgba(226, 232, 240, 0.8);
     }
+
+    /* ========== PREMIUM DESIGN SYSTEM ========== */
+
+    /* Typography System */
+    .metric-label {
+      @apply text-slate-400 text-sm font-medium tracking-wide uppercase;
+    }
+
+    .metric-value {
+      @apply text-white text-3xl font-semibold tabular-nums;
+    }
+
+    /* Enhanced Glass Panel with Premium Depth */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.4) !important;
+      backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(71, 85, 105, 0.4) !important;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* Premium Shadow Hierarchy */
+    .shadow-elevated {
+      box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .shadow-premium {
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .shadow-floating {
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    /* Refined Borders */
+    .border-refined {
+      border: 1px solid rgba(71, 85, 105, 0.4) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    /* Enhanced Spacing & Padding */
+    .card-premium {
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    /* Metric Card Enhancements */
+    .metric-card {
+      @apply bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/40 
+             shadow-lg shadow-slate-900/20 
+             hover:shadow-floating hover:border-slate-600/60 
+             transition-all duration-300 
+             group;
+    }
+
+    .metric-card-with-accent {
+      @apply relative overflow-hidden;
+    }
+
+    .metric-card-with-accent::before {
+      content: '';
+      @apply absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 to-cyan-400/50;
+    }
+
+    /* Bubble Enhancements */
+    #bubble-accounts,
+    #bubble-views,
+    #bubble-engagement {
+      @apply bg-slate-900/60 backdrop-blur-xl rounded-2xl border 
+             shadow-lg shadow-slate-900/20 
+             hover:shadow-floating transition-all duration-300
+             p-6;
+    }
+
+    #bubble-accounts {
+      @apply border-sky-500/40 hover:border-sky-400/60;
+    }
+
+    #bubble-views {
+      @apply border-cyan-500/40 hover:border-cyan-400/60;
+    }
+
+    #bubble-engagement {
+      @apply border-purple-500/40 hover:border-purple-400/60;
+    }
+
+    /* Button Refinements */
+    button {
+      @apply transition-all duration-300;
+    }
+
+    button:not(.platform-pill):not([class*="pill"]):hover {
+      @apply shadow-md shadow-slate-900/20;
+    }
+
+    button:focus-visible {
+      @apply ring-2 ring-cyan-400/50 ring-offset-2 ring-offset-slate-900;
+    }
+
+    /* Smoother Transitions */
+    .transition-subtle {
+      @apply transition-all duration-200 ease-out;
+    }
+
+    .transition-smooth {
+      @apply transition-all duration-300 ease-in-out;
+    }
+
+    .transition-flow {
+      @apply transition-all duration-500 ease-out;
+    }
+
+    /* Header Enhancement */
+    header.glass-panel {
+      @apply shadow-elevated;
+    }
+
+    /* Modal Enhancements */
+    #modal-account,
+    #modal-post,
+    #modal-calendar-post,
+    #modal-niche-manager,
+    #modal-viewer-location-manager,
+    #modal-vault-sharing {
+      @apply backdrop-blur-md;
+    }
+
+    #modal-account .glass-panel,
+    #modal-post .glass-panel,
+    #modal-calendar-post .glass-panel,
+    #modal-niche-manager .glass-panel,
+    #modal-viewer-location-manager .glass-panel,
+    #modal-vault-sharing .glass-panel {
+      @apply shadow-premium;
+    }
+
+    /* Input Focus States */
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      @apply ring-2 ring-cyan-400/50 ring-offset-1 ring-offset-slate-900;
+    }
+
+    /* Workspace Banner Enhancement */
+    .workspace-banner {
+      @apply border-slate-700/40 shadow-elevated;
+    }
+
+    /* Toolbar Enhancement */
+    .dashboard-toolbar {
+      @apply border-slate-700/40 shadow-elevated;
+    }
+
+    /* Chart Container Enhancement */
+    .dashboard-shell {
+      @apply border-slate-700/40 shadow-elevated 
+             hover:shadow-floating transition-all duration-300;
+    }
+
+    /* Content Calendar & Log Enhancement */
+    .dashboard-shell table {
+      @apply border-collapse;
+    }
+
+    .dashboard-shell tbody tr {
+      @apply hover:bg-slate-800/40 transition-colors duration-200;
+    }
+
+    /* Micro-interaction: Subtle Lift */
+    .card-hover:hover {
+      @apply translate-y-[-2px] shadow-floating;
+    }
+
+    /* Accent Color Classes */
+    .accent-sky {
+      @apply text-sky-400 border-sky-500/40;
+    }
+
+    .accent-cyan {
+      @apply text-cyan-400 border-cyan-500/40;
+    }
+
+    .accent-purple {
+      @apply text-purple-400 border-purple-500/40;
+    }
+
+    /* Tab & Filter Refinement */
+    .modern-filter-box {
+      @apply bg-slate-900/60 backdrop-blur-xl rounded-lg border border-slate-700/40 
+             transition-all duration-300
+             hover:border-slate-600/60 hover:shadow-md hover:shadow-slate-900/20;
+    }
+
+    /* Smooth Color Transitions */
+    .color-transition {
+      @apply transition-colors duration-300;
+    }
+
   </style>
 </head>
 <body class="auth-locked min-h-full flex flex-col justify-between custom-scrollbar text-slate-200 antialiased pb-24 md:pb-0">
@@ -1371,10 +1587,6 @@
         <span>Workspaces</span>
       </button>
 
-      <button id="theme-toggle-desktop" onclick="window.toggleTheme()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors" title="Toggle dark/light mode">
-        <i data-lucide="moon" class="w-4 h-4"></i>
-      </button>
-
       <button onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-700 rounded-lg transition-colors relative" title="Cloud Sync Settings">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
@@ -1384,9 +1596,6 @@
 
     <!-- Mobile Header Quick Actions -->
     <div class="flex md:hidden items-center space-x-2">
-      <button id="theme-toggle-mobile" onclick="window.toggleTheme()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60" title="Toggle dark/light mode">
-        <i data-lucide="moon" class="w-4 h-4"></i>
-      </button>
       <button id="mobile-settings-button" onclick="window.openSettingsModal()" class="p-2 text-slate-400 hover:text-white bg-slate-800/80 rounded-xl border border-slate-700/60 relative">
         <i data-lucide="cloud" class="w-4 h-4"></i>
         <span id="sync-indicator-mobile" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400"></span>
@@ -1448,46 +1657,46 @@
       <!-- SUMMARY BUBBLES: TOTAL ACCOUNTS, VIEWS, ENGAGEMENT -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
         <!-- Total Accounts Bubble -->
-        <div id="bubble-accounts" class="glass-panel p-4 sm:p-5 rounded-2xl border border-sky-500/25 space-y-3 hover:border-sky-500/40 transition-all">
+        <div id="bubble-accounts" class="glass-panel p-6 sm:p-6 rounded-2xl border border-sky-500/40 space-y-3 hover:border-sky-400/60 transition-all shadow-lg shadow-slate-900/20 hover:shadow-floating">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400 flex items-center gap-1.5">
+            <span class="metric-label text-sky-400 flex items-center gap-1.5">
               <i data-lucide="layers" class="w-4 h-4"></i>
               Total Accounts
             </span>
             <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-accounts" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <div id="hub-total-accounts" class="metric-value">0</div>
             <p class="text-[10px] text-slate-400 mt-1">Accounts in this vault</p>
           </div>
         </div>
 
         <!-- Total Views Bubble -->
-        <div id="bubble-views" class="glass-panel p-4 sm:p-5 rounded-2xl border border-cyan-500/25 space-y-3 hover:border-cyan-500/40 transition-all">
+        <div id="bubble-views" class="glass-panel p-6 sm:p-6 rounded-2xl border border-cyan-500/40 space-y-3 hover:border-cyan-400/60 transition-all shadow-lg shadow-slate-900/20 hover:shadow-floating">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+            <span class="metric-label text-cyan-400 flex items-center gap-1.5">
               <i data-lucide="eye" class="w-4 h-4"></i>
               Total Views
             </span>
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-views" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <div id="hub-total-views" class="metric-value">0</div>
             <p class="text-[10px] text-slate-400 mt-1">Impressions all accounts</p>
           </div>
         </div>
 
         <!-- Total Engagement Bubble -->
-        <div id="bubble-engagement" class="glass-panel p-4 sm:p-5 rounded-2xl border border-purple-500/25 space-y-3 hover:border-purple-500/40 transition-all">
+        <div id="bubble-engagement" class="glass-panel p-6 sm:p-6 rounded-2xl border border-purple-500/40 space-y-3 hover:border-purple-400/60 transition-all shadow-lg shadow-slate-900/20 hover:shadow-floating">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400 flex items-center gap-1.5">
+            <span class="metric-label text-purple-400 flex items-center gap-1.5">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
               Total Engagement
             </span>
             <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
           </div>
           <div>
-            <div id="hub-total-engagement" class="text-2xl sm:text-3xl font-black text-white tracking-tight">0</div>
+            <div id="hub-total-engagement" class="metric-value">0</div>
             <p class="text-[10px] text-slate-400 mt-1">Likes, comments, shares & saves</p>
           </div>
         </div>
@@ -1500,7 +1709,7 @@
     <!-- VIEW 2: ACCOUNT DASHBOARD WORKSPACE -->
     <section id="view-dashboard" class="hidden space-y-4 sm:space-y-6">
       <!-- Workspace Banner -->
-      <div class="workspace-banner glass-panel p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-slate-800">
+      <div class="workspace-banner glass-panel p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 border border-slate-700/40 shadow-lg shadow-slate-900/20">
         <div class="flex items-center space-x-3 sm:space-x-4">
           <button onclick="window.navigateToHub()" class="p-2 sm:p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors shrink-0">
             <i data-lucide="arrow-left" class="w-4 h-4 sm:w-5 sm:h-5"></i>
@@ -1538,7 +1747,7 @@
       <div id="dashboard-data-status" class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500"></div>
 
       <!-- Timeframe Filter Toolbar -->
-      <div class="dashboard-toolbar glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-slate-800">
+      <div class="dashboard-toolbar glass-panel p-3.5 sm:p-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-slate-700/40 shadow-lg shadow-slate-900/20">
         <div class="modern-filter-group">
           <div class="modern-filter-box">
             <label for="timeframe-filter" class="flex items-center gap-1.5 shrink-0">
@@ -1589,57 +1798,57 @@
         </div>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
-        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-cyan-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Impressions</span>
-            <span class="metric-card-icon text-cyan-300"><i data-lucide="eye" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-cyan-400"><i data-lucide="eye" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-impressions">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-impressions">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card metric-card-primary p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-sky-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Reach</span>
-            <span class="metric-card-icon text-sky-300"><i data-lucide="users-round" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-sky-400"><i data-lucide="users-round" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-reach">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-reach">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-rose-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Likes</span>
-            <span class="metric-card-icon text-rose-300"><i data-lucide="heart" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-rose-400"><i data-lucide="heart" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-likes">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-likes">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-purple-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Comments</span>
-            <span class="metric-card-icon text-purple-300"><i data-lucide="message-circle" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-purple-400"><i data-lucide="message-circle" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-comments">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-comments">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-emerald-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-400 font-medium">Shares</span>
-            <span class="metric-card-icon text-emerald-300"><i data-lucide="share-2" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-emerald-400"><i data-lucide="share-2" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-shares">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-shares">Select a period to compare</div>
         </div>
-        <div class="glass-panel metric-card metric-card-secondary p-3.5 sm:p-4 rounded-2xl space-y-2">
+        <div class="glass-panel metric-card metric-card-secondary p-3.5 sm:p-4 rounded-2xl space-y-2 relative border-l-4 border-l-amber-400 shadow-lg shadow-slate-900/20 hover:shadow-floating transition-all">
           <div class="flex items-center justify-between gap-2">
             <span class="text-[11px] sm:text-xs text-slate-300 font-medium">Saves</span>
-            <span class="metric-card-icon text-amber-300"><i data-lucide="bookmark" class="w-4 h-4" aria-hidden="true"></i></span>
+            <span class="metric-card-icon text-amber-400"><i data-lucide="bookmark" class="w-4 h-4" aria-hidden="true"></i></span>
           </div>
           <div class="metric-card-value text-lg sm:text-2xl font-bold text-white tracking-tight" id="metric-saves">0</div>
           <div class="text-[10px] text-slate-400" id="comparison-saves">Select a period to compare</div>
         </div>
       </div>
 
-      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white">Feed vs Video Performance</h3>
@@ -1657,7 +1866,7 @@
         </div>
       </div>
 
-      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white">Engagement by Niche</h3>
@@ -1678,7 +1887,7 @@
         </div>
       </div>
 
-      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white">Viewers by Country</h3>
@@ -1701,7 +1910,7 @@
 
       <!-- CHARTS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div class="dashboard-shell lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
+        <div class="dashboard-shell lg:col-span-2 glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
@@ -1721,7 +1930,7 @@
           </div>
         </div>
 
-        <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3 sm:space-y-4">
+        <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
@@ -1743,7 +1952,7 @@
       </div>
 
       <!-- CONTENT CALENDAR -->
-      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-800 space-y-3">
+      <div class="dashboard-shell glass-panel p-4 sm:p-5 rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4 text-cyan-400"></i>Content Calendar</h3>
@@ -1771,8 +1980,8 @@
       </div>
 
       <!-- CONTENT LOG -->
-      <div class="dashboard-shell glass-panel rounded-2xl border border-slate-800 overflow-hidden">
-        <div class="p-4 sm:p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="dashboard-shell glass-panel rounded-2xl border border-slate-700/40 shadow-lg shadow-slate-900/20 overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-700/40 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="table" class="w-4 h-4 text-cyan-400"></i>
@@ -1848,8 +2057,8 @@
 
   <!-- MODALS -->
   <div id="modal-account" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <h3 id="modal-account-title" class="text-base font-bold text-white">Add New Account</h3>
         <button onclick="window.closeModal('modal-account')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
@@ -1881,7 +2090,7 @@
           <label class="block text-xs font-medium text-slate-300 mb-1">Theme Color</label>
           <input type="color" id="account-color" value="#0ea5e9" class="w-full h-10 p-1 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer">
         </div>
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-700/40">
           <button type="button" onclick="window.closeModal('modal-account')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
           <button type="submit" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-colors">Save Account</button>
         </div>
@@ -1890,8 +2099,8 @@
   </div>
 
   <div id="modal-post" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <h3 id="modal-post-title" class="text-base font-bold text-white">Log Content Performance</h3>
         <button onclick="window.closeModal('modal-post')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
@@ -1988,7 +2197,7 @@
             <input type="number" id="post-saves" min="0" value="0" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:border-cyan-500 focus:outline-none">
           </div>
         </div>
-        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-700/40">
           <button type="button" onclick="window.closeModal('modal-post')" class="w-full sm:w-auto px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-white">Cancel</button>
           <button type="submit" class="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg transition-all">Submit Post</button>
         </div>
@@ -1997,8 +2206,8 @@
   </div>
 
   <div id="modal-calendar-post" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-calendar-post')">
-    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <div>
           <h3 id="calendar-post-detail-title" class="text-base font-bold text-white">Content Details</h3>
           <p id="calendar-post-detail-subtitle" class="text-[11px] text-slate-400 mt-1"></p>
@@ -2014,8 +2223,8 @@
   </div>
 
   <div id="modal-niche-manager" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-niche-manager')">
-    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <div>
           <h3 class="text-base font-bold text-white">Manage Niche List</h3>
           <p class="text-[11px] text-slate-400 mt-1">Add the niche labels you want to assign to content. This list is saved in this browser.</p>
@@ -2037,15 +2246,15 @@
   </div>
 
   <div id="modal-viewer-location-manager" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-viewer-location-manager')">
-    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <div>
           <h3 class="text-base font-bold text-white">Manage Viewer Countries</h3>
           <p id="viewer-location-manager-account" class="text-[11px] text-slate-400 mt-1"></p>
         </div>
         <button onclick="window.closeModal('modal-viewer-location-manager')" class="text-slate-400 hover:text-white" aria-label="Close viewer country manager"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <details class="rounded-xl border border-slate-800 bg-slate-900/70 p-3">
+      <details class="rounded-xl border border-slate-700/40 bg-slate-900/70 p-3">
         <summary class="cursor-pointer text-[11px] font-medium text-cyan-300">Set up cross-device sync</summary>
         <p class="mt-2 text-[11px] text-slate-400">Viewer data is saved locally and synced through Supabase. For cross-device sync, create this table in the same Supabase project used by SocioNexus, then give it the same API permissions and row-level security policies as your content data.</p>
         <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-950 p-3 text-[10px] text-slate-300"><code>create table if not exists public.viewer_locations (
@@ -2080,8 +2289,8 @@
   </div>
 
   <div id="modal-vault-sharing" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target === this) window.closeModal('modal-vault-sharing')">
-    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-lg p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <div>
           <h3 class="text-base font-bold text-white">Share Vault</h3>
           <p id="vault-sharing-title" class="text-[11px] text-slate-400 mt-1"></p>
@@ -2119,8 +2328,8 @@
   </div>
 
   <div id="modal-settings" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-md p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 shadow-premium space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i data-lucide="cloud" class="w-4 h-4 text-cyan-400"></i> Cloud Sync Settings
         </h3>
@@ -2146,8 +2355,8 @@
 
   <!-- PPTX & PRESENTATION REPORT MODAL -->
   <div id="modal-report" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="glass-panel w-full sm:max-w-5xl p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-800 space-y-4 max-h-[95vh] overflow-y-auto custom-scrollbar">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-panel w-full sm:max-w-5xl p-5 sm:p-6 rounded-t-2xl sm:rounded-2xl border border-slate-700/40 space-y-4 max-h-[95vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-slate-700/40 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i data-lucide="presentation" class="w-5 h-5 text-cyan-400"></i> Social Media Performance Report
         </h3>
@@ -2195,7 +2404,7 @@
       <!-- Slide Preview Canvas (Copy Source) -->
       <div class="pt-2 border-t border-slate-800">
         <h4 class="text-xs font-semibold text-slate-300 mb-2">Report pages preview:</h4>
-        <div id="print-report-container" class="p-3 sm:p-5 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-4 max-h-[55vh] overflow-y-auto custom-scrollbar"></div>
+        <div id="print-report-container" class="p-3 sm:p-5 bg-slate-950 rounded-xl border border-slate-700/40 text-xs text-slate-300 space-y-4 max-h-[55vh] overflow-y-auto custom-scrollbar"></div>
       </div>
 
       <!-- Export Actions -->
@@ -3081,7 +3290,7 @@
           const isCurrent = state.currentAccountId ? acc.id === state.currentAccountId : true;
           const div = document.createElement('div');
           const color = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
-          div.className = "flex items-center justify-between p-2 bg-slate-900/80 rounded-xl border border-slate-800";
+          div.className = "flex items-center justify-between p-2 bg-slate-900/80 rounded-xl border border-slate-700/40";
           div.innerHTML = `
             <label class="flex items-center gap-2 text-xs text-white cursor-pointer w-full">
               <input type="checkbox" class="report-acc-checkbox rounded bg-slate-800 border-slate-700 text-cyan-500" value="${escapeReportHtml(acc.id)}" ${isCurrent ? 'checked' : ''} onchange="window.updateReportPreview()">
@@ -3150,9 +3359,9 @@
             <span class="text-[10px] text-cyan-300">${report.accounts.length} akun · ${totals.posts} konten</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-[10px]">
-            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Total tayangan <b class="block text-white text-xs mt-1">${totals.impressions.toLocaleString('id-ID')}</b></div>
-            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Total jangkauan <b class="block text-white text-xs mt-1">${totals.reach.toLocaleString('id-ID')}</b></div>
-            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Akun teratas <b class="block text-white text-xs mt-1 truncate">${escapeReportHtml(ranking[0].account.name)}</b></div>
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Total tayangan <b class="block text-white text-xs mt-1">${totals.impressions.toLocaleString('id-ID')}</b></div>
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Total jangkauan <b class="block text-white text-xs mt-1">${totals.reach.toLocaleString('id-ID')}</b></div>
+            <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Akun teratas <b class="block text-white text-xs mt-1 truncate">${escapeReportHtml(ranking[0].account.name)}</b></div>
           </div>
           <div>
             <span class="block text-[10px] font-semibold text-slate-400 mb-1">Isi presentasi</span>
@@ -3170,9 +3379,9 @@
                 <span class="text-[10px] text-slate-400">${posts.length} konten</span>
               </div>
               <div class="grid grid-cols-3 gap-2 text-[10px]">
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Tayangan: <b class="text-white">${metrics.impressions.toLocaleString('id-ID')}</b></div>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Jangkauan: <b class="text-white">${metrics.reach.toLocaleString('id-ID')}</b></div>
-                <div class="bg-slate-900 p-2 rounded-lg border border-slate-800">Interaksi: <b class="text-amber-400">${metrics.engagementRate.toFixed(2)}%</b></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Tayangan: <b class="text-white">${metrics.impressions.toLocaleString('id-ID')}</b></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Jangkauan: <b class="text-white">${metrics.reach.toLocaleString('id-ID')}</b></div>
+                <div class="bg-slate-900 p-2 rounded-lg border border-slate-700/40">Interaksi: <b class="text-amber-400">${metrics.engagementRate.toFixed(2)}%</b></div>
               </div>
             </div>
           `).join('')}
@@ -4931,47 +5140,10 @@
       if (id === 'modal-account') resetAccountProfilePicturePicker();
     };
 
-    window.toggleTheme = function() {
-      const currentTheme = localStorage.getItem('sn_theme') || 'dark';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('sn_theme', newTheme);
-      applyTheme(newTheme);
-    };
-
-    function applyTheme(theme) {
-      const html = document.documentElement;
-      const desktopToggle = document.getElementById('theme-toggle-desktop');
-      const mobileToggle = document.getElementById('theme-toggle-mobile');
-      
-      if (theme === 'light') {
-        html.classList.add('light-mode');
-        html.classList.remove('dark');
-        if (desktopToggle) {
-          desktopToggle.querySelector('i').setAttribute('data-lucide', 'sun');
-          desktopToggle.title = 'Switch to dark mode';
-        }
-        if (mobileToggle) {
-          mobileToggle.querySelector('i').setAttribute('data-lucide', 'sun');
-          mobileToggle.title = 'Switch to dark mode';
-        }
-      } else {
-        html.classList.remove('light-mode');
-        html.classList.add('dark');
-        if (desktopToggle) {
-          desktopToggle.querySelector('i').setAttribute('data-lucide', 'moon');
-          desktopToggle.title = 'Switch to light mode';
-        }
-        if (mobileToggle) {
-          mobileToggle.querySelector('i').setAttribute('data-lucide', 'moon');
-          mobileToggle.title = 'Switch to light mode';
-        }
-      }
-      lucide.createIcons();
-    }
+    // Dark mode only - theme functions removed
 
     window.addEventListener('DOMContentLoaded', async () => {
-      const savedTheme = localStorage.getItem('sn_theme') || 'dark';
-      applyTheme(savedTheme);
+      // Dark mode only - theme initialization removed
       
       lucide.createIcons();
       initRevealAnimations();
@@ -5198,7 +5370,7 @@
       }
       const members = membersResult.data || [];
       membersContainer.innerHTML = members.length ? members.map(member => `
-        <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-700/40 px-3 py-2.5">
           <span class="min-w-0 break-all text-xs text-white">${escapeReportHtml(member.email)}${String(member.user_id) === String(state.authUser.id) ? ' <span class="text-slate-500">(you)</span>' : ''}</span>
           <div class="flex items-center gap-2">
             ${member.role === 'owner'
@@ -5209,7 +5381,7 @@
         </div>`).join('') : '<p class="text-xs text-slate-500">No members listed yet.</p>';
       const invites = invitesResult.data || [];
       invitesContainer.innerHTML = invites.length ? invites.map(invite => `
-        <div class="flex items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+        <div class="flex items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-700/40 px-3 py-2.5">
           <span class="min-w-0 break-all text-xs text-slate-300">${escapeReportHtml(invite.email)} <span class="text-slate-500">· ${escapeReportHtml(invite.role)}</span></span>
           <button type="button" onclick="window.cancelVaultInvite('${escapeReportHtml(invite.invite_id)}')" class="shrink-0 text-[11px] text-rose-300 hover:text-rose-200">Cancel</button>
         </div>`).join('') : '<p class="text-xs text-slate-500">No pending invitations.</p>';
@@ -5562,7 +5734,7 @@
       grid.innerHTML = '';
 
       if (state.accounts.length === 0) {
-        grid.innerHTML = `<div class="col-span-full text-center py-10 glass-panel rounded-2xl border border-slate-800 space-y-3">
+        grid.innerHTML = `<div class="col-span-full text-center py-10 glass-panel rounded-2xl border border-slate-700/40 space-y-3">
           <i data-lucide="folder-plus" class="w-8 h-8 text-slate-500 mx-auto"></i>
           <p class="text-slate-400 text-xs">No workspaces created yet. Click <b>Add New Account</b> to start.</p>
         </div>`;
@@ -5577,7 +5749,7 @@
         const accountColor = /^#[0-9a-f]{6}$/i.test(acc.color || '') ? acc.color : '#0ea5e9';
 
         const card = document.createElement('div');
-        card.className = "glass-panel p-4 sm:p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer space-y-3 sm:space-y-4 group";
+        card.className = "glass-panel p-4 sm:p-6 rounded-2xl border border-slate-700/40 hover:border-slate-700 transition-all cursor-pointer space-y-3 sm:space-y-4 group";
         card.onclick = () => window.openAccountWorkspace(acc.id);
 
         card.innerHTML = `
@@ -5939,7 +6111,7 @@
           const engagementShare = totalEngagement > 0 ? Math.min(100, Math.round((engagement / totalEngagement) * 100)) : 0;
 
           return `
-            <div class="comparison-bubble-card glass-panel p-4 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all space-y-3 group">
+            <div class="comparison-bubble-card glass-panel p-4 rounded-2xl border border-slate-700/40 hover:border-slate-700 transition-all space-y-3 group">
               <!-- Account Header -->
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2.5 min-w-0">
@@ -6228,7 +6400,7 @@
         return;
       }
       container.innerHTML = locations.map(location => `
-        <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-900 border border-slate-800 px-3 py-2.5">
+        <div class="flex items-center justify-between gap-3 rounded-xl bg-slate-900 border border-slate-700/40 px-3 py-2.5">
           <span class="min-w-0 truncate text-xs font-medium text-white">${escapeReportHtml(location.country)} <span class="text-cyan-300">${location.percentage.toFixed(1)}%</span></span>
           <div class="flex shrink-0 items-center gap-2">
             <button type="button" onclick="window.editViewerLocation(${location.index})" class="text-[11px] text-slate-400 hover:text-cyan-300">Edit</button>
@@ -6765,13 +6937,13 @@
       const contentType = post.content_type === 'video' ? 'Video' : 'Feed';
       if (!post.thumbnail_path) {
         return `
-        <div class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/70 px-5 py-7 text-center">
+        <div class="flex min-h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-slate-700/40 bg-slate-950/70 px-5 py-7 text-center">
           <i data-lucide="${contentType === 'Video' ? 'video-off' : 'image-off'}" class="h-7 w-7 text-slate-500" aria-hidden="true"></i>
           <p class="text-xs font-semibold text-slate-200">No thumbnail uploaded</p>
         </div>`;
       }
       return `
-        <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+        <div class="relative overflow-hidden rounded-2xl border border-slate-700/40 bg-slate-950">
           <img data-calendar-post-preview="${escapeReportHtml(post.id)}" class="hidden max-h-[70vh] w-full object-contain" alt="${escapeReportHtml(post.title || `${contentType} preview`)}">
           <div class="calendar-preview-fallback flex min-h-40 items-center justify-center text-slate-500"><i data-lucide="${contentType === 'Video' ? 'video' : 'image'}" class="h-7 w-7" aria-hidden="true"></i></div>
           ${contentType === 'Video' ? '<span class="absolute bottom-3 right-3 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-slate-950/75 text-white shadow-lg backdrop-blur"><i data-lucide="play" class="h-4 w-4 fill-current" aria-hidden="true"></i></span>' : ''}
@@ -6813,7 +6985,7 @@
         <p class="text-sm text-slate-200 whitespace-pre-wrap break-words">${escapeReportHtml(post.title || 'Untitled Content')}</p>
         ${safeLink ? `<a href="${escapeReportHtml(safeLink)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-cyan-400 hover:underline break-all">Open content link <i data-lucide="external-link" class="w-3.5 h-3.5 shrink-0"></i></a>` : ''}
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          ${details.map(([label, value]) => `<div class="bg-slate-900 border border-slate-800 rounded-xl p-3"><span class="block text-[10px] text-slate-500">${label}</span><span class="block mt-1 text-sm font-semibold text-white">${typeof value === 'number' ? value.toLocaleString() : value}</span></div>`).join('')}
+          ${details.map(([label, value]) => `<div class="bg-slate-900 border border-slate-700/40 rounded-xl p-3"><span class="block text-[10px] text-slate-500">${label}</span><span class="block mt-1 text-sm font-semibold text-white">${typeof value === 'number' ? value.toLocaleString() : value}</span></div>`).join('')}
         </div>`;
       const previewImage = document.querySelector('[data-calendar-post-preview]');
       if (previewImage) loadCalendarPostThumbnail(previewImage, post);
@@ -7073,7 +7245,7 @@
         const statusBadge = getContentStatusBadge(p.status);
 
         const card = document.createElement('div');
-        card.className = "p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5";
+        card.className = "p-3.5 rounded-xl bg-slate-900/90 border border-slate-700/40 space-y-2.5";
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
             <div>
