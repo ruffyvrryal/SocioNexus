@@ -6377,7 +6377,7 @@
 
         // Process hashtags
         if (post.hashtags) {
-          post.hashtags.split(',').forEach(tag => {
+          post.hashtags.split(', ').forEach(tag => {
             const cleanTag = tag.trim();
             if (cleanTag) {
               if (!hashtagMap[cleanTag]) {
@@ -6400,7 +6400,7 @@
 
         // Process subjects
         if (post.subjects) {
-          post.subjects.split(',').forEach(subject => {
+          post.subjects.split(', ').forEach(subject => {
             const cleanSubject = subject.trim();
             if (cleanSubject) {
               if (!subjectMap[cleanSubject]) {
@@ -6539,7 +6539,7 @@
 
       posts.forEach(post => {
         if (post.hashtags) {
-          post.hashtags.split(',').forEach(tag => {
+          post.hashtags.split(', ').forEach(tag => {
             const cleanTag = tag.trim();
             if (cleanTag) {
               hashtags[cleanTag] = (hashtags[cleanTag] || 0) + 1;
@@ -6548,7 +6548,7 @@
         }
 
         if (post.subjects) {
-          post.subjects.split(',').forEach(subject => {
+          post.subjects.split(', ').forEach(subject => {
             const cleanSubject = subject.trim();
             if (cleanSubject) {
               subjects[cleanSubject] = (subjects[cleanSubject] || 0) + 1;
